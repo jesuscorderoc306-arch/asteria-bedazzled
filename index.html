@@ -178,8 +178,10 @@
   .field.invalid .err{display:block}
   .field.invalid input,.field.invalid select{border-color:var(--maroon)}
 
-  /* modelo de iPhone (paso 3) */
-  .modelbox{max-width:440px;margin:0 auto;background:var(--paper-2);border:1px solid var(--line);border-radius:20px;padding:38px 34px 32px;text-align:center}
+  /* modelo de iPhone (dentro del paso 2, debajo del color de pasta) */
+  .modelbox{max-height:0;opacity:0;overflow:hidden;transition:max-height .5s cubic-bezier(.2,.8,.25,1),opacity .4s,margin .4s;max-width:440px;margin:0 auto}
+  .modelbox.show{max-height:420px;opacity:1;margin-top:34px}
+  .modelbox-card{background:var(--paper-2);border:1px solid var(--line);border-radius:20px;padding:38px 34px 32px;text-align:center}
   .modelbox-star{display:block;color:var(--maroon);font-size:1.25rem;margin-bottom:14px}
   .modelbox .field{margin:0}
 
@@ -430,8 +432,7 @@
     <div class="progress">
       <div class="pstep active" data-p="1"><div class="bar"><i></i></div><span class="lbl">1 · Instagram</span></div>
       <div class="pstep" data-p="2"><div class="bar"><i></i></div><span class="lbl">2 · Tu estilo</span></div>
-      <div class="pstep" data-p="3"><div class="bar"><i></i></div><span class="lbl">3 · Tu modelo</span></div>
-      <div class="pstep" data-p="4"><div class="bar"><i></i></div><span class="lbl">4 · Tu diseño</span></div>
+      <div class="pstep" data-p="3"><div class="bar"><i></i></div><span class="lbl">3 · Tu diseño</span></div>
     </div>
   </div>
 
@@ -487,6 +488,18 @@
           </div>
           <p class="pnote">La disponibilidad depende de tu modelo de iPhone; te lo confirmamos por Instagram.</p>
         </div>
+        <div class="modelbox" id="modelBox">
+          <div class="modelbox-card">
+            <span class="modelbox-star" aria-hidden="true">★</span>
+            <div class="field" id="fld-modelo">
+              <label for="modelo">Modelo de iPhone</label>
+              <div class="inputwrap">
+                <select id="modelo"><option value="">Selecciona tu modelo…</option></select>
+              </div>
+              <div class="err">Elige tu modelo de iPhone para continuar.</div>
+            </div>
+          </div>
+        </div>
         <p class="note-strip">Tu funda cuenta con una capa protectora además del pegamento para adherir las gemas.</p>
     </div>
 
@@ -494,28 +507,6 @@
     <div class="fstep" data-step="3">
       <div class="fstep-head">
         <div class="kick">Paso 3</div>
-        <h2>Elige tu modelo de iPhone</h2>
-        <p>Los modelos disponibles dependen del estilo que elegiste</p>
-      </div>
-      <div class="bracket" aria-hidden="true">
-        <svg viewBox="0 0 400 46" preserveAspectRatio="none"><path d="M200 0 V16 M60 46 V28 H340 V46 M200 16 V28"/></svg>
-      </div>
-      <div class="modelbox">
-        <span class="modelbox-star" aria-hidden="true">★</span>
-        <div class="field" id="fld-modelo">
-          <label for="modelo">Modelo de iPhone</label>
-          <div class="inputwrap">
-            <select id="modelo"><option value="">Selecciona tu modelo…</option></select>
-          </div>
-          <div class="err">Elige tu modelo de iPhone para continuar.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 4 -->
-    <div class="fstep" data-step="4">
-      <div class="fstep-head">
-        <div class="kick">Paso 4</div>
         <h2>Elige entre MAXI o minimalista</h2>
       </div>
       <div class="pick2">
@@ -691,6 +682,7 @@
   const MODELOS_TRANSPARENTE=['iPhone 12','iPhone 12 Pro','iPhone 12 Pro Max','iPhone 13 mini','iPhone 13','iPhone 13 Pro','iPhone 13 Pro Max','iPhone 14','iPhone 14 Plus','iPhone 14 Pro','iPhone 14 Pro Max','iPhone 15','iPhone 15 Pro','iPhone 15 Pro Max','iPhone 16','iPhone 16 Plus','iPhone 16 Pro','iPhone 16 Pro Max','iPhone 17e','iPhone 17','iPhone Air','iPhone 17 Pro','iPhone 17 Pro Max'];
   const modeloSelect=document.getElementById('modelo');
   const fldModelo=document.getElementById('fld-modelo');
+  const modelBox=document.getElementById('modelBox');
   function populateModelos(){
     const esPasta = state.style && state.style.indexOf('Pasta')===0;
     const lista = esPasta ? MODELOS_PASTA : MODELOS_TRANSPARENTE;
@@ -717,11 +709,10 @@
     steps.forEach(s=>s.classList.toggle('active', +s.dataset.step===n));
     psteps.forEach(p=>{const pn=+p.dataset.p;p.classList.toggle('active',pn===n);p.classList.toggle('done',pn<n);});
     backBtn.style.visibility = n>1 ? 'visible':'hidden';
-    nextBtn.innerHTML = n<4 ? 'Continuar <span class="arw">→</span>' : 'Enviar pedido <span class="arw">→</span>';
+    nextBtn.innerHTML = n<3 ? 'Continuar <span class="arw">→</span>' : 'Enviar pedido <span class="arw">→</span>';
     success.classList.remove('show');
     steps.forEach(s=>s.style.display='');
-    if(n===3) populateModelos();
-    if(n===4 && !gemHinted){
+    if(n===3 && !gemHinted){
       gemHinted=true;
       const gemblock=document.getElementById('gemblock');
       gemblock.classList.add('hint');
@@ -743,12 +734,10 @@
     } else if(step===2){
       if(!state.style){flash('Elige un estilo para continuar.');return;}
       if(state.style.indexOf('Pasta')===0 && !state.pasta){flash('Elige el color de la pasta: blanca o negra.');return;}
-      goStep(3);
-    } else if(step===3){
       if(!state.modelo){fldModelo.classList.add('invalid');flash('Elige tu modelo de iPhone.');return;}
       fldModelo.classList.remove('invalid');
-      goStep(4);
-    } else if(step===4){
+      goStep(3);
+    } else if(step===3){
       if(!state.dens){flash('Elige entre maxi o minimalista.');return;}
       submit();
     }
@@ -764,6 +753,8 @@
     const esPasta = state.style.indexOf('Pasta')===0;
     pastaWrap.classList.toggle('show',esPasta);
     if(!esPasta){state.pasta=null;document.querySelectorAll('.pastabtn').forEach(b=>b.classList.remove('on'));}
+    modelBox.classList.add('show');
+    populateModelos();
   }));
   document.querySelectorAll('.pastabtn').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('.pastabtn').forEach(x=>x.classList.remove('on'));
@@ -822,7 +813,7 @@
   document.getElementById('againBtn').addEventListener('click',()=>{
     state.style=null;state.dens=null;state.pasta=null;state.modelo=null;gemHinted=false;
     document.querySelectorAll('.pastabtn').forEach(x=>x.classList.remove('on'));pastaWrap.classList.remove('show');Object.keys(state.shapes).forEach(k=>state.shapes[k]='none');
-    modeloSelect.value='';fldModelo.classList.remove('invalid');
+    modeloSelect.value='';fldModelo.classList.remove('invalid');modelBox.classList.remove('show');
     document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel'));renderGems();
     document.getElementById('ig').value='';document.getElementById('nombre').value='';
     formNav.style.display='';goStep(1);
