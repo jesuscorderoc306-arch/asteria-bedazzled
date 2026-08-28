@@ -790,7 +790,9 @@
   }
 
   /* submit -> summary (Telegram se conecta después) */
-  function submit(){
+  const WORKER_URL='https://asteria-orders.asteria-telegram-worker.workers.dev';
+
+  async function submit(){
     const prio=Object.keys(state.shapes).filter(s=>state.shapes[s]==='prio');
     const excl=Object.keys(state.shapes).filter(s=>state.shapes[s]==='excl');
     document.getElementById('summary').innerHTML=`
@@ -803,6 +805,28 @@
       <div class="row"><b>Densidad</b><span>${state.dens}</span></div>
       <div class="row"><b>Priorizar</b><span>${prio.length?prio.join(', '):'Ninguna'}</span></div>
       <div class="row"><b>No incluir</b><span>${excl.length?excl.join(', '):'Ninguna'}</span></div>`;
+
+    nextBtn.disabled=true;
+    nextBtn.innerHTML='Enviando… <span class="arw">→</span>';
+    try{
+      const ctrl=new AbortController();
+      const t=setTimeout(()=>ctrl.abort(),8000);
+      await fetch(WORKER_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          ig:state.ig, nombre:state.nombre, style:state.style, pasta:state.pasta,
+          modelo:state.modelo, dens:state.dens,
+          prio:prio.length?prio.join(', '):'', excl:excl.length?excl.join(', '):''
+        }),
+        signal:ctrl.signal
+      });
+      clearTimeout(t);
+    }catch(e){
+      console.error('No se pudo notificar el pedido por Telegram', e);
+    }
+    nextBtn.disabled=false;
+
     steps.forEach(s=>s.style.display='none');
     formNav.style.display='none';
     success.classList.add('show');
