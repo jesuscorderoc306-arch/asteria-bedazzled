@@ -184,6 +184,7 @@
   .modelbox-card{background:var(--paper-2);border:1px solid var(--line);border-radius:20px;padding:38px 34px 32px;text-align:center}
   .modelbox-star{display:block;color:var(--maroon);font-size:1.25rem;margin-bottom:14px}
   .modelbox .field{margin:0}
+  .pastawrap,.modelbox,.gemblock{scroll-margin-top:150px}
 
   /* bracket connector (como el PDF) */
   .bracket{display:flex;justify-content:center;margin:0 auto 30px;width:60%;max-width:420px}
@@ -749,6 +750,8 @@
     if(!esPasta){state.pasta=null;document.querySelectorAll('.pastabtn').forEach(b=>b.classList.remove('on'));}
     modelBox.classList.add('show');
     populateModelos();
+    const scrollTarget = esPasta ? pastaWrap : modelBox;
+    setTimeout(()=>scrollTarget.scrollIntoView({behavior:'smooth',block:'start'}),380);
   }));
   document.querySelectorAll('.pastabtn').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('.pastabtn').forEach(x=>x.classList.remove('on'));
@@ -757,6 +760,7 @@
   document.querySelectorAll('.pick[data-dens]').forEach(c=>c.addEventListener('click',()=>{
     document.querySelectorAll('.pick[data-dens]').forEach(x=>x.classList.remove('sel'));
     c.classList.add('sel'); state.dens=c.dataset.dens;
+    document.getElementById('gemblock').scrollIntoView({behavior:'smooth',block:'start'});
   }));
 
   /* gems: prioritize / exclude mutually exclusive per shape */
