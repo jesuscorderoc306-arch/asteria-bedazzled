@@ -672,6 +672,7 @@
   })();
 
   /* ---------- form state ---------- */
+  const WORKER_URL='https://asteria-orders.asteria-telegram-worker.workers.dev';
   const overlay=document.getElementById('formOverlay');
   const state={ig:'',nombre:'',style:null,pasta:null,modelo:null,dens:null,shapes:{Estrellas:'none',Círculos:'none',Corazones:'none',Flores:'none'}};
   let step=1;
@@ -725,7 +726,7 @@
   }
 
   /* validation + advance */
-  nextBtn.addEventListener('click',()=>{
+  nextBtn.addEventListener('click',async()=>{
     if(step===1){
       const igField=document.getElementById('fld-ig');
       const errIg=document.getElementById('err-ig');
@@ -734,6 +735,29 @@
       if(!v){errIg.textContent='Escribe tu usuario para continuar.';igField.classList.add('invalid');return;}
       if(!igValido){errIg.textContent='Ese no parece un usuario válido de Instagram.';igField.classList.add('invalid');return;}
       igField.classList.remove('invalid');
+
+      nextBtn.disabled=true;
+      const nextBtnOrig=nextBtn.innerHTML;
+      nextBtn.innerHTML='Verificando… <span class="arw">→</span>';
+      let existe=null;
+      try{
+        const ctrl=new AbortController();
+        const t=setTimeout(()=>ctrl.abort(),5000);
+        const r=await fetch(`${WORKER_URL}/check-ig?u=${encodeURIComponent(v)}`,{signal:ctrl.signal});
+        clearTimeout(t);
+        const data=await r.json();
+        existe=data.exists;
+      }catch(e){
+        existe=null; // no se pudo verificar: no bloqueamos al usuario
+      }
+      nextBtn.disabled=false;
+      nextBtn.innerHTML=nextBtnOrig;
+
+      if(existe===false){
+        errIg.textContent='Escribe un usuario existente.';
+        igField.classList.add('invalid');
+        return;
+      }
       state.ig=v; state.nombre=document.getElementById('nombre').value.trim();
       goStep(2);
     } else if(step===2){
@@ -806,8 +830,6 @@
   }
 
   /* submit -> summary (Telegram se conecta después) */
-  const WORKER_URL='https://asteria-orders.asteria-telegram-worker.workers.dev';
-
   async function submit(){
     const prio=Object.keys(state.shapes).filter(s=>state.shapes[s]==='prio');
     const excl=Object.keys(state.shapes).filter(s=>state.shapes[s]==='excl');
