@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://asteriamx.pages.dev/sitemap.xml
