@@ -713,6 +713,17 @@
 
   /* ---------- form state ---------- */
   const WORKER_URL='https://asteria-orders.asteria-telegram-worker.workers.dev';
+  /* metrica de embudo, sin datos personales: solo cuenta que se llego a cada paso */
+  function trackEvent(name){
+    try{
+      const body=JSON.stringify({event:name});
+      if(navigator.sendBeacon){
+        navigator.sendBeacon(`${WORKER_URL}/event`, new Blob([body],{type:'application/json'}));
+      }else{
+        fetch(`${WORKER_URL}/event`,{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:true}).catch(()=>{});
+      }
+    }catch(e){ /* nunca romper el sitio por una metrica */ }
+  }
   const overlay=document.getElementById('formOverlay');
   const state={ig:'',nombre:'',style:null,pasta:null,modelo:null,dens:null,shapes:{Estrellas:'none',Círculos:'none',Corazones:'none',Flores:'none'}};
   let step=1;
@@ -737,6 +748,7 @@
 
   let formOpenedAt=0;
   let formOpenerEl=null;
+  let trackedStep2=false, trackedStep3=false;
   function focusableInOverlay(){
     return Array.from(overlay.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
       .filter(el=>!el.disabled && el.offsetParent!==null);
@@ -744,6 +756,8 @@
   function openForm(e){
     formOpenerEl = (e && e.currentTarget) || document.activeElement;
     overlay.classList.add('open');document.body.style.overflow='hidden';formOpenedAt=Date.now();goStep(1);
+    trackedStep2=false; trackedStep3=false;
+    trackEvent('form_open');
     const focusables=focusableInOverlay();
     (focusables[0]||overlay).focus();
   }
@@ -826,12 +840,14 @@
         flash('No pudimos verificar tu usuario. Revisa que esté bien escrito antes de continuar.');
       }
       state.ig=v; state.nombre=document.getElementById('nombre').value.trim();
+      if(!trackedStep2){trackedStep2=true;trackEvent('step2');}
       goStep(2);
     } else if(step===2){
       if(!state.style){flash('Elige un estilo para continuar.');return;}
       if(state.style.indexOf('Pasta')===0 && !state.pasta){flash('Elige el color de la pasta: blanca o negra.');return;}
       if(!state.modelo){fldModelo.classList.add('invalid');flash('Elige tu modelo de iPhone.');return;}
       fldModelo.classList.remove('invalid');
+      if(!trackedStep3){trackedStep3=true;trackEvent('step3');}
       goStep(3);
     } else if(step===3){
       if(!state.dens){flash('Elige entre maxi o minimalista.');return;}
@@ -986,6 +1002,7 @@
 
     if(enviado){
       pendingOrderId=null;
+      trackEvent('submit');
       showSuccess(orderId, prio, excl);
     }else{
       flash('No pudimos enviar tu pedido. Revisa tu conexión y dale "Enviar pedido" de nuevo.');
@@ -998,6 +1015,8 @@
     document.querySelectorAll('.pick').forEach(x=>x.classList.remove('sel'));renderGems();
     document.getElementById('ig').value='';document.getElementById('nombre').value='';document.getElementById('website').value='';
     if(window.turnstile) turnstile.reset();
+    trackedStep2=false; trackedStep3=false;
+    trackEvent('form_open');
     formNav.style.display='';goStep(1);
   });
 
