@@ -40,7 +40,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Oswald:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Oswald:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
   :root{
@@ -69,7 +69,7 @@
   /* NAV — logo más grande */
   header.nav{position:sticky;top:0;z-index:50;background:rgba(242,239,233,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
   .nav-inner{display:flex;align-items:center;justify-content:space-between;height:92px}
-  .nav-logo img{height:52px;width:auto;transition:transform .3s}
+  .nav-logo img{height:52px;width:auto;aspect-ratio:900/540;transition:transform .3s}
   .nav-logo:hover img{transform:rotate(-3deg) scale(1.05)}
   .nav-links{display:flex;gap:34px;align-items:center}
   .nav-links a{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.18em;font-size:.76rem;color:var(--char);position:relative;padding:4px 0;transition:color .2s}
@@ -101,8 +101,8 @@
   .hero-stage{position:relative;height:560px;display:flex;align-items:center;justify-content:center;touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none}
   .hero-stage.dragging{cursor:grabbing}
   .hero-case{position:absolute;filter:drop-shadow(0 30px 40px rgba(5,4,3,.28));will-change:translate}
-  .hero-case.main{width:300px;z-index:2;opacity:0;animation:caseIn 1s .35s cubic-bezier(.2,.8,.25,1) forwards, floaty 6s 1.4s ease-in-out infinite}
-  .hero-case.side{width:240px;z-index:1;left:52%;top:8%;opacity:0;animation:caseIn 1s .6s cubic-bezier(.2,.8,.25,1) forwards, floaty 7s 1.7s ease-in-out infinite reverse}
+  .hero-case.main{width:300px;aspect-ratio:500/996;z-index:2;opacity:0;animation:caseIn 1s .35s cubic-bezier(.2,.8,.25,1) forwards, floaty 6s 1.4s ease-in-out infinite}
+  .hero-case.side{width:240px;aspect-ratio:500/998;z-index:1;left:52%;top:8%;opacity:0;animation:caseIn 1s .6s cubic-bezier(.2,.8,.25,1) forwards, floaty 7s 1.7s ease-in-out infinite reverse}
   .hero-case.orbit-ready{left:50%;top:50%}
   .hero-glow{position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(200,194,173,.55),transparent 68%);z-index:0;filter:blur(6px);animation:pulse 7s ease-in-out infinite}
   .hero-spark{position:absolute;color:var(--maroon);font-size:1.7rem;z-index:3;opacity:0;animation:spark 3.4s ease-in-out infinite}
@@ -159,7 +159,7 @@
   /* FOOTER */
   footer{background:var(--ink);color:var(--paper);padding:72px 0 34px}
   .foot-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:52px;border-bottom:1px solid rgba(242,239,233,.16)}
-  .foot-brand img{height:52px;margin-bottom:20px}
+  .foot-brand img{height:52px;width:auto;aspect-ratio:900/540;margin-bottom:20px}
   .foot-brand p{color:var(--mist);font-size:.9rem;font-weight:300;max-width:30ch}
   .foot-col h4{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.2em;font-size:.72rem;color:var(--stone);margin-bottom:18px}
   .foot-col a{display:block;color:var(--mist);font-size:.9rem;margin-bottom:12px;font-weight:300;transition:color .2s;cursor:pointer}
@@ -177,7 +177,7 @@
   @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
   .form-top{position:sticky;top:0;background:rgba(242,239,233,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:5}
   .form-top-inner{max-width:900px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between}
-  .form-top img{height:40px}
+  .form-top img{height:40px;width:auto;aspect-ratio:900/540}
   .form-close{background:none;border:1px solid var(--line);width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:1.1rem;color:var(--char);transition:all .2s;display:grid;place-items:center}
   .form-close:hover{background:var(--ink);color:var(--paper);border-color:var(--ink);transform:rotate(90deg)}
 
