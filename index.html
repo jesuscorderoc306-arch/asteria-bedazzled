@@ -818,6 +818,9 @@
         igField.classList.add('invalid');
         return;
       }
+      if(existe===null){
+        flash('No pudimos verificar tu usuario. Revisa que esté bien escrito antes de continuar.');
+      }
       state.ig=v; state.nombre=document.getElementById('nombre').value.trim();
       goStep(2);
     } else if(step===2){
