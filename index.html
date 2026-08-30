@@ -442,6 +442,7 @@
       <div class="foot-col">
         <h4>Pedido</h4>
         <a data-open-form>Formulario</a>
+        <a href="pedido.html">Consultar mi pedido</a>
         <a href="https://www.instagram.com/asteria__mx/" target="_blank" rel="noopener">Instagram</a>
       </div>
       <div class="foot-col">
@@ -593,6 +594,7 @@
       <h2>¡Pedido enviado!</h2>
       <p>Gracias. Te escribimos por Instagram para afinar los detalles de tu funda.</p>
       <div class="summary" id="summary"></div>
+      <p class="note-strip"><a id="lookupLink" href="pedido.html" target="_blank">Guarda este link para consultar tu pedido después →</a></p>
       <button class="btn btn-ghost" id="againBtn">Hacer otro pedido</button>
     </div>
   </div>
@@ -903,18 +905,20 @@
     return `AST-${ymd}-${rand}`;
   }
 
+  function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
   function showSuccess(orderId, prio, excl){
     document.getElementById('summary').innerHTML=`
-      <div class="order-id">Folio de tu pedido<br><b>${orderId}</b></div>
+      <div class="order-id">Folio de tu pedido<br><b>${esc(orderId)}</b></div>
       <h4>Resumen de tu pedido</h4>
-      <div class="row"><b>Instagram</b><span>@${state.ig}</span></div>
-      ${state.nombre?`<div class="row"><b>Nombre</b><span>${state.nombre}</span></div>`:''}
+      <div class="row"><b>Instagram</b><span>@${esc(state.ig)}</span></div>
+      ${state.nombre?`<div class="row"><b>Nombre</b><span>${esc(state.nombre)}</span></div>`:''}
       <div class="row"><b>Estilo</b><span>${state.style}</span></div>
       ${state.pasta?`<div class="row"><b>Color de pasta</b><span>${state.pasta}</span></div>`:''}
       <div class="row"><b>Modelo</b><span>${state.modelo}</span></div>
       <div class="row"><b>Densidad</b><span>${state.dens}</span></div>
       <div class="row"><b>Priorizar</b><span>${prio.length?prio.join(', '):'Ninguna'}</span></div>
       <div class="row"><b>No incluir</b><span>${excl.length?excl.join(', '):'Ninguna'}</span></div>`;
+    document.getElementById('lookupLink').href=`pedido.html?folio=${encodeURIComponent(orderId)}`;
     steps.forEach(s=>s.style.display='none');
     formNav.style.display='none';
     success.classList.add('show');
