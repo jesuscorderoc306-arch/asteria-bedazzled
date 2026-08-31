@@ -129,7 +129,7 @@
   };
 
   // Modelos con la camara en barra completa.
-  const CAMARA_BARRA = ["iPhone 17", "iPhone 17 Pro", "iPhone 17 Pro Max", "iPhone Air"];
+  const CAMARA_BARRA = ["iPhone 17e", "iPhone 17", "iPhone 17 Pro", "iPhone 17 Pro Max", "iPhone Air"];
   const esBarra = (modelo) => CAMARA_BARRA.indexOf(String(modelo || "")) !== -1;
 
   /* Zona prohibida (la camara) en coordenadas de la caja de charms, en %.
