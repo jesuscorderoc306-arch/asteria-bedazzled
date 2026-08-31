@@ -46,11 +46,14 @@ export function panelHtml() {
   nav.tabs::-webkit-scrollbar{display:none}
   nav.tabs button{flex:0 0 auto;background:none;border:none;cursor:pointer;position:relative;padding:4px 0;
     font-family:var(--font-label);text-transform:uppercase;letter-spacing:.18em;font-size:.76rem;color:var(--char);transition:color .2s}
-  nav.tabs button::after{content:"";position:absolute;left:0;bottom:-2px;height:1px;width:0;background:var(--maroon);transition:width .28s}
+  /* Mismo subrayado que .nav-links del sitio, pero animado con transform en vez
+     de width: se ve identico y no obliga al navegador a recalcular layout. */
+  nav.tabs button::after{content:"";position:absolute;left:0;bottom:-2px;height:1px;width:100%;background:var(--maroon);
+    transform:scaleX(0);transform-origin:left center;transition:transform .28s}
   nav.tabs button:hover{color:var(--ink)}
-  nav.tabs button:hover::after{width:100%}
+  nav.tabs button:hover::after{transform:scaleX(1)}
   nav.tabs button[aria-selected="true"]{color:var(--ink)}
-  nav.tabs button[aria-selected="true"]::after{width:100%}
+  nav.tabs button[aria-selected="true"]::after{transform:scaleX(1)}
   /* El foco se ve distinto de la pestana activa: si no, parecen dos activas. */
   nav.tabs button:focus-visible{outline:1px solid var(--maroon);outline-offset:4px}
 
