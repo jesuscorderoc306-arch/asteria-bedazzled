@@ -1,15 +1,19 @@
-// Arma el sitio de borrador que se publica en GitHub Pages.
+// Arma los DOS sitios visuales que se publican en GitHub Pages.
 //
 //   node scripts/build-borrador.mjs <carpeta-destino>
 //
-// Produce tres cosas:
-//   /            portada del borrador con los enlaces
-//   /sitio/      copia del sitio de esta rama (index, pedido, privacidad, img)
-//   /panel/      el panel de administracion, funcionando sin servidor
+//   /            SITIO 1 — la base de la pagina principal, copiada de master.
+//                Aqui se revisa un cambio antes de mandarlo a produccion.
+//   /v2/         SITIO 2 — el borrador: como va quedando la v2.
+//   /v2/sitio/   la pagina de la rama v2
+//   /v2/panel/   el panel de administracion, funcionando sin servidor
 //
-// Todo lleva <meta name="robots" content="noindex"> inyectado: el borrador es
-// publico (Pages de un repo publico lo es) pero no debe competir en Google con
-// asteriamx.pages.dev ni aparecer en resultados como si fuera la tienda real.
+// El sitio 1 sale de `git show master:...`, no del disco: asi siempre refleja
+// master aunque estemos parados en otra rama.
+//
+// Todo lleva <meta name="robots" content="noindex">. Las dos copias son
+// publicas (Pages de un repo publico lo es) y ninguna debe competir en Google
+// con asteriamx.pages.dev, que es la tienda de verdad.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -21,48 +25,62 @@ const destino = process.argv[2];
 if (!destino) throw new Error("uso: node scripts/build-borrador.mjs <carpeta-destino>");
 
 const NOINDEX = '<meta name="robots" content="noindex, nofollow">';
+const PAGINAS = ["index.html", "pedido.html", "privacidad.html"];
+const SUELTOS = ["favicon.svg", "favicon-32.png", "favicon-180.png", "og-image.jpg"];
 
-function copiaConNoindex(origen, salida) {
-  let html = fs.readFileSync(origen, "utf8");
-  if (!/name="robots"/i.test(html)) {
-    html = html.replace(/<head>/i, "<head>\n" + NOINDEX);
-  }
+const gitBuffer = (ref) => execFileSync("git", ["show", ref], { cwd: raiz, maxBuffer: 64 * 1024 * 1024 });
+const gitTexto = (ref) => gitBuffer(ref).toString("utf8");
+const gitLista = (ref, prefijo) =>
+  execFileSync("git", ["ls-tree", "-r", "--name-only", ref, prefijo], { cwd: raiz, encoding: "utf8" })
+    .split("\n").map((s) => s.trim()).filter(Boolean);
+
+function escribe(salida, contenido) {
   fs.mkdirSync(path.dirname(salida), { recursive: true });
-  fs.writeFileSync(salida, html);
+  fs.writeFileSync(salida, contenido);
 }
 
-function copiaTal(origen, salida) {
-  fs.mkdirSync(path.dirname(salida), { recursive: true });
-  fs.copyFileSync(origen, salida);
+// El aviso va en la pagina misma: quien la abra debe saber en dos segundos que
+// no esta viendo la tienda real.
+function conAviso(html, texto, colorFondo) {
+  let salida = /name="robots"/i.test(html) ? html : html.replace(/<head>/i, "<head>\n" + NOINDEX);
+  const cinta = `<div style="background:${colorFondo};color:#f2efe9;font-family:'Oswald',system-ui,sans-serif;
+text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center;padding:7px 14px;position:relative;z-index:999">${texto}</div>`;
+  return salida.replace(/<body([^>]*)>/i, `<body$1>\n${cinta}`);
 }
 
-// --- limpiar destino ---
 fs.rmSync(destino, { recursive: true, force: true });
 fs.mkdirSync(destino, { recursive: true });
 
-// --- /sitio: la pagina de esta rama ---
-for (const f of ["index.html", "pedido.html", "privacidad.html"]) {
-  copiaConNoindex(path.join(raiz, f), path.join(destino, "sitio", f));
+// ---------- SITIO 1: copia de master ----------
+for (const f of PAGINAS) {
+  escribe(path.join(destino, f), conAviso(gitTexto(`master:${f}`), "Copia de revisión · la tienda real está en asteriamx.pages.dev", "#472d1d"));
 }
+for (const f of SUELTOS) escribe(path.join(destino, f), gitBuffer(`master:${f}`));
+for (const f of gitLista("master", "img/")) escribe(path.join(destino, f), gitBuffer(`master:${f}`));
+
+const commitMaster = execFileSync("git", ["rev-parse", "--short", "master"], { cwd: raiz, encoding: "utf8" }).trim();
+
+// ---------- SITIO 2: el borrador de esta rama ----------
+const v2 = path.join(destino, "v2");
+for (const f of PAGINAS) {
+  escribe(path.join(v2, "sitio", f), conAviso(fs.readFileSync(path.join(raiz, f), "utf8"), "Borrador v2 · todavía no está en la tienda", "#922939"));
+}
+for (const f of SUELTOS) escribe(path.join(v2, "sitio", f), fs.readFileSync(path.join(raiz, f)));
 for (const f of fs.readdirSync(path.join(raiz, "img"))) {
-  copiaTal(path.join(raiz, "img", f), path.join(destino, "sitio", "img", f));
-}
-for (const f of ["favicon.svg", "favicon-32.png", "favicon-180.png", "og-image.jpg"]) {
-  copiaTal(path.join(raiz, f), path.join(destino, "sitio", f));
+  escribe(path.join(v2, "sitio", "img", f), fs.readFileSync(path.join(raiz, "img", f)));
 }
 
-// --- /panel: el panel real, con el worker corriendo dentro de la pagina ---
-fs.mkdirSync(path.join(destino, "panel"), { recursive: true });
+fs.mkdirSync(path.join(v2, "panel"), { recursive: true });
 execFileSync(process.execPath, [
   path.join(raiz, "worker", "test", "build-demo.mjs"),
-  path.join(destino, "panel", "index.html"),
+  path.join(v2, "panel", "index.html"),
 ], { stdio: "inherit" });
 
-// --- portada del borrador ---
-const commit = execFileSync("git", ["rev-parse", "--short", "HEAD"], { cwd: raiz }).toString().trim();
+// ---------- portada del borrador ----------
+const commitV2 = execFileSync("git", ["rev-parse", "--short", "HEAD"], { cwd: raiz, encoding: "utf8" }).trim();
 const fecha = new Date().toISOString().slice(0, 10);
 
-fs.writeFileSync(path.join(destino, "index.html"), `<!doctype html>
+escribe(path.join(v2, "index.html"), `<!doctype html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -74,7 +92,7 @@ ${NOINDEX}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Oswald:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root{--ink:#050403;--char:#443f3b;--maroon:#922939;--stone:#c8c2ad;--taupe:#6b655e;
+  :root{--ink:#050403;--char:#443f3b;--maroon:#922939;--brown:#472d1d;--stone:#c8c2ad;--taupe:#6b655e;
     --paper:#f2efe9;--paper-2:#eae4d9;--line:rgba(5,4,3,.14);
     --display:'Cormorant Garamond',Georgia,serif;--label:'Oswald',system-ui,sans-serif;--body:'Jost',system-ui,sans-serif}
   *{margin:0;padding:0;box-sizing:border-box}
@@ -86,10 +104,11 @@ ${NOINDEX}
   .eyebrow{font-family:var(--label);text-transform:uppercase;letter-spacing:.32em;font-size:.72rem;font-weight:500;color:var(--maroon)}
   h1{font-family:var(--display);font-weight:400;font-size:clamp(2.6rem,6vw,4rem);line-height:1;margin:16px 0 14px}
   .lead{color:var(--char);font-weight:300;max-width:52ch;margin-bottom:14px}
+  .lead a{color:var(--maroon)}
   .stamp{font-family:var(--label);text-transform:uppercase;letter-spacing:.16em;font-size:.64rem;color:var(--taupe);margin-bottom:48px}
   .cards{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
   a.card{display:block;text-decoration:none;color:inherit;border:1px solid var(--line);background:var(--paper-2);
-    padding:30px 28px;transition:background .25s,transform .25s,border-color .25s}
+    padding:30px 28px;transition:background .25s,transform .25s,border-color .25s,color .25s}
   a.card:hover,a.card:focus-visible{background:var(--ink);color:var(--paper);border-color:var(--ink);transform:translateY(-2px)}
   a.card:focus-visible{outline:2px solid var(--maroon);outline-offset:3px}
   a.card h2{font-family:var(--display);font-weight:400;font-size:1.9rem;line-height:1.1;margin-bottom:8px}
@@ -100,6 +119,7 @@ ${NOINDEX}
   .nota{border:1px solid var(--line);padding:22px 24px;margin-top:44px;font-size:.9rem;font-weight:300;color:var(--char)}
   .nota b{font-weight:500}
   .nota a{color:var(--maroon)}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.86em;background:var(--paper-2);padding:1px 5px}
   @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -108,9 +128,9 @@ ${NOINDEX}
 <main>
   <p class="eyebrow">Rama v2</p>
   <h1>Borrador de ASTÉRIA</h1>
-  <p class="lead">Aquí se ve lo que se está construyendo antes de que llegue a la tienda.
-     Nada de esto afecta a <a href="https://asteriamx.pages.dev">asteriamx.pages.dev</a>, que sigue saliendo de la rama master.</p>
-  <p class="stamp">Actualizado ${fecha} · commit ${commit}</p>
+  <p class="lead">Aquí se ve lo que se está construyendo, antes de que llegue a la tienda.
+     Para comparar contra lo que hay hoy, <a href="../">abre la copia de revisión</a>.</p>
+  <p class="stamp">Actualizado ${fecha} · v2 en ${commitV2} · master en ${commitMaster}</p>
 
   <div class="cards">
     <a class="card" href="panel/">
@@ -120,18 +140,18 @@ ${NOINDEX}
     </a>
     <a class="card" href="sitio/">
       <h2>La página</h2>
-      <p>El sitio tal como está en esta rama, con el formulario de pedido. Todavía sin el personalizador de charms.</p>
+      <p>El sitio tal como está en la rama v2, con el formulario de pedido. Todavía sin el personalizador de charms.</p>
       <span class="go">Abrir la página →</span>
     </a>
   </div>
 
   <div class="nota">
-    <b>Cómo se actualiza:</b> cada vez que se termina un cambio en la rama <code>v2</code>, se vuelve a generar este borrador
-    con <code>node scripts/build-borrador.mjs</code> y se publica. Lo que ves aquí siempre corresponde al commit de arriba.
+    <b>Cómo se actualiza:</b> cada vez que se termina un cambio en la rama <code>v2</code>, se regenera este borrador
+    con <code>node scripts/publicar-borrador.mjs</code>. Lo que ves aquí siempre corresponde al commit de arriba.
   </div>
 </main>
 </body>
 </html>
 `);
 
-console.log("borrador listo en", destino, "· commit", commit);
+console.log(`dos sitios listos en ${destino}\n  /      copia de master (${commitMaster})\n  /v2/   borrador (${commitV2})`);
