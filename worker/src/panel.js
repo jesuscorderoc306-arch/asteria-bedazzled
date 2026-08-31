@@ -1,7 +1,10 @@
 // Panel de administracion ASTÉRIA v2.
 // HTML autocontenido servido por el worker en /panel?key=ADMIN_KEY.
-// Sin dependencias externas: ni fuentes remotas ni librerias. La clave nunca se
-// guarda en localStorage; vive en memoria mientras la pestana este abierta.
+// Usa los mismos tokens, fuentes y botones que index.html: es la trastienda de
+// la misma tienda. Sin librerias. La clave nunca se guarda en localStorage;
+// vive en memoria mientras la pestana este abierta.
+
+import { LOGO_DATA_URI } from "./logo.js";
 
 export function panelHtml() {
   return `<!doctype html>
@@ -11,88 +14,143 @@ export function panelHtml() {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Panel ASTÉRIA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Oswald:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+  /* Tokens y patrones tomados tal cual de index.html: mismo papel, misma tinta,
+     mismas tres fuentes, mismos botones. El panel es la trastienda de la misma
+     tienda, no otra marca. */
   :root{
-    --ink:#050403;--char:#443f3b;--taupe:#6b655e;--maroon:#922939;--green:#2f6b47;
-    --paper:#f2efe9;--paper-2:#eae4d9;--card:#fffdfa;--line:rgba(5,4,3,.14);
-    --label:'Oswald',system-ui,sans-serif;
-    --body:'Jost',system-ui,-apple-system,'Segoe UI',sans-serif;
-    --display:'Cormorant Garamond',Georgia,serif;
+    --ink:#050403;--char:#443f3b;--maroon:#922939;--blue:#2d70ad;
+    --stone:#c8c2ad;--taupe:#6b655e;--paper:#f2efe9;--paper-2:#eae4d9;
+    --line:rgba(5,4,3,.14);
+    --font-display:'Cormorant Garamond', Georgia, serif;
+    --font-label:'Oswald', system-ui, sans-serif;
+    --font-body:'Jost', system-ui, -apple-system, sans-serif;
   }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.55;-webkit-font-smoothing:antialiased}
-  header{position:sticky;top:0;z-index:10;background:var(--ink);color:var(--paper);padding:14px 20px 0}
-  .brand{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-  .brand h1{font-family:var(--display);font-weight:400;font-size:1.5rem;margin:0;letter-spacing:.04em}
-  .brand span{font-family:var(--label);text-transform:uppercase;letter-spacing:.24em;font-size:.62rem;opacity:.7}
-  nav{display:flex;gap:2px;overflow-x:auto;margin-top:12px;scrollbar-width:none}
-  nav::-webkit-scrollbar{display:none}
-  nav button{flex:0 0 auto;background:none;border:0;border-bottom:2px solid transparent;color:rgba(242,239,233,.62);
-    font-family:var(--label);text-transform:uppercase;letter-spacing:.16em;font-size:.72rem;padding:10px 14px;cursor:pointer;transition:color .18s,border-color .18s}
-  nav button:hover{color:var(--paper)}
-  nav button[aria-selected="true"]{color:var(--paper);border-bottom-color:var(--paper)}
-  /* El foco se ve distinto de la pestana activa: si no, quedan dos "seleccionadas". */
-  nav button:focus-visible{outline:2px solid var(--paper);outline-offset:-4px}
-  main{max-width:1000px;margin:0 auto;padding:24px 20px 80px}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--font-body);background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  img{display:block;max-width:100%}
+
+  .announce{background:var(--ink);color:var(--paper);font-family:var(--font-label);text-transform:uppercase;letter-spacing:.28em;font-size:.66rem;font-weight:300;text-align:center;padding:9px 14px}
+  .announce .star{color:var(--stone);margin:0 .7em}
+
+  header.nav{position:sticky;top:0;z-index:50;background:rgba(242,239,233,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:1180px;margin:0 auto;padding:0 28px;display:flex;align-items:center;justify-content:space-between;gap:24px;height:76px}
+  .nav-brand{display:flex;align-items:center;gap:12px}
+  .nav-brand img{height:38px;width:38px}
+  .nav-brand b{font-family:var(--font-display);font-weight:400;font-size:1.35rem;letter-spacing:.06em}
+  .nav-brand span{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.24em;font-size:.62rem;color:var(--taupe)}
+  nav.tabs{display:flex;gap:30px;overflow-x:auto;scrollbar-width:none}
+  nav.tabs::-webkit-scrollbar{display:none}
+  nav.tabs button{flex:0 0 auto;background:none;border:none;cursor:pointer;position:relative;padding:4px 0;
+    font-family:var(--font-label);text-transform:uppercase;letter-spacing:.18em;font-size:.76rem;color:var(--char);transition:color .2s}
+  nav.tabs button::after{content:"";position:absolute;left:0;bottom:-2px;height:1px;width:0;background:var(--maroon);transition:width .28s}
+  nav.tabs button:hover{color:var(--ink)}
+  nav.tabs button:hover::after{width:100%}
+  nav.tabs button[aria-selected="true"]{color:var(--ink)}
+  nav.tabs button[aria-selected="true"]::after{width:100%}
+  /* El foco se ve distinto de la pestana activa: si no, parecen dos activas. */
+  nav.tabs button:focus-visible{outline:1px solid var(--maroon);outline-offset:4px}
+
+  main{max-width:1180px;margin:0 auto;padding:44px 28px 90px}
   section[hidden]{display:none}
-  h2{font-family:var(--display);font-weight:400;font-size:1.6rem;margin:0 0 4px}
-  .sub{color:var(--taupe);font-size:.88rem;margin:0 0 20px}
-  .card{background:var(--card);border:1px solid var(--line);padding:18px;margin-bottom:18px}
-  .card h3{font-family:var(--label);text-transform:uppercase;letter-spacing:.18em;font-size:.72rem;font-weight:500;margin:0 0 14px;color:var(--taupe)}
-  label{display:block;font-family:var(--label);text-transform:uppercase;letter-spacing:.12em;font-size:.66rem;color:var(--taupe);margin-bottom:5px}
-  input,select,textarea{width:100%;font-family:var(--body);font-size:.95rem;padding:9px 11px;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:0}
-  input:focus,select:focus,textarea:focus{outline:2px solid var(--ink);outline-offset:-1px}
-  .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
-  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
-  button.btn{font-family:var(--label);text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;padding:10px 18px;
-    border:1px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;transition:background .2s,color .2s}
-  button.btn:hover{background:transparent;color:var(--ink)}
-  button.ghost{background:transparent;color:var(--ink)}
-  button.ghost:hover{background:var(--ink);color:var(--paper)}
-  button.danger{border-color:var(--maroon);background:transparent;color:var(--maroon)}
-  button.danger:hover{background:var(--maroon);color:#fff}
-  .list{display:grid;gap:10px}
-  .item{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);padding:10px 12px}
-  .item img{width:56px;height:56px;object-fit:cover;background:var(--paper-2)}
-  .item .ph{width:56px;height:56px;background:var(--paper-2);display:grid;place-items:center;color:var(--taupe);font-size:1.1rem}
-  .item b{font-weight:500}
-  .meta{color:var(--taupe);font-size:.82rem}
-  .tag{display:inline-block;font-family:var(--label);text-transform:uppercase;letter-spacing:.12em;font-size:.6rem;padding:2px 7px;border:1px solid var(--line);color:var(--taupe);margin-left:6px}
-  .tag.out{color:var(--maroon);border-color:var(--maroon)}
-  .kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
-  .kpi{background:var(--card);border:1px solid var(--line);padding:16px}
-  .kpi .n{font-family:var(--display);font-size:2rem;line-height:1.1}
+  .eyebrow{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.32em;font-size:.72rem;font-weight:500;color:var(--maroon)}
+  h2{font-family:var(--font-display);font-weight:400;font-size:clamp(2.1rem,4vw,2.9rem);line-height:1.05;margin:14px 0 10px}
+  .sub{color:var(--char);font-weight:300;max-width:56ch;margin-bottom:34px}
+
+  .card{border:1px solid var(--line);background:var(--paper-2);padding:26px 24px;margin-bottom:20px}
+  .card h3{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.7rem;font-weight:400;color:var(--maroon);margin-bottom:20px}
+
+  label{display:block;font-family:var(--font-label);text-transform:uppercase;letter-spacing:.14em;font-size:.7rem;color:var(--char);margin-bottom:9px}
+  input,select{width:100%;padding:13px 15px;border:1px solid var(--line);background:var(--paper);font-family:var(--font-body);font-size:.98rem;color:var(--ink);transition:border-color .2s,box-shadow .2s}
+  input:focus,select:focus{outline:none;border-color:var(--maroon);box-shadow:0 0 0 3px rgba(146,41,57,.1)}
+  input[type=file]{padding:10px 12px;font-size:.86rem;cursor:pointer}
+  select{appearance:none;-webkit-appearance:none;cursor:pointer;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23443f3b' stroke-width='1.5'><path d='M5 8l5 5 5-5'/></svg>");
+    background-repeat:no-repeat;background-position:right 15px center;background-size:14px}
+  .grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+  .row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+
+  .btn{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.74rem;padding:13px 26px;cursor:pointer;
+    border:1px solid var(--ink);display:inline-flex;align-items:center;gap:10px;transition:all .25s;background:none;color:var(--ink)}
+  .btn-solid{background:var(--ink);color:var(--paper)}
+  .btn-solid:hover{background:var(--maroon);border-color:var(--maroon);transform:translateY(-2px)}
+  .btn-ghost:hover{background:var(--ink);color:var(--paper)}
+  .btn-small{padding:9px 16px;font-size:.68rem}
+  .btn-danger{border-color:var(--line);color:var(--taupe)}
+  .btn-danger:hover{background:var(--maroon);border-color:var(--maroon);color:var(--paper)}
+
+  .list{display:grid;gap:14px}
+  .item{display:grid;grid-template-columns:64px 1fr auto;gap:18px;align-items:center;border:1px solid var(--line);background:var(--paper);padding:14px 18px}
+  .item img{width:64px;height:64px;object-fit:cover;background:var(--paper-2)}
+  .item .ph{width:64px;height:64px;background:var(--paper-2);display:grid;place-items:center;color:var(--stone);font-size:1.3rem}
+  .item .nm{font-family:var(--font-display);font-size:1.25rem;line-height:1.2}
+  .item .meta{color:var(--taupe);font-size:.84rem;font-weight:300;margin-top:2px}
+  .tag{display:inline-block;font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.6rem;color:var(--taupe);margin-left:12px;vertical-align:middle}
+  .tag.out{color:var(--maroon)}
+  .acts{display:flex;gap:8px}
+
+  .kpis{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+  .kpi{border:1px solid var(--line);background:var(--paper-2);padding:24px 22px}
+  /* Cormorant trae numeros de estilo antiguo por defecto y el "1" se lee como
+     una I mayuscula. En cifras de dinero eso no se perdona: forzamos lining. */
+  .kpi .n{font-family:var(--font-display);font-size:2.6rem;line-height:1;letter-spacing:.01em;font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}
   .kpi .n.neg{color:var(--maroon)}
-  .kpi .n.pos{color:var(--green)}
-  .kpi .l{font-family:var(--label);text-transform:uppercase;letter-spacing:.14em;font-size:.62rem;color:var(--taupe)}
-  table{width:100%;border-collapse:collapse;font-size:.88rem}
-  th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left}
-  th{font-family:var(--label);text-transform:uppercase;letter-spacing:.12em;font-size:.62rem;color:var(--taupe);font-weight:500}
-  .empty{color:var(--taupe);font-size:.9rem;padding:14px 0}
-  .warn{border:1px solid var(--maroon);color:var(--maroon);background:var(--card);padding:14px 16px;font-size:.88rem;margin-bottom:18px}
-  #toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:24px;background:var(--ink);color:var(--paper);
-    padding:12px 20px;font-size:.86rem;opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;z-index:50;max-width:90vw}
+  .kpi .l{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.64rem;color:var(--taupe);margin-top:8px}
+
+  table{width:100%;border-collapse:collapse;font-size:.92rem;font-weight:300}
+  th{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.14em;font-size:.64rem;font-weight:400;color:var(--maroon);text-align:left;padding:0 0 12px}
+  td{padding:12px 0;border-bottom:1px dashed var(--line)}
+  tr:last-child td{border-bottom:none}
+  td:last-child,th:last-child{text-align:right}
+  .empty{color:var(--taupe);font-weight:300;font-size:.92rem;padding:10px 0}
+
+  .warn{border:1px solid var(--maroon);color:var(--maroon);background:var(--paper);padding:18px 20px;font-size:.92rem;margin-bottom:20px}
+  .warn b{font-weight:500}
+
+  #toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:28px;background:var(--ink);color:var(--paper);
+    font-family:var(--font-label);text-transform:uppercase;letter-spacing:.14em;font-size:.7rem;padding:14px 26px;
+    opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;z-index:60;max-width:90vw;text-align:center}
   #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
   #toast.err{background:var(--maroon)}
-  @media (max-width:560px){ .item{grid-template-columns:44px 1fr}.item .acts{grid-column:1/-1;display:flex;gap:8px} .item img,.item .ph{width:44px;height:44px} }
+
+  @media(max-width:900px){
+    .nav-inner{height:auto;flex-direction:column;align-items:flex-start;gap:10px;padding:14px 20px}
+    .nav-brand span{display:none}
+    nav.tabs{gap:22px;width:100%;padding-bottom:4px}
+    main{padding:30px 20px 80px}
+    .item{grid-template-columns:52px 1fr;row-gap:12px}
+    .item img,.item .ph{width:52px;height:52px}
+    .acts{grid-column:1/-1}
+  }
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<header>
-  <div class="brand"><h1>★ ASTÉRIA</h1><span>Panel de administración</span></div>
-  <nav id="tabs" role="tablist">
-    <button role="tab" data-tab="charms" aria-selected="true">Charms</button>
-    <button role="tab" data-tab="precios" aria-selected="false">Precios</button>
-    <button role="tab" data-tab="stock" aria-selected="false">Stock</button>
-    <button role="tab" data-tab="fotos" aria-selected="false">Fotos</button>
-    <button role="tab" data-tab="gastos" aria-selected="false">Gastos</button>
-    <button role="tab" data-tab="rendimiento" aria-selected="false">Rendimiento</button>
-  </nav>
+<div class="announce"><span class="star">★</span> Panel interno · ASTÉRIA <span class="star">★</span></div>
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <img src="${LOGO_DATA_URI}" alt="" width="38" height="38">
+      <b>ASTÉRIA</b><span>Administración</span>
+    </div>
+    <nav class="tabs" id="tabs" role="tablist">
+      <button role="tab" data-tab="charms" aria-selected="true">Charms</button>
+      <button role="tab" data-tab="precios" aria-selected="false">Precios</button>
+      <button role="tab" data-tab="stock" aria-selected="false">Stock</button>
+      <button role="tab" data-tab="fotos" aria-selected="false">Fotos</button>
+      <button role="tab" data-tab="gastos" aria-selected="false">Gastos</button>
+      <button role="tab" data-tab="rendimiento" aria-selected="false">Rendimiento</button>
+    </nav>
+  </div>
 </header>
 
 <main>
   <!-- CHARMS -->
   <section id="tab-charms">
+    <p class="eyebrow">Catálogo</p>
     <h2>Charms</h2>
     <p class="sub">Lo que la clienta puede elegir al personalizar su funda. Sin stock, el charm deja de ofrecerse.</p>
     <div class="card">
@@ -104,13 +162,14 @@ export function panelHtml() {
         <div><label for="c-stock">Stock</label><input id="c-stock" type="number" min="0" step="1" inputmode="numeric" value="0"></div>
         <div><label for="c-img">Foto</label><input id="c-img" type="file" accept="image/*"></div>
       </div>
-      <div class="row" style="margin-top:14px"><button class="btn" id="c-add">Agregar</button></div>
+      <div class="row" style="margin-top:14px"><button class="btn btn-solid" id="c-add">Agregar charm</button></div>
     </div>
     <div class="list" id="charms-list"></div>
   </section>
 
   <!-- PRECIOS -->
   <section id="tab-precios" hidden>
+    <p class="eyebrow">Lista de precios</p>
     <h2>Precios</h2>
     <p class="sub">Mientras falte un precio, el sitio muestra “precio a confirmar” en vez de un número inventado.</p>
     <div class="card">
@@ -125,11 +184,12 @@ export function panelHtml() {
       <h3>Envío</h3>
       <div class="grid"><div><label for="p-envio">Costo de envío (MXN, 0 = gratis)</label><input id="p-envio" type="number" min="0" step="1" inputmode="numeric"></div></div>
     </div>
-    <button class="btn" id="p-save">Guardar precios</button>
+    <button class="btn btn-solid" id="p-save">Guardar precios</button>
   </section>
 
   <!-- STOCK -->
   <section id="tab-stock" hidden>
+    <p class="eyebrow">Inventario</p>
     <h2>Stock de fundas</h2>
     <p class="sub">Solo hace falta capturar lo que se agota. Un modelo sin registro se considera disponible.</p>
     <div class="card">
@@ -139,13 +199,14 @@ export function panelHtml() {
         <div><label for="s-modelo">Modelo</label><select id="s-modelo"></select></div>
         <div><label for="s-cantidad">Piezas (vacío = quitar límite)</label><input id="s-cantidad" type="number" min="0" step="1" inputmode="numeric"></div>
       </div>
-      <div class="row" style="margin-top:14px"><button class="btn" id="s-save">Guardar</button></div>
+      <div class="row" style="margin-top:14px"><button class="btn btn-solid" id="s-save">Guardar</button></div>
     </div>
     <div class="card"><h3>Registros actuales</h3><div id="stock-list"></div></div>
   </section>
 
   <!-- FOTOS -->
   <section id="tab-fotos" hidden>
+    <p class="eyebrow">Imágenes</p>
     <h2>Fotos del sitio</h2>
     <p class="sub">Sube imágenes y ordénalas por sección. Se sirven desde el worker con caché larga.</p>
     <div class="card">
@@ -160,6 +221,7 @@ export function panelHtml() {
 
   <!-- GASTOS -->
   <section id="tab-gastos" hidden>
+    <p class="eyebrow">Egresos</p>
     <h2>Gastos</h2>
     <p class="sub">Cada egreso del taller: material, envíos, publicidad, empaque.</p>
     <div class="card">
@@ -170,20 +232,21 @@ export function panelHtml() {
         <div><label for="g-categoria">Categoría</label><input id="g-categoria" placeholder="Material" list="cats"><datalist id="cats"><option>Material</option><option>Envíos</option><option>Empaque</option><option>Publicidad</option><option>Herramienta</option></datalist></div>
         <div><label for="g-monto">Monto (MXN)</label><input id="g-monto" type="number" min="0" step="0.01" inputmode="decimal"></div>
       </div>
-      <div class="row" style="margin-top:14px"><button class="btn" id="g-add">Registrar</button></div>
+      <div class="row" style="margin-top:14px"><button class="btn btn-solid" id="g-add">Registrar gasto</button></div>
     </div>
     <div class="card"><h3>Historial</h3><div id="gastos-list"></div></div>
   </section>
 
   <!-- RENDIMIENTO -->
   <section id="tab-rendimiento" hidden>
+    <p class="eyebrow">Números del taller</p>
     <h2>Rendimiento</h2>
     <p class="sub">Ingresos tomados de los pedidos con precio calculado; los pedidos antiguos sin precio se cuentan aparte.</p>
     <div class="card">
       <div class="row">
         <div><label for="r-desde">Desde</label><input id="r-desde" type="date"></div>
         <div><label for="r-hasta">Hasta</label><input id="r-hasta" type="date"></div>
-        <button class="btn ghost" id="r-load">Actualizar</button>
+        <button class="btn btn-ghost" id="r-load">Actualizar</button>
       </div>
     </div>
     <div class="kpis" id="r-kpis"></div>
@@ -272,13 +335,13 @@ export function panelHtml() {
       var agotado = !c.stock || c.activo === false;
       return '<div class="item" data-id="' + esc(c.id) + '">' +
         (c.imgId ? '<img src="/img/' + esc(c.imgId) + '" alt="">' : '<div class="ph">★</div>') +
-        '<div><b>' + esc(c.nombre) + '</b>' +
+        '<div><span class="nm">' + esc(c.nombre) + '</span>' +
           (c.categoria ? '<span class="tag">' + esc(c.categoria) + '</span>' : '') +
           (agotado ? '<span class="tag out">' + (c.activo === false ? 'oculto' : 'agotado') + '</span>' : '') +
           '<div class="meta">' + money(c.precio) + ' · ' + (c.stock||0) + ' pzas</div></div>' +
         '<div class="acts">' +
-          '<button class="btn ghost" data-act="editar">Editar</button> ' +
-          '<button class="btn danger" data-act="borrar">Borrar</button>' +
+          '<button class="btn btn-ghost btn-small" data-act="editar">Editar</button>' +
+          '<button class="btn btn-danger btn-small" data-act="borrar">Borrar</button>' +
         '</div></div>';
     }).join("");
   }
@@ -380,7 +443,7 @@ export function panelHtml() {
     cont.innerHTML = lista.length ? lista.map(function(id){
       return '<div class="item" data-img="' + esc(id) + '"><img src="/img/' + esc(id) + '" alt="">' +
         '<div class="meta">' + esc(id) + '</div>' +
-        '<div class="acts"><button class="btn danger" data-act="quitar">Quitar</button></div></div>';
+        '<div class="acts"><button class="btn btn-danger btn-small" data-act="quitar">Quitar</button></div></div>';
     }).join("") : '<p class="empty">Sin fotos en esta sección.</p>';
   }
 
@@ -419,7 +482,7 @@ export function panelHtml() {
       cont.innerHTML = '<table><tr><th>Fecha</th><th>Concepto</th><th>Categoría</th><th>Monto</th><th></th></tr>' +
         d.gastos.map(function(g){
           return '<tr><td>' + esc(g.fecha) + '</td><td>' + esc(g.concepto) + '</td><td>' + esc(g.categoria) + '</td><td>' + money(g.monto) + '</td>' +
-            '<td><button class="btn danger" data-gasto="' + esc(g.id) + '">Borrar</button></td></tr>';
+            '<td><button class="btn btn-danger btn-small" data-gasto="' + esc(g.id) + '">Borrar</button></td></tr>';
         }).join("") + '</table>';
     }).catch(function(){});
   }
@@ -449,7 +512,8 @@ export function panelHtml() {
     if (d1) q.push("desde=" + d1);
     if (d2) q.push("hasta=" + d2);
     api("/admin/rendimiento" + (q.length ? "?" + q.join("&") : "")).then(function(r){
-      var clase = r.utilidad > 0 ? "pos" : (r.utilidad < 0 ? "neg" : "");
+      // Solo la utilidad negativa se marca: en el sitio el maroon es acento, no adorno.
+      var clase = r.utilidad < 0 ? "neg" : "";
       document.getElementById("r-kpis").innerHTML =
         '<div class="kpi"><div class="n">' + money(r.ingresos) + '</div><div class="l">Ingresos</div></div>' +
         '<div class="kpi"><div class="n">' + money(r.gastos) + '</div><div class="l">Gastos</div></div>' +
