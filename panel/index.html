@@ -1,0 +1,1578 @@
+<title>Panel ASTÉRIA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Oswald:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* Tokens y patrones tomados tal cual de index.html: mismo papel, misma tinta,
+     mismas tres fuentes, mismos botones. El panel es la trastienda de la misma
+     tienda, no otra marca. */
+  :root{
+    --ink:#050403;--char:#443f3b;--maroon:#922939;--blue:#2d70ad;
+    --stone:#c8c2ad;--taupe:#6b655e;--paper:#f2efe9;--paper-2:#eae4d9;
+    --line:rgba(5,4,3,.14);
+    --font-display:'Cormorant Garamond', Georgia, serif;
+    --font-label:'Oswald', system-ui, sans-serif;
+    --font-body:'Jost', system-ui, -apple-system, sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--font-body);background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  img{display:block;max-width:100%}
+
+  .announce{background:var(--ink);color:var(--paper);font-family:var(--font-label);text-transform:uppercase;letter-spacing:.28em;font-size:.66rem;font-weight:300;text-align:center;padding:9px 14px}
+  .announce .star{color:var(--stone);margin:0 .7em}
+
+  header.nav{position:sticky;top:0;z-index:50;background:rgba(242,239,233,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:1180px;margin:0 auto;padding:0 28px;display:flex;align-items:center;justify-content:space-between;gap:24px;height:76px}
+  .nav-brand{display:flex;align-items:center;gap:12px}
+  .nav-brand img{height:38px;width:38px}
+  .nav-brand b{font-family:var(--font-display);font-weight:400;font-size:1.35rem;letter-spacing:.06em}
+  .nav-brand span{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.24em;font-size:.62rem;color:var(--taupe)}
+  nav.tabs{display:flex;gap:30px;overflow-x:auto;scrollbar-width:none}
+  nav.tabs::-webkit-scrollbar{display:none}
+  nav.tabs button{flex:0 0 auto;background:none;border:none;cursor:pointer;position:relative;padding:4px 0;
+    font-family:var(--font-label);text-transform:uppercase;letter-spacing:.18em;font-size:.76rem;color:var(--char);transition:color .2s}
+  /* Mismo subrayado que .nav-links del sitio, pero animado con transform en vez
+     de width: se ve identico y no obliga al navegador a recalcular layout. */
+  nav.tabs button::after{content:"";position:absolute;left:0;bottom:-2px;height:1px;width:100%;background:var(--maroon);
+    transform:scaleX(0);transform-origin:left center;transition:transform .28s}
+  nav.tabs button:hover{color:var(--ink)}
+  nav.tabs button:hover::after{transform:scaleX(1)}
+  nav.tabs button[aria-selected="true"]{color:var(--ink)}
+  nav.tabs button[aria-selected="true"]::after{transform:scaleX(1)}
+  /* El foco se ve distinto de la pestana activa: si no, parecen dos activas. */
+  nav.tabs button:focus-visible{outline:1px solid var(--maroon);outline-offset:4px}
+
+  main{max-width:1180px;margin:0 auto;padding:44px 28px 90px}
+  section[hidden]{display:none}
+  .eyebrow{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.32em;font-size:.72rem;font-weight:500;color:var(--maroon)}
+  h2{font-family:var(--font-display);font-weight:400;font-size:clamp(2.1rem,4vw,2.9rem);line-height:1.05;margin:14px 0 10px}
+  .sub{color:var(--char);font-weight:300;max-width:56ch;margin-bottom:34px}
+
+  .card{border:1px solid var(--line);background:var(--paper-2);padding:26px 24px;margin-bottom:20px}
+  .card h3{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.7rem;font-weight:400;color:var(--maroon);margin-bottom:20px}
+
+  label{display:block;font-family:var(--font-label);text-transform:uppercase;letter-spacing:.14em;font-size:.7rem;color:var(--char);margin-bottom:9px}
+  input,select{width:100%;padding:13px 15px;border:1px solid var(--line);background:var(--paper);font-family:var(--font-body);font-size:.98rem;color:var(--ink);transition:border-color .2s,box-shadow .2s}
+  input:focus,select:focus{outline:none;border-color:var(--maroon);box-shadow:0 0 0 3px rgba(146,41,57,.1)}
+  input[type=file]{padding:10px 12px;font-size:.86rem;cursor:pointer}
+  select{appearance:none;-webkit-appearance:none;cursor:pointer;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23443f3b' stroke-width='1.5'><path d='M5 8l5 5 5-5'/></svg>");
+    background-repeat:no-repeat;background-position:right 15px center;background-size:14px}
+  .grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+  .row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+
+  .btn{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.74rem;padding:13px 26px;cursor:pointer;
+    border:1px solid var(--ink);display:inline-flex;align-items:center;gap:10px;transition:all .25s;background:none;color:var(--ink)}
+  .btn-solid{background:var(--ink);color:var(--paper)}
+  .btn-solid:hover{background:var(--maroon);border-color:var(--maroon);transform:translateY(-2px)}
+  .btn-ghost:hover{background:var(--ink);color:var(--paper)}
+  .btn-small{padding:9px 16px;font-size:.68rem}
+  .btn-danger{border-color:var(--line);color:var(--taupe)}
+  .btn-danger:hover{background:var(--maroon);border-color:var(--maroon);color:var(--paper)}
+
+  .list{display:grid;gap:14px}
+  .item{display:grid;grid-template-columns:64px 1fr auto;gap:18px;align-items:center;border:1px solid var(--line);background:var(--paper);padding:14px 18px}
+  .item img{width:64px;height:64px;object-fit:cover;background:var(--paper-2)}
+  .item .ph{width:64px;height:64px;background:var(--paper-2);display:grid;place-items:center;color:var(--stone);font-size:1.3rem}
+  .item .nm{font-family:var(--font-display);font-size:1.25rem;line-height:1.2}
+  .item .meta{color:var(--taupe);font-size:.84rem;font-weight:300;margin-top:2px}
+  .tag{display:inline-block;font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.6rem;color:var(--taupe);margin-left:12px;vertical-align:middle}
+  .tag.out{color:var(--maroon)}
+  .acts{display:flex;gap:8px}
+
+  .kpis{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+  .kpi{border:1px solid var(--line);background:var(--paper-2);padding:24px 22px}
+  /* Cormorant trae numeros de estilo antiguo por defecto y el "1" se lee como
+     una I mayuscula. En cifras de dinero eso no se perdona: forzamos lining. */
+  .kpi .n{font-family:var(--font-display);font-size:2.6rem;line-height:1;letter-spacing:.01em;font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}
+  .kpi .n.neg{color:var(--maroon)}
+  .kpi .l{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.64rem;color:var(--taupe);margin-top:8px}
+
+  table{width:100%;border-collapse:collapse;font-size:.92rem;font-weight:300}
+  th{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.14em;font-size:.64rem;font-weight:400;color:var(--maroon);text-align:left;padding:0 0 12px}
+  td{padding:12px 0;border-bottom:1px dashed var(--line)}
+  tr:last-child td{border-bottom:none}
+  td:last-child,th:last-child{text-align:right}
+  .empty{color:var(--taupe);font-weight:300;font-size:.92rem;padding:10px 0}
+
+  .warn{border:1px solid var(--maroon);color:var(--maroon);background:var(--paper);padding:18px 20px;font-size:.92rem;margin-bottom:20px}
+  .warn b{font-weight:500}
+
+  #toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:28px;background:var(--ink);color:var(--paper);
+    font-family:var(--font-label);text-transform:uppercase;letter-spacing:.14em;font-size:.7rem;padding:14px 26px;
+    opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;z-index:60;max-width:90vw;text-align:center}
+  #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  #toast.err{background:var(--maroon)}
+
+  @media(max-width:900px){
+    .nav-inner{height:auto;flex-direction:column;align-items:flex-start;gap:10px;padding:14px 20px}
+    .nav-brand span{display:none}
+    nav.tabs{gap:22px;width:100%;padding-bottom:4px}
+    main{padding:30px 20px 80px}
+    .item{grid-template-columns:52px 1fr;row-gap:12px}
+    .item img,.item .ph{width:52px;height:52px}
+    .acts{grid-column:1/-1}
+  }
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<div class="announce"><span class="star">★</span> Vista previa del panel · datos de ejemplo <span class="star">★</span></div>
+<div class="nav-inner">
+    <div class="nav-brand">
+      <img src="data:image/png;base64,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" alt="" width="38" height="38">
+      <b>ASTÉRIA</b><span>Administración</span>
+    </div>
+    <nav class="tabs" id="tabs" role="tablist">
+      <button role="tab" data-tab="charms" aria-selected="true">Charms</button>
+      <button role="tab" data-tab="precios" aria-selected="false">Precios</button>
+      <button role="tab" data-tab="stock" aria-selected="false">Stock</button>
+      <button role="tab" data-tab="fotos" aria-selected="false">Fotos</button>
+      <button role="tab" data-tab="gastos" aria-selected="false">Gastos</button>
+      <button role="tab" data-tab="rendimiento" aria-selected="false">Rendimiento</button>
+    </nav>
+  </div>
+<main>
+  <!-- CHARMS -->
+  <section id="tab-charms">
+    <p class="eyebrow">Catálogo</p>
+    <h2>Charms</h2>
+    <p class="sub">Lo que la clienta puede elegir al personalizar su funda. Sin stock, el charm deja de ofrecerse.</p>
+    <div class="card">
+      <h3>Agregar charm</h3>
+      <div class="grid">
+        <div><label for="c-nombre">Nombre</label><input id="c-nombre" placeholder="Estrella dorada"></div>
+        <div><label for="c-categoria">Categoría</label><input id="c-categoria" placeholder="Gemas"></div>
+        <div><label for="c-precio">Precio (MXN)</label><input id="c-precio" type="number" min="0" step="1" inputmode="numeric"></div>
+        <div><label for="c-stock">Stock</label><input id="c-stock" type="number" min="0" step="1" inputmode="numeric" value="0"></div>
+        <div><label for="c-img">Foto</label><input id="c-img" type="file" accept="image/*"></div>
+      </div>
+      <div class="row" style="margin-top:14px"><button class="btn btn-solid" id="c-add">Agregar charm</button></div>
+    </div>
+    <div class="list" id="charms-list"></div>
+  </section>
+
+  <!-- PRECIOS -->
+  <section id="tab-precios" hidden>
+    <p class="eyebrow">Lista de precios</p>
+    <h2>Precios</h2>
+    <p class="sub">Mientras falte un precio, el sitio muestra “precio a confirmar” en vez de un número inventado.</p>
+    <div class="card">
+      <h3>Precio base por estilo</h3>
+      <div class="grid" id="p-base"></div>
+    </div>
+    <div class="card">
+      <h3>Extra por densidad</h3>
+      <div class="grid" id="p-dens"></div>
+    </div>
+    <div class="card">
+      <h3>Envío</h3>
+      <div class="grid"><div><label for="p-envio">Costo de envío (MXN, 0 = gratis)</label><input id="p-envio" type="number" min="0" step="1" inputmode="numeric"></div></div>
+    </div>
+    <button class="btn btn-solid" id="p-save">Guardar precios</button>
+  </section>
+
+  <!-- STOCK -->
+  <section id="tab-stock" hidden>
+    <p class="eyebrow">Inventario</p>
+    <h2>Stock de fundas</h2>
+    <p class="sub">Solo hace falta capturar lo que se agota. Un modelo sin registro se considera disponible.</p>
+    <div class="card">
+      <h3>Marcar disponibilidad</h3>
+      <div class="grid">
+        <div><label for="s-estilo">Estilo</label><select id="s-estilo"></select></div>
+        <div><label for="s-modelo">Modelo</label><select id="s-modelo"></select></div>
+        <div><label for="s-cantidad">Piezas (vacío = quitar límite)</label><input id="s-cantidad" type="number" min="0" step="1" inputmode="numeric"></div>
+      </div>
+      <div class="row" style="margin-top:14px"><button class="btn btn-solid" id="s-save">Guardar</button></div>
+    </div>
+    <div class="card"><h3>Registros actuales</h3><div id="stock-list"></div></div>
+  </section>
+
+  <!-- FOTOS -->
+  <section id="tab-fotos" hidden>
+    <p class="eyebrow">Imágenes</p>
+    <h2>Fotos del sitio</h2>
+    <p class="sub">Sube imágenes y ordénalas por sección. Se sirven desde el worker con caché larga.</p>
+    <div class="card">
+      <h3>Subir a una sección</h3>
+      <div class="grid">
+        <div><label for="f-seccion">Sección</label><select id="f-seccion"></select></div>
+        <div><label for="f-file">Imagen (máx. 800 KB tras comprimir)</label><input id="f-file" type="file" accept="image/*" multiple></div>
+      </div>
+    </div>
+    <div class="list" id="fotos-list"></div>
+  </section>
+
+  <!-- GASTOS -->
+  <section id="tab-gastos" hidden>
+    <p class="eyebrow">Egresos</p>
+    <h2>Gastos</h2>
+    <p class="sub">Cada egreso del taller: material, envíos, publicidad, empaque.</p>
+    <div class="card">
+      <h3>Registrar gasto</h3>
+      <div class="grid">
+        <div><label for="g-fecha">Fecha</label><input id="g-fecha" type="date"></div>
+        <div><label for="g-concepto">Concepto</label><input id="g-concepto" placeholder="Gemas AB 6mm"></div>
+        <div><label for="g-categoria">Categoría</label><input id="g-categoria" placeholder="Material" list="cats"><datalist id="cats"><option>Material</option><option>Envíos</option><option>Empaque</option><option>Publicidad</option><option>Herramienta</option></datalist></div>
+        <div><label for="g-monto">Monto (MXN)</label><input id="g-monto" type="number" min="0" step="0.01" inputmode="decimal"></div>
+      </div>
+      <div class="row" style="margin-top:14px"><button class="btn btn-solid" id="g-add">Registrar gasto</button></div>
+    </div>
+    <div class="card"><h3>Historial</h3><div id="gastos-list"></div></div>
+  </section>
+
+  <!-- RENDIMIENTO -->
+  <section id="tab-rendimiento" hidden>
+    <p class="eyebrow">Números del taller</p>
+    <h2>Rendimiento</h2>
+    <p class="sub">Ingresos tomados de los pedidos con precio calculado; los pedidos antiguos sin precio se cuentan aparte.</p>
+    <div class="card">
+      <div class="row">
+        <div><label for="r-desde">Desde</label><input id="r-desde" type="date"></div>
+        <div><label for="r-hasta">Hasta</label><input id="r-hasta" type="date"></div>
+        <button class="btn btn-ghost" id="r-load">Actualizar</button>
+      </div>
+    </div>
+    <div class="kpis" id="r-kpis"></div>
+    <div class="card" style="margin-top:18px"><h3>Gastos por categoría</h3><div id="r-cats"></div></div>
+  </section>
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+// Catalogo v2: charms, precios, stock y fotos por seccion.
+// Regla dura del proyecto: los precios NUNCA se inventan en el codigo ni en el
+// navegador. Viven en KV, los edita la duena desde el panel, y el total siempre
+// se recalcula aqui (servidor) al recibir el pedido.
+
+const KEY_CHARMS = "catalog:charms";
+const KEY_PRECIOS = "catalog:precios";
+const KEY_STOCK = "catalog:stock";
+const KEY_FOTOS = (seccion) => `catalog:fotos:${seccion}`;
+
+// Estilos y densidades: son los que ya usa el formulario publico. Si cambian ahi,
+// cambian aqui. No se inventan opciones nuevas desde el panel.
+const ESTILOS = ["Pasta blanca/negra", "Transparente"];
+const DENSIDADES = ["Maximalista", "Minimalista"];
+const SECCIONES_FOTO = ["hero", "galeria", "charms", "estilos"];
+
+// Estructura vacia, no un precio inventado: mientras la duena no capture precios,
+// el sitio debe decir "precio a confirmar" en vez de mostrar un numero falso.
+function preciosVacios() {
+  return {
+    moneda: "MXN",
+    base: Object.fromEntries(ESTILOS.map((e) => [e, null])),
+    densidad: Object.fromEntries(DENSIDADES.map((d) => [d, null])),
+    envio: null,
+    actualizado: null,
+  };
+}
+
+async function readJSON(kv, key, fallback) {
+  if (!kv) return fallback;
+  try {
+    const raw = await kv.get(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return parsed ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+async function getCharms(kv) {
+  const list = await readJSON(kv, KEY_CHARMS, []);
+  return Array.isArray(list) ? list : [];
+}
+
+async function getPrecios(kv) {
+  const p = await readJSON(kv, KEY_PRECIOS, null);
+  if (!p || typeof p !== "object") return preciosVacios();
+  return { ...preciosVacios(), ...p, base: { ...preciosVacios().base, ...(p.base || {}) }, densidad: { ...preciosVacios().densidad, ...(p.densidad || {}) } };
+}
+
+async function getStock(kv) {
+  const s = await readJSON(kv, KEY_STOCK, {});
+  return s && typeof s === "object" ? s : {};
+}
+
+async function getFotos(kv, seccion) {
+  const f = await readJSON(kv, KEY_FOTOS(seccion), []);
+  return Array.isArray(f) ? f : [];
+}
+
+// Un precio esta "completo" cuando cada estilo y cada densidad tienen numero.
+// Con precios incompletos el sitio publico no muestra total.
+function preciosCompletos(precios) {
+  const num = (v) => typeof v === "number" && isFinite(v) && v >= 0;
+  return (
+    ESTILOS.every((e) => num(precios.base?.[e])) &&
+    DENSIDADES.every((d) => num(precios.densidad?.[d]))
+  );
+}
+
+function charmDisponible(charm) {
+  return !!charm && charm.activo !== false && (charm.stock ?? 0) > 0;
+}
+
+// Stock de fundas: { "<estilo>": { "<modelo>": cantidad } }.
+// Sin registro para un modelo asumimos disponible: la duena solo captura lo que
+// se le agota, no las 24 combinaciones de iPhone.
+function fundaDisponible(stock, estilo, modelo) {
+  const porEstilo = stock?.[estilo];
+  if (!porEstilo || !(modelo in porEstilo)) return true;
+  const n = porEstilo[modelo];
+  return typeof n === "number" ? n > 0 : !!n;
+}
+
+/**
+ * Calcula el total de un pedido. Es la unica autoridad de precio.
+ * seleccion: { style, dens, modelo, charms: [{ id, qty }] }
+ * Devuelve { ok, error?, total, moneda, desglose[] }.
+ */
+function calcularPrecio(seleccion, { charms, precios, stock }) {
+  const sel = seleccion || {};
+  const desglose = [];
+
+  if (!ESTILOS.includes(sel.style)) return { ok: false, error: "estilo_invalido" };
+  if (!DENSIDADES.includes(sel.dens)) return { ok: false, error: "densidad_invalida" };
+  if (!sel.modelo) return { ok: false, error: "modelo_faltante" };
+  if (!preciosCompletos(precios)) return { ok: false, error: "precios_no_capturados" };
+  if (!fundaDisponible(stock, sel.style, sel.modelo)) return { ok: false, error: "modelo_agotado" };
+
+  const base = precios.base[sel.style];
+  const dens = precios.densidad[sel.dens];
+  desglose.push({ concepto: `Funda ${sel.style}`, monto: base });
+  desglose.push({ concepto: `Densidad ${sel.dens}`, monto: dens });
+
+  const porId = new Map(charms.map((c) => [c.id, c]));
+  const pedidos = Array.isArray(sel.charms) ? sel.charms : [];
+  for (const item of pedidos) {
+    const charm = porId.get(item?.id);
+    const qty = Math.max(0, Math.floor(Number(item?.qty) || 0));
+    if (!charm) return { ok: false, error: "charm_desconocido", id: item?.id };
+    if (qty === 0) continue;
+    if (!charmDisponible(charm)) return { ok: false, error: "charm_agotado", id: charm.id };
+    if (qty > (charm.stock ?? 0)) return { ok: false, error: "charm_sin_stock_suficiente", id: charm.id };
+    if (typeof charm.precio !== "number" || !isFinite(charm.precio) || charm.precio < 0) {
+      return { ok: false, error: "charm_sin_precio", id: charm.id };
+    }
+    desglose.push({ concepto: `${charm.nombre} x${qty}`, monto: charm.precio * qty });
+  }
+
+  const envio = typeof precios.envio === "number" ? precios.envio : 0;
+  if (envio > 0) desglose.push({ concepto: "Envio", monto: envio });
+
+  const total = desglose.reduce((acc, l) => acc + l.monto, 0);
+  return { ok: true, total, moneda: precios.moneda || "MXN", desglose };
+}
+
+// Vista publica del catalogo: sin stock crudo de charms (solo disponible si/no),
+// y sin precios cuando estan incompletos.
+async function catalogoPublico(kv) {
+  const [charms, precios, stock] = await Promise.all([getCharms(kv), getPrecios(kv), getStock(kv)]);
+  const fotos = {};
+  for (const s of SECCIONES_FOTO) fotos[s] = await getFotos(kv, s);
+  const completos = preciosCompletos(precios);
+  return {
+    charms: charms
+      .filter((c) => c.activo !== false)
+      .map((c) => ({
+        id: c.id,
+        nombre: c.nombre,
+        categoria: c.categoria || "",
+        imgId: c.imgId || null,
+        precio: completos && typeof c.precio === "number" ? c.precio : null,
+        disponible: charmDisponible(c),
+        max: Math.max(0, Math.min(20, c.stock ?? 0)),
+      })),
+    precios: completos ? precios : null,
+    preciosListos: completos,
+    stock,
+    fotos,
+    estilos: ESTILOS,
+    densidades: DENSIDADES,
+  };
+}
+
+
+// API de administracion (v2). Todo pasa por ADMIN_KEY.
+// Nada de esto toca las rutas de produccion: vive en /admin/* y /panel.
+
+
+const MAX_IMG_BYTES = 800 * 1024; // tope acordado: 800 KB por imagen
+const TIPOS_IMG = ["image/webp", "image/jpeg", "image/png"];
+
+function autorizado(request, url, env) {
+  if (!env.ADMIN_KEY) return false;
+  const key = url.searchParams.get("key") || request.headers.get("X-Admin-Key") || "";
+  // Comparacion de tiempo constante para no filtrar la clave por tiempo de respuesta.
+  if (key.length !== env.ADMIN_KEY.length) return false;
+  let diff = 0;
+  for (let i = 0; i < key.length; i++) diff |= key.charCodeAt(i) ^ env.ADMIN_KEY.charCodeAt(i);
+  return diff === 0;
+}
+
+function json(data, status = 200, extra = {}) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "Content-Type": "application/json; charset=UTF-8", "Cache-Control": "no-store", ...extra },
+  });
+}
+
+const nuevoId = (p) => `${p}_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
+const texto = (v, max = 80) => String(v ?? "").trim().slice(0, max);
+
+function numeroOpcional(v) {
+  if (v === null || v === undefined || v === "") return null;
+  const n = Number(v);
+  return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : null;
+}
+
+function entero(v, min = 0) {
+  const n = Math.floor(Number(v));
+  return isFinite(n) && n >= min ? n : min;
+}
+
+// ---------- charms ----------
+
+function normalizaCharm(body, previo) {
+  const nombre = texto(body.nombre, 60) || previo?.nombre || "";
+  if (!nombre) return null;
+  return {
+    id: previo?.id || nuevoId("charm"),
+    nombre,
+    categoria: texto(body.categoria, 40) || previo?.categoria || "",
+    precio: numeroOpcional(body.precio ?? previo?.precio),
+    stock: entero(body.stock ?? previo?.stock ?? 0),
+    imgId: body.imgId === null ? null : texto(body.imgId, 60) || previo?.imgId || null,
+    activo: body.activo === undefined ? previo?.activo !== false : !!body.activo,
+    creado: previo?.creado || new Date().toISOString(),
+  };
+}
+
+async function charmsCrud(kv, method, body, id) {
+  const charms = await getCharms(kv);
+
+  if (method === "GET") return json({ charms });
+
+  if (method === "POST") {
+    const charm = normalizaCharm(body || {}, null);
+    if (!charm) return json({ ok: false, error: "nombre_requerido" }, 400);
+    charms.push(charm);
+    await kv.put(KEY_CHARMS, JSON.stringify(charms));
+    return json({ ok: true, charm });
+  }
+
+  if (method === "PUT") {
+    const i = charms.findIndex((c) => c.id === id);
+    if (i === -1) return json({ ok: false, error: "no_encontrado" }, 404);
+    charms[i] = normalizaCharm(body || {}, charms[i]);
+    await kv.put(KEY_CHARMS, JSON.stringify(charms));
+    return json({ ok: true, charm: charms[i] });
+  }
+
+  if (method === "DELETE") {
+    const restantes = charms.filter((c) => c.id !== id);
+    if (restantes.length === charms.length) return json({ ok: false, error: "no_encontrado" }, 404);
+    await kv.put(KEY_CHARMS, JSON.stringify(restantes));
+    return json({ ok: true });
+  }
+
+  return json({ ok: false, error: "metodo_no_permitido" }, 405);
+}
+
+// ---------- precios ----------
+
+async function preciosCrud(kv, method, body) {
+  if (method === "GET") return json({ precios: await getPrecios(kv) });
+  if (method !== "PUT") return json({ ok: false, error: "metodo_no_permitido" }, 405);
+
+  const actual = await getPrecios(kv);
+  const b = body || {};
+  const precios = {
+    moneda: "MXN",
+    base: { ...actual.base },
+    densidad: { ...actual.densidad },
+    envio: b.envio === undefined ? actual.envio : numeroOpcional(b.envio),
+    actualizado: new Date().toISOString(),
+  };
+  for (const e of ESTILOS) if (b.base && e in b.base) precios.base[e] = numeroOpcional(b.base[e]);
+  for (const d of DENSIDADES) if (b.densidad && d in b.densidad) precios.densidad[d] = numeroOpcional(b.densidad[d]);
+
+  await kv.put(KEY_PRECIOS, JSON.stringify({ ...preciosVacios(), ...precios }));
+  return json({ ok: true, precios });
+}
+
+// ---------- stock de fundas ----------
+
+async function stockCrud(kv, method, body) {
+  if (method === "GET") return json({ stock: await getStock(kv) });
+  if (method !== "PUT") return json({ ok: false, error: "metodo_no_permitido" }, 405);
+
+  const actual = await getStock(kv);
+  const b = body || {};
+  if (!ESTILOS.includes(b.estilo)) return json({ ok: false, error: "estilo_invalido" }, 400);
+  const modelo = texto(b.modelo, 40);
+  if (!modelo) return json({ ok: false, error: "modelo_requerido" }, 400);
+
+  const siguiente = { ...actual, [b.estilo]: { ...(actual[b.estilo] || {}) } };
+  if (b.cantidad === null || b.cantidad === "") {
+    delete siguiente[b.estilo][modelo]; // sin registro = disponible
+  } else {
+    siguiente[b.estilo][modelo] = entero(b.cantidad);
+  }
+  await kv.put(KEY_STOCK, JSON.stringify(siguiente));
+  return json({ ok: true, stock: siguiente });
+}
+
+// ---------- imagenes ----------
+
+async function subirImagen(kv, request) {
+  const tipo = (request.headers.get("Content-Type") || "").split(";")[0].trim();
+  if (!TIPOS_IMG.includes(tipo)) return json({ ok: false, error: "tipo_no_permitido", tipo }, 415);
+
+  const bytes = await request.arrayBuffer();
+  if (bytes.byteLength === 0) return json({ ok: false, error: "imagen_vacia" }, 400);
+  if (bytes.byteLength > MAX_IMG_BYTES) {
+    return json({ ok: false, error: "imagen_muy_grande", max: MAX_IMG_BYTES, bytes: bytes.byteLength }, 413);
+  }
+
+  const id = nuevoId("img");
+  await kv.put(`img:${id}`, bytes, { metadata: { tipo, bytes: bytes.byteLength, subida: new Date().toISOString() } });
+  return json({ ok: true, id, url: `/img/${id}`, bytes: bytes.byteLength });
+}
+
+async function servirImagen(kv, id) {
+  const limpio = String(id || "").replace(/[^a-zA-Z0-9_]/g, "");
+  if (!limpio) return new Response("No encontrada", { status: 404 });
+  const { value, metadata } = await kv.getWithMetadata(`img:${limpio}`, { type: "arrayBuffer" });
+  if (!value) return new Response("No encontrada", { status: 404 });
+  return new Response(value, {
+    status: 200,
+    headers: {
+      "Content-Type": (metadata && metadata.tipo) || "image/webp",
+      // Las imagenes son inmutables: cambiar una genera un id nuevo.
+      "Cache-Control": "public, max-age=31536000, immutable",
+    },
+  });
+}
+
+// ---------- fotos por seccion ----------
+
+async function fotosCrud(kv, method, body, seccion) {
+  if (!SECCIONES_FOTO.includes(seccion)) {
+    return json({ ok: false, error: "seccion_invalida", validas: SECCIONES_FOTO }, 400);
+  }
+  if (method === "GET") return json({ seccion, fotos: await getFotos(kv, seccion) });
+  if (method !== "PUT") return json({ ok: false, error: "metodo_no_permitido" }, 405);
+
+  const lista = Array.isArray(body?.fotos)
+    ? body.fotos.map((f) => texto(f, 60)).filter(Boolean).slice(0, 40)
+    : [];
+  await kv.put(KEY_FOTOS(seccion), JSON.stringify(lista));
+  return json({ ok: true, seccion, fotos: lista });
+}
+
+// ---------- gastos ----------
+
+async function gastosCrud(kv, method, body, id) {
+  if (method === "GET") {
+    const list = await kv.list({ prefix: "expense:", limit: 1000 });
+    const gastos = (
+      await Promise.all(list.keys.map(async (k) => {
+        try { return JSON.parse(await kv.get(k.name)); } catch { return null; }
+      }))
+    ).filter(Boolean).reverse();
+    return json({ gastos });
+  }
+
+  if (method === "POST") {
+    const b = body || {};
+    const monto = numeroOpcional(b.monto);
+    if (monto === null || monto === 0) return json({ ok: false, error: "monto_requerido" }, 400);
+    const fecha = /^\d{4}-\d{2}-\d{2}$/.test(b.fecha || "") ? b.fecha : new Date().toISOString().slice(0, 10);
+    const gasto = {
+      id: nuevoId("gasto"),
+      fecha,
+      concepto: texto(b.concepto, 80) || "Sin concepto",
+      categoria: texto(b.categoria, 40) || "General",
+      monto,
+      registrado: new Date().toISOString(),
+    };
+    await kv.put(`expense:${fecha}:${gasto.id}`, JSON.stringify(gasto));
+    return json({ ok: true, gasto });
+  }
+
+  if (method === "DELETE") {
+    const list = await kv.list({ prefix: "expense:", limit: 1000 });
+    const clave = list.keys.find((k) => k.name.endsWith(`:${id}`));
+    if (!clave) return json({ ok: false, error: "no_encontrado" }, 404);
+    await kv.delete(clave.name);
+    return json({ ok: true });
+  }
+
+  return json({ ok: false, error: "metodo_no_permitido" }, 405);
+}
+
+// ---------- rendimiento ----------
+// Ingresos derivados de los pedidos guardados (campo `total`, que solo existe en
+// pedidos v2). Un pedido viejo sin total cuenta como pedido, no como ingreso:
+// preferimos un ingreso subestimado antes que un numero inventado.
+
+async function rendimiento(kv, desde, hasta) {
+  const dentro = (iso) => (!desde || iso >= desde) && (!hasta || iso <= hasta);
+
+  const pedidosList = await kv.list({ prefix: "order:", limit: 1000 });
+  let ingresos = 0, pedidos = 0, pedidosSinPrecio = 0;
+  for (const k of pedidosList.keys) {
+    const iso = k.name.slice("order:".length, "order:".length + 10);
+    if (!dentro(iso)) continue;
+    let rec;
+    try { rec = JSON.parse(await kv.get(k.name)); } catch { continue; }
+    if (!rec) continue;
+    pedidos++;
+    if (typeof rec.total === "number" && isFinite(rec.total)) ingresos += rec.total;
+    else pedidosSinPrecio++;
+  }
+
+  const gastosList = await kv.list({ prefix: "expense:", limit: 1000 });
+  let gastos = 0;
+  const porCategoria = {};
+  for (const k of gastosList.keys) {
+    const iso = k.name.slice("expense:".length, "expense:".length + 10);
+    if (!dentro(iso)) continue;
+    let g;
+    try { g = JSON.parse(await kv.get(k.name)); } catch { continue; }
+    if (!g) continue;
+    gastos += g.monto || 0;
+    porCategoria[g.categoria] = (porCategoria[g.categoria] || 0) + (g.monto || 0);
+  }
+
+  return {
+    desde: desde || null,
+    hasta: hasta || null,
+    moneda: "MXN",
+    pedidos,
+    pedidosSinPrecio,
+    ingresos: Math.round(ingresos * 100) / 100,
+    gastos: Math.round(gastos * 100) / 100,
+    utilidad: Math.round((ingresos - gastos) * 100) / 100,
+    gastosPorCategoria: porCategoria,
+  };
+}
+
+
+// Worker v2: recibe el pedido del formulario de ASTERIA y lo reenvia a Telegram.
+// El token del bot vive solo aqui (secret de Cloudflare), nunca en el sitio publico.
+
+
+// Limite de tasa simple por IP usando el mismo KV de pedidos (prefijo "rl:").
+// No es perfectamente atomico bajo carga simultanea, pero para el trafico de
+// esta tienda es mas que suficiente como segunda barrera junto con Turnstile.
+async function rateLimit(kv, key, limit, windowSeconds) {
+  if (!kv) return true; // si no hay KV disponible, no bloqueamos por esto
+  const k = `rl:${key}`;
+  let count = 0;
+  try {
+    const current = await kv.get(k);
+    count = current ? parseInt(current, 10) || 0 : 0;
+  } catch {
+    return true; // KV con problemas: no bloqueamos al usuario por esto
+  }
+  if (count >= limit) return false;
+  try {
+    await kv.put(k, String(count + 1), { expirationTtl: windowSeconds });
+  } catch {
+    // si no se pudo guardar el contador, dejamos pasar de todas formas
+  }
+  return true;
+}
+
+// Eventos del embudo del formulario: contador diario por evento, sin datos
+// personales (ni IP, ni IG) -- solo cuantas veces paso cada cosa cada dia.
+const FUNNEL_EVENTS = ["form_open", "step2", "step3", "submit"];
+
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+async function logEvent(kv, eventName) {
+  if (!kv || !FUNNEL_EVENTS.includes(eventName)) return;
+  const key = `stat:${todayISO()}:${eventName}`;
+  try {
+    const current = await kv.get(key);
+    const count = current ? parseInt(current, 10) || 0 : 0;
+    await kv.put(key, String(count + 1));
+  } catch {
+    // metrica perdida no es grave, no interrumpimos nada por esto
+  }
+}
+
+async function renderFunnelSummary(kv, days) {
+  const totals = Object.fromEntries(FUNNEL_EVENTS.map((e) => [e, 0]));
+  const d = new Date();
+  for (let i = 0; i < days; i++) {
+    const iso = d.toISOString().slice(0, 10);
+    for (const ev of FUNNEL_EVENTS) {
+      const v = await kv.get(`stat:${iso}:${ev}`);
+      if (v) totals[ev] += parseInt(v, 10) || 0;
+    }
+    d.setDate(d.getDate() - 1);
+  }
+  const pct = (n, base) => (base > 0 ? Math.round((n / base) * 100) : 0);
+  const rows = [
+    ["Abrieron el formulario", totals.form_open, 100],
+    ["Llegaron a paso 2 (estilo)", totals.step2, pct(totals.step2, totals.form_open)],
+    ["Llegaron a paso 3 (diseño)", totals.step3, pct(totals.step3, totals.form_open)],
+    ["Enviaron el pedido", totals.submit, pct(totals.submit, totals.form_open)],
+  ];
+  return `
+    <h2>Embudo del formulario (${days} dias)</h2>
+    <table>
+      <tr><th>Paso</th><th>Personas</th><th>% vs. abrieron el form</th></tr>
+      ${rows.map(([label, n, p]) => `<tr><td>${escapeHtml(label)}</td><td>${n}</td><td>${p}%</td></tr>`).join("\n")}
+    </table>`;
+}
+
+function corsHeaders(origin, allowedOrigins) {
+  const list = (allowedOrigins || "").split(",").map((s) => s.trim()).filter(Boolean);
+  const allow = list.includes(origin) ? origin : list[0];
+  return {
+    "Access-Control-Allow-Origin": allow,
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
+}
+
+// Consulta no oficial de Instagram: no requiere login para perfiles publicos.
+// Si algo falla o Instagram nos limita, regresamos null (inconcluso) en vez de
+// arriesgarnos a bloquear a un cliente real.
+async function checkInstagramExists(username) {
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 4000);
+    const res = await fetch(
+      `https://i.instagram.com/api/v1/users/web_profile_info/?username=${encodeURIComponent(username)}`,
+      {
+        headers: {
+          "x-ig-app-id": "936619743392459",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0 Safari/537.36",
+          Accept: "*/*",
+        },
+        signal: ctrl.signal,
+      }
+    );
+    clearTimeout(t);
+    if (res.status === 404) return false;
+    if (!res.ok) return null;
+    const data = await res.json();
+    return !!(data && data.data && data.data.user);
+  } catch {
+    return null;
+  }
+}
+
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+}
+
+function buildMessage(o, precio, charmsCat) {
+  const lines = ["🌟 <b>Nuevo pedido ASTERIA</b>"];
+  if (o.orderId) lines.push(`<b>Folio:</b> ${escapeHtml(o.orderId)}`);
+  lines.push("", `<b>Instagram:</b> @${escapeHtml(o.ig || "")}`);
+  if (o.nombre) lines.push(`<b>Nombre:</b> ${escapeHtml(o.nombre)}`);
+  lines.push(`<b>Estilo:</b> ${escapeHtml(o.style || "")}`);
+  if (o.pasta) lines.push(`<b>Color de pasta:</b> ${escapeHtml(o.pasta)}`);
+  lines.push(`<b>Modelo:</b> ${escapeHtml(o.modelo || "")}`);
+  lines.push(`<b>Densidad:</b> ${escapeHtml(o.dens || "")}`);
+  lines.push(`<b>Priorizar:</b> ${escapeHtml(o.prio || "Ninguna")}`);
+  lines.push(`<b>No incluir:</b> ${escapeHtml(o.excl || "Ninguna")}`);
+
+  const porId = new Map((charmsCat || []).map((c) => [c.id, c]));
+  const pedidos = (Array.isArray(o.charms) ? o.charms : []).filter((c) => Number(c && c.qty) > 0);
+  if (pedidos.length) {
+    lines.push("", "<b>Charms:</b>");
+    for (const item of pedidos) {
+      const nombre = (porId.get(item.id) || {}).nombre || item.id;
+      lines.push(`• ${escapeHtml(nombre)} x${Math.floor(Number(item.qty))}`);
+    }
+  }
+  if (precio && precio.ok) {
+    lines.push("", `<b>Total:</b> ${precio.total} ${escapeHtml(precio.moneda)}`);
+  } else if (precio && precio.error) {
+    lines.push("", `<b>Total:</b> por confirmar (${escapeHtml(precio.error)})`);
+  }
+  return lines.join("\n");
+}
+
+async function verifyTurnstile(secret, token, ip) {
+  if (!token) return false;
+  const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ secret, response: token, remoteip: ip }),
+  });
+  const data = await res.json();
+  return !!data.success;
+}
+
+async function sendToChat(token, chatId, text) {
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    console.log("telegram_error", chatId, res.status, body, "token_len", (token || "").length);
+  }
+  return res.ok;
+}
+
+// Respaldo del pedido en KV: para que un fallo de Telegram (rate limit, chat_id
+// invalido, caida del servicio) nunca signifique perder el pedido por completo.
+async function saveOrderBackup(kv, order, ip, telegramOk, precio) {
+  if (!kv) return;
+  const receivedAt = new Date().toISOString();
+  const record = {
+    orderId: order.orderId || null,
+    ig: order.ig || "",
+    nombre: order.nombre || "",
+    style: order.style || "",
+    pasta: order.pasta || "",
+    modelo: order.modelo || "",
+    dens: order.dens || "",
+    prio: order.prio || "",
+    excl: order.excl || "",
+    charms: Array.isArray(order.charms) ? order.charms : [],
+    // El total lo calcula el servidor (calcularPrecio). Si el catalogo aun no
+    // tiene precios capturados, se guarda null en vez de un numero inventado.
+    total: precio && precio.ok ? precio.total : null,
+    desglose: precio && precio.ok ? precio.desglose : null,
+    ip: ip || "",
+    telegramOk,
+    receivedAt,
+  };
+  const key = `order:${receivedAt}:${order.orderId || crypto.randomUUID()}`;
+  try {
+    await kv.put(key, JSON.stringify(record));
+    // Indice secundario por folio, para que el cliente pueda consultar su
+    // pedido directamente (GET /order?folio=...) sin exponer el listado completo.
+    if (order.orderId) {
+      await kv.put(`orderid:${order.orderId}`, JSON.stringify(record));
+    }
+  } catch (e) {
+    console.log("kv_backup_error", e && e.message);
+  }
+}
+
+// Lo que el cliente ve al consultar su folio: nada de IP, nada de datos de
+// otros pedidos, solo el resumen de lo que el eligio.
+function publicOrderView(record) {
+  return {
+    orderId: record.orderId,
+    ig: record.ig,
+    nombre: record.nombre,
+    style: record.style,
+    pasta: record.pasta,
+    modelo: record.modelo,
+    dens: record.dens,
+    prio: record.prio,
+    excl: record.excl,
+    receivedAt: record.receivedAt,
+    total: typeof record.total === "number" ? record.total : null,
+    notificado: !!record.telegramOk,
+  };
+}
+
+async function renderOrdersPage(kv) {
+  const list = await kv.list({ prefix: "order:", limit: 500 });
+  const records = await Promise.all(
+    list.keys.map(async (k) => {
+      const v = await kv.get(k.name);
+      try {
+        return JSON.parse(v);
+      } catch {
+        return null;
+      }
+    })
+  );
+  const rows = records
+    .filter(Boolean)
+    .reverse() // mas reciente primero (las keys ordenan por fecha ascendente)
+    .map(
+      (o) => `<tr class="${o.telegramOk ? "" : "fail"}">
+      <td>${escapeHtml(o.receivedAt.replace("T", " ").slice(0, 19))}</td>
+      <td>${escapeHtml(o.orderId || "-")}</td>
+      <td>@${escapeHtml(o.ig)}</td>
+      <td>${escapeHtml(o.nombre || "-")}</td>
+      <td>${escapeHtml(o.style)}${o.pasta ? " (" + escapeHtml(o.pasta) + ")" : ""}</td>
+      <td>${escapeHtml(o.modelo)}</td>
+      <td>${escapeHtml(o.dens)}</td>
+      <td>${escapeHtml(o.prio || "Ninguna")}</td>
+      <td>${escapeHtml(o.excl || "Ninguna")}</td>
+      <td>${o.telegramOk ? "✅" : "⚠️ no llego a Telegram"}</td>
+    </tr>`
+    )
+    .join("\n");
+
+  const funnel = await renderFunnelSummary(kv, 7);
+
+  return `<!doctype html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pedidos ASTERIA</title>
+<meta name="robots" content="noindex">
+<style>
+  body{font-family:system-ui,sans-serif;background:#f2efe9;color:#050403;margin:0;padding:20px}
+  h1{font-size:1.3rem;margin-bottom:4px}
+  h2{font-size:1.05rem;margin:30px 0 10px}
+  p.sub{color:#848079;margin-top:0;margin-bottom:18px;font-size:.9rem}
+  table{border-collapse:collapse;width:100%;font-size:.82rem;background:#fff;margin-bottom:8px}
+  th,td{border:1px solid #e0dbd0;padding:6px 8px;text-align:left;white-space:nowrap}
+  th{background:#eae4d9;position:sticky;top:0}
+  tr.fail{background:#fdeceb}
+  .wrap{overflow-x:auto}
+</style></head><body>
+<h1>★ Pedidos ASTERIA — respaldo</h1>
+<p class="sub">${records.filter(Boolean).length} pedidos guardados. Los marcados en rojo no llegaron a Telegram: contacta a ese cliente manualmente.</p>
+${funnel}
+<div class="wrap"><table>
+<tr><th>Fecha</th><th>Folio</th><th>Instagram</th><th>Nombre</th><th>Estilo</th><th>Modelo</th><th>Densidad</th><th>Priorizar</th><th>No incluir</th><th>Telegram</th></tr>
+${rows || '<tr><td colspan="10">Sin pedidos todavia.</td></tr>'}
+</table></div>
+</body></html>`;
+}
+
+const ordersHandler = {
+  async fetch(request, env) {
+    const origin = request.headers.get("Origin") || "";
+    const headers = corsHeaders(origin, env.ALLOWED_ORIGINS);
+    const url = new URL(request.url);
+
+    if (request.method === "OPTIONS") {
+      return new Response(null, { headers });
+    }
+
+    if (request.method === "GET" && url.pathname === "/orders") {
+      const key = url.searchParams.get("key") || "";
+      if (!env.ADMIN_KEY || key !== env.ADMIN_KEY) {
+        return new Response("No autorizado", { status: 403 });
+      }
+      const html = await renderOrdersPage(env.ASTERIA_ORDERS);
+      return new Response(html, { status: 200, headers: { "Content-Type": "text/html; charset=UTF-8" } });
+    }
+
+    if (request.method === "GET" && url.pathname === "/order") {
+      const ipOrder = request.headers.get("CF-Connecting-IP") || "unknown";
+      const allowedLookup = await rateLimit(env.ASTERIA_ORDERS, `orderlookup:${ipOrder}`, 20, 60);
+      if (!allowedLookup) {
+        return new Response(JSON.stringify({ found: false, error: "rate_limited" }), {
+          status: 429,
+          headers: { ...headers, "Content-Type": "application/json" },
+        });
+      }
+      const folio = (url.searchParams.get("folio") || "").trim().toUpperCase();
+      if (!folio || !env.ASTERIA_ORDERS) {
+        return new Response(JSON.stringify({ found: false }), {
+          status: 200,
+          headers: { ...headers, "Content-Type": "application/json" },
+        });
+      }
+      const raw = await env.ASTERIA_ORDERS.get(`orderid:${folio}`);
+      if (!raw) {
+        return new Response(JSON.stringify({ found: false }), {
+          status: 200,
+          headers: { ...headers, "Content-Type": "application/json" },
+        });
+      }
+      let record;
+      try {
+        record = JSON.parse(raw);
+      } catch {
+        return new Response(JSON.stringify({ found: false }), {
+          status: 200,
+          headers: { ...headers, "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ found: true, order: publicOrderView(record) }), {
+        status: 200,
+        headers: { ...headers, "Content-Type": "application/json" },
+      });
+    }
+
+    if (request.method === "POST" && url.pathname === "/event") {
+      const ipEvent = request.headers.get("CF-Connecting-IP") || "unknown";
+      const allowedEvent = await rateLimit(env.ASTERIA_ORDERS, `event:${ipEvent}`, 40, 60);
+      if (allowedEvent) {
+        try {
+          const body = await request.json();
+          await logEvent(env.ASTERIA_ORDERS, body && body.event);
+        } catch {
+          // evento mal formado: lo ignoramos, no es critico
+        }
+      }
+      // Siempre 204: es una metrica de fondo, nunca debe romper la experiencia del sitio.
+      return new Response(null, { status: 204, headers });
+    }
+
+    if (request.method === "GET" && url.pathname === "/check-ig") {
+      const ipCheck = request.headers.get("CF-Connecting-IP") || "unknown";
+      const allowed = await rateLimit(env.ASTERIA_ORDERS, `checkig:${ipCheck}`, 20, 60);
+      if (!allowed) {
+        return new Response(JSON.stringify({ exists: null }), {
+          status: 429,
+          headers: { ...headers, "Content-Type": "application/json" },
+        });
+      }
+      const username = (url.searchParams.get("u") || "").trim();
+      const exists = username ? await checkInstagramExists(username) : null;
+      return new Response(JSON.stringify({ exists }), {
+        status: 200,
+        headers: { ...headers, "Content-Type": "application/json" },
+      });
+    }
+
+    if (request.method !== "POST") {
+      return new Response(JSON.stringify({ ok: false, error: "method_not_allowed" }), {
+        status: 405,
+        headers: { ...headers, "Content-Type": "application/json" },
+      });
+    }
+
+    let order;
+    try {
+      order = await request.json();
+    } catch {
+      return new Response(JSON.stringify({ ok: false, error: "bad_json" }), {
+        status: 400,
+        headers: { ...headers, "Content-Type": "application/json" },
+      });
+    }
+
+    if (!order || !order.ig) {
+      return new Response(JSON.stringify({ ok: false, error: "missing_fields" }), {
+        status: 400,
+        headers: { ...headers, "Content-Type": "application/json" },
+      });
+    }
+
+    const ipPost = request.headers.get("CF-Connecting-IP") || "unknown";
+    const allowedToOrder = await rateLimit(env.ASTERIA_ORDERS, `order:${ipPost}`, 8, 600);
+    if (!allowedToOrder) {
+      return new Response(JSON.stringify({ ok: false, error: "rate_limited" }), {
+        status: 429,
+        headers: { ...headers, "Content-Type": "application/json" },
+      });
+    }
+
+    // Honeypot: si un campo que ningun humano deberia llenar viene con algo, es un bot.
+    // Respondemos "ok" para no delatar el filtro, pero nunca mandamos el mensaje.
+    if (order.website) {
+      return new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: { ...headers, "Content-Type": "application/json" },
+      });
+    }
+
+    // Turnstile: verifica que quien envia sea humano.
+    const human = await verifyTurnstile(env.TURNSTILE_SECRET, order.turnstileToken, ipPost);
+    if (!human) {
+      return new Response(JSON.stringify({ ok: false, error: "captcha_failed" }), {
+        status: 403,
+        headers: { ...headers, "Content-Type": "application/json" },
+      });
+    }
+
+    // Precio: siempre recalculado aqui a partir del catalogo en KV. Lo que el
+    // navegador haya mostrado no es autoridad y nunca se guarda tal cual.
+    const kv = env.ASTERIA_ORDERS;
+    const [charmsCat, preciosCat, stockCat] = await Promise.all([getCharms(kv), getPrecios(kv), getStock(kv)]);
+    const precio = calcularPrecio(
+      { style: order.style, dens: order.dens, modelo: order.modelo, charms: order.charms },
+      { charms: charmsCat, precios: preciosCat, stock: stockCat }
+    );
+
+    const text = buildMessage(order, precio, charmsCat);
+    const chatIds = (env.TELEGRAM_CHAT_IDS || "").split(",").map((s) => s.trim()).filter(Boolean);
+
+    const results = await Promise.all(chatIds.map((id) => sendToChat(env.TELEGRAM_TOKEN, id, text)));
+    const allOk = results.every(Boolean);
+
+    await saveOrderBackup(env.ASTERIA_ORDERS, order, ipPost, allOk, precio);
+
+    return new Response(JSON.stringify({ ok: allOk, total: precio.ok ? precio.total : null }), {
+      status: allOk ? 200 : 502,
+      headers: { ...headers, "Content-Type": "application/json" },
+    });
+  },
+};
+
+
+// El panel ya es esta pagina; /panel nunca se pide desde aqui.
+const panelHtml = () => "";
+
+// Worker ASTÉRIA v2 — router.
+//
+// Este worker es un SUPERCONJUNTO del de produccion (`asteria-orders`):
+// mantiene tal cual las rutas que ya existen (POST /, /orders, /order, /event,
+// /check-ig, delegadas a orders.js) y agrega la capa v2:
+//
+//   GET  /catalog                      publico  — charms, precios, stock, fotos
+//   POST /precio                       publico  — total calculado en el servidor
+//   GET  /img/:id                      publico  — imagen guardada en KV
+//   GET  /panel?key=ADMIN_KEY          panel de administracion (HTML)
+//   GET|POST|PUT|DELETE /admin/*       API protegida con ADMIN_KEY
+//
+// No se despliega sobre produccion: wrangler.toml de esta carpeta apunta a un
+// worker y un KV distintos.
+
+
+
+
+
+function corsHeaders(origin, allowedOrigins) {
+  const list = (allowedOrigins || "").split(",").map((s) => s.trim()).filter(Boolean);
+  const allow = list.includes(origin) ? origin : list[0] || "*";
+  return {
+    "Access-Control-Allow-Origin": allow,
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, X-Admin-Key",
+  };
+}
+
+async function cuerpoJson(request) {
+  try {
+    return await request.json();
+  } catch {
+    return null;
+  }
+}
+
+async function rutasAdmin(request, url, env, partes) {
+  const kv = env.ASTERIA_ORDERS;
+  const method = request.method;
+  const seccion = partes[1] || "";
+  const id = partes[2] || "";
+  // La subida de imagen manda bytes crudos: su cuerpo lo lee subirImagen, no aqui
+  // (un cuerpo solo se puede leer una vez).
+  const esJson = (request.headers.get("Content-Type") || "").includes("application/json");
+  const body = esJson && (method === "POST" || method === "PUT") ? await cuerpoJson(request) : null;
+
+  switch (seccion) {
+    case "charms":
+      return charmsCrud(kv, method, body, id);
+    case "precios":
+      return preciosCrud(kv, method, body);
+    case "stock":
+      return stockCrud(kv, method, body);
+    case "fotos":
+      return fotosCrud(kv, method, body, id);
+    case "gastos":
+      return gastosCrud(kv, method, body, id);
+    case "rendimiento":
+      return json(await rendimiento(kv, url.searchParams.get("desde"), url.searchParams.get("hasta")));
+    case "imagen":
+      if (method !== "POST") return json({ ok: false, error: "metodo_no_permitido" }, 405);
+      return subirImagen(kv, request);
+    default:
+      return json({ ok: false, error: "ruta_desconocida" }, 404);
+  }
+}
+
+const workerV2 = {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    const headers = corsHeaders(request.headers.get("Origin") || "", env.ALLOWED_ORIGINS);
+    const partes = url.pathname.split("/").filter(Boolean);
+
+    if (request.method === "OPTIONS") return new Response(null, { headers });
+
+    // --- publico ---
+
+    if (request.method === "GET" && url.pathname === "/catalog") {
+      const catalogo = await catalogoPublico(env.ASTERIA_ORDERS);
+      return json(catalogo, 200, {
+        ...headers,
+        // Corto: el panel puede cambiar precios o stock en cualquier momento.
+        "Cache-Control": "public, max-age=60",
+      });
+    }
+
+    if (request.method === "POST" && url.pathname === "/precio") {
+      const kv = env.ASTERIA_ORDERS;
+      const sel = await cuerpoJson(request);
+      const [charms, precios, stock] = await Promise.all([getCharms(kv), getPrecios(kv), getStock(kv)]);
+      const precio = calcularPrecio(sel, { charms, precios, stock });
+      return json(precio, precio.ok ? 200 : 200, headers); // 200 siempre: el error es de negocio, no de red
+    }
+
+    if (request.method === "GET" && partes[0] === "img") {
+      return servirImagen(env.ASTERIA_ORDERS, partes[1]);
+    }
+
+    // --- administracion ---
+
+    if (url.pathname === "/panel") {
+      if (!autorizado(request, url, env)) return new Response("No autorizado", { status: 403 });
+      return new Response(panelHtml(), {
+        status: 200,
+        headers: { "Content-Type": "text/html; charset=UTF-8", "Cache-Control": "no-store", "X-Robots-Tag": "noindex" },
+      });
+    }
+
+    if (partes[0] === "admin") {
+      if (!autorizado(request, url, env)) return json({ ok: false, error: "no_autorizado" }, 403);
+      const res = await rutasAdmin(request, url, env, partes);
+      for (const [k, v] of Object.entries(headers)) res.headers.set(k, v);
+      return res;
+    }
+
+    // --- todo lo demas: comportamiento identico al worker de produccion ---
+    return ordersHandler.fetch(request, env, ctx);
+  },
+};
+
+
+// ---- KV en memoria + datos de ejemplo ----
+class MockKV {
+  constructor(){ this.store = new Map(); }
+  async get(key, op){ const r = this.store.get(key); if(!r) return null;
+    const t = typeof op === "string" ? op : op && op.type;
+    if (t === "arrayBuffer") return r.valor;
+    return typeof r.valor === "string" ? r.valor : new TextDecoder().decode(r.valor); }
+  async getWithMetadata(key, op){ const r = this.store.get(key);
+    return r ? { value: await this.get(key, op), metadata: r.metadata || null } : { value: null, metadata: null }; }
+  async put(key, valor, op = {}){ this.store.set(key, { valor, metadata: op.metadata || null }); }
+  async delete(key){ this.store.delete(key); }
+  async list({ prefix = "", limit = 1000 } = {}){
+    return { keys: [...this.store.keys()].filter(k => k.startsWith(prefix)).sort().slice(0, limit).map(name => ({ name })), list_complete: true }; }
+}
+
+const env = { ASTERIA_ORDERS: new MockKV(), ADMIN_KEY: "demo", ALLOWED_ORIGINS: "*",
+  TELEGRAM_CHAT_IDS: "1", TELEGRAM_TOKEN: "x", TURNSTILE_SECRET: "x" };
+
+env.ASTERIA_ORDERS.put("catalog:precios", JSON.stringify({ moneda: "MXN",
+  base: { "Pasta blanca/negra": 400, "Transparente": 380 },
+  densidad: { Maximalista: 150, Minimalista: 80 }, envio: 120, actualizado: new Date().toISOString() }));
+env.ASTERIA_ORDERS.put("catalog:charms", JSON.stringify([
+  { id: "c1", nombre: "Estrella dorada", categoria: "Gemas", precio: 25, stock: 12, imgId: null, activo: true },
+  { id: "c2", nombre: "Perla blanca", categoria: "Perlas", precio: 15, stock: 0, imgId: null, activo: true },
+  { id: "c3", nombre: "Moño rosa", categoria: "Charms", precio: 45, stock: 4, imgId: null, activo: true },
+  { id: "c4", nombre: "Corazón bicolor", categoria: "Gemas", precio: 30, stock: 7, imgId: null, activo: true }
+]));
+env.ASTERIA_ORDERS.put("catalog:stock", JSON.stringify({ Transparente: { "iPhone 13": 0 } }));
+env.ASTERIA_ORDERS.put("expense:2026-08-12:g1", JSON.stringify({ id: "g1", fecha: "2026-08-12", concepto: "Gemas AB 6mm", categoria: "Material", monto: 480, registrado: "2026-08-12" }));
+env.ASTERIA_ORDERS.put("expense:2026-08-20:g2", JSON.stringify({ id: "g2", fecha: "2026-08-20", concepto: "Cajas y listón", categoria: "Empaque", monto: 260, registrado: "2026-08-20" }));
+for (const [folio, total, fecha] of [["A1", 605, "2026-08-15"], ["A2", 530, "2026-08-19"], ["A3", 700, "2026-08-24"]]) {
+  env.ASTERIA_ORDERS.put("order:" + fecha + "T12:00:00.000Z:" + folio,
+    JSON.stringify({ orderId: folio, total, receivedAt: fecha + "T12:00:00.000Z", telegramOk: true }));
+}
+
+// ---- fetch falso: las mismas rutas, contra el worker de arriba ----
+const fetchReal = window.fetch.bind(window);
+window.fetch = function (entrada, opciones) {
+  const url = typeof entrada === "string" ? entrada : entrada.url;
+  if (!/^https?:/i.test(url)) {
+    return workerV2.fetch(new Request(new URL(url, "https://demo.local"), opciones || {}), env, {});
+  }
+  return fetchReal(entrada, opciones);
+};
+
+</script>
+<script>
+(function(){
+  "use strict";
+  var KEY = "demo"; // vista previa: el worker de esta pagina vive en memoria
+  var MODELOS = ["iPhone 12","iPhone 12 Pro","iPhone 12 Pro Max","iPhone 13 mini","iPhone 13","iPhone 13 Pro","iPhone 13 Pro Max","iPhone 14","iPhone 14 Plus","iPhone 14 Pro","iPhone 14 Pro Max","iPhone 15","iPhone 15 Plus","iPhone 15 Pro","iPhone 15 Pro Max","iPhone 16","iPhone 16 Plus","iPhone 16 Pro","iPhone 16 Pro Max","iPhone 17e","iPhone 17","iPhone Air","iPhone 17 Pro","iPhone 17 Pro Max"];
+  var estado = { charms: [], precios: null, stock: {}, estilos: [], densidades: [], secciones: [], fotos: {} };
+
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+  function money(n){ return n==null ? "—" : "$" + Number(n).toLocaleString("es-MX"); }
+
+  var toastEl = document.getElementById("toast"), toastT;
+  function toast(msg, esError){
+    toastEl.textContent = msg;
+    toastEl.className = "on" + (esError ? " err" : "");
+    clearTimeout(toastT);
+    toastT = setTimeout(function(){ toastEl.className = ""; }, 3200);
+  }
+
+  function api(ruta, opciones){
+    opciones = opciones || {};
+    var headers = { "X-Admin-Key": KEY };
+    if (opciones.json !== undefined) { headers["Content-Type"] = "application/json"; opciones.body = JSON.stringify(opciones.json); }
+    if (opciones.tipo) headers["Content-Type"] = opciones.tipo;
+    return fetch(ruta, { method: opciones.method || "GET", headers: headers, body: opciones.body })
+      .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, status: r.status, data: d }; }); })
+      .then(function(res){
+        if (res.status === 403) { toast("Clave de administrador inválida.", true); throw new Error("403"); }
+        if (res.data && res.data.ok === false) { toast("No se pudo guardar: " + (res.data.error || "error"), true); throw new Error(res.data.error); }
+        return res.data;
+      });
+  }
+
+  /* ---------- pestanas ---------- */
+  var tabs = document.getElementById("tabs");
+  tabs.addEventListener("click", function(e){
+    var b = e.target.closest("button[data-tab]"); if(!b) return;
+    Array.prototype.forEach.call(tabs.querySelectorAll("button"), function(x){ x.setAttribute("aria-selected", String(x === b)); });
+    ["charms","precios","stock","fotos","gastos","rendimiento"].forEach(function(t){
+      document.getElementById("tab-" + t).hidden = (t !== b.dataset.tab);
+    });
+    if (b.dataset.tab === "gastos") cargarGastos();
+    if (b.dataset.tab === "rendimiento") cargarRendimiento();
+    if (b.dataset.tab === "fotos") pintarFotos();
+  });
+
+  /* ---------- imagenes: se redimensionan en el navegador antes de subir ---------- */
+  function comprimir(file, maxLado){
+    return new Promise(function(resolve, reject){
+      var img = new Image();
+      img.onload = function(){
+        var escala = Math.min(1, maxLado / Math.max(img.width, img.height));
+        var c = document.createElement("canvas");
+        c.width = Math.round(img.width * escala); c.height = Math.round(img.height * escala);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(function(b){ b ? resolve(b) : reject(new Error("canvas")); }, "image/webp", 0.85);
+        URL.revokeObjectURL(img.src);
+      };
+      img.onerror = function(){ reject(new Error("no_es_imagen")); };
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  function subir(file){
+    return comprimir(file, 1200).then(function(blob){
+      if (blob.size > 800*1024) throw new Error("imagen_muy_grande");
+      return fetch("/admin/imagen", { method:"POST", headers:{ "X-Admin-Key": KEY, "Content-Type": "image/webp" }, body: blob })
+        .then(function(r){ return r.json(); })
+        .then(function(d){ if(!d.ok) throw new Error(d.error||"upload"); return d.id; });
+    });
+  }
+
+  /* ---------- charms ---------- */
+  function pintarCharms(){
+    var cont = document.getElementById("charms-list");
+    if (!estado.charms.length) { cont.innerHTML = '<p class="empty">Todavía no hay charms. Agrega el primero arriba.</p>'; return; }
+    cont.innerHTML = estado.charms.map(function(c){
+      var agotado = !c.stock || c.activo === false;
+      return '<div class="item" data-id="' + esc(c.id) + '">' +
+        (c.imgId ? '<img src="/img/' + esc(c.imgId) + '" alt="">' : '<div class="ph">★</div>') +
+        '<div><span class="nm">' + esc(c.nombre) + '</span>' +
+          (c.categoria ? '<span class="tag">' + esc(c.categoria) + '</span>' : '') +
+          (agotado ? '<span class="tag out">' + (c.activo === false ? 'oculto' : 'agotado') + '</span>' : '') +
+          '<div class="meta">' + money(c.precio) + ' · ' + (c.stock||0) + ' pzas</div></div>' +
+        '<div class="acts">' +
+          '<button class="btn btn-ghost btn-small" data-act="editar">Editar</button>' +
+          '<button class="btn btn-danger btn-small" data-act="borrar">Borrar</button>' +
+        '</div></div>';
+    }).join("");
+  }
+
+  document.getElementById("charms-list").addEventListener("click", function(e){
+    var b = e.target.closest("button[data-act]"); if(!b) return;
+    var id = b.closest(".item").dataset.id;
+    var charm = estado.charms.filter(function(c){ return c.id === id; })[0];
+    if (!charm) return;
+
+    if (b.dataset.act === "borrar") {
+      if (!confirm("¿Borrar “" + charm.nombre + "”? Esto no se puede deshacer.")) return;
+      api("/admin/charms/" + id, { method:"DELETE" }).then(function(){
+        estado.charms = estado.charms.filter(function(c){ return c.id !== id; });
+        pintarCharms(); toast("Charm borrado.");
+      }).catch(function(){});
+      return;
+    }
+
+    var nombre = prompt("Nombre", charm.nombre); if (nombre === null) return;
+    var precio = prompt("Precio en MXN (vacío = sin precio)", charm.precio == null ? "" : charm.precio); if (precio === null) return;
+    var stock = prompt("Piezas en stock", charm.stock); if (stock === null) return;
+    api("/admin/charms/" + id, { method:"PUT", json:{ nombre: nombre, precio: precio, stock: stock, categoria: charm.categoria, imgId: charm.imgId, activo: charm.activo } })
+      .then(function(d){
+        estado.charms = estado.charms.map(function(c){ return c.id === id ? d.charm : c; });
+        pintarCharms(); toast("Charm actualizado.");
+      }).catch(function(){});
+  });
+
+  document.getElementById("c-add").addEventListener("click", function(){
+    var nombre = document.getElementById("c-nombre").value.trim();
+    if (!nombre) { toast("Ponle nombre al charm.", true); return; }
+    var file = document.getElementById("c-img").files[0];
+    var paso = file ? subir(file) : Promise.resolve(null);
+    paso.then(function(imgId){
+      return api("/admin/charms", { method:"POST", json:{
+        nombre: nombre,
+        categoria: document.getElementById("c-categoria").value,
+        precio: document.getElementById("c-precio").value,
+        stock: document.getElementById("c-stock").value,
+        imgId: imgId
+      }});
+    }).then(function(d){
+      estado.charms.push(d.charm); pintarCharms();
+      ["c-nombre","c-categoria","c-precio","c-img"].forEach(function(id){ document.getElementById(id).value = ""; });
+      document.getElementById("c-stock").value = "0";
+      toast("Charm agregado.");
+    }).catch(function(err){ toast("No se pudo agregar: " + err.message, true); });
+  });
+
+  /* ---------- precios ---------- */
+  function pintarPrecios(){
+    document.getElementById("p-base").innerHTML = estado.estilos.map(function(e){
+      var v = estado.precios && estado.precios.base ? estado.precios.base[e] : null;
+      return '<div><label>' + esc(e) + '</label><input data-base="' + esc(e) + '" type="number" min="0" step="1" inputmode="numeric" value="' + (v==null?"":v) + '"></div>';
+    }).join("");
+    document.getElementById("p-dens").innerHTML = estado.densidades.map(function(d){
+      var v = estado.precios && estado.precios.densidad ? estado.precios.densidad[d] : null;
+      return '<div><label>' + esc(d) + '</label><input data-dens="' + esc(d) + '" type="number" min="0" step="1" inputmode="numeric" value="' + (v==null?"":v) + '"></div>';
+    }).join("");
+    document.getElementById("p-envio").value = estado.precios && estado.precios.envio != null ? estado.precios.envio : "";
+  }
+
+  document.getElementById("p-save").addEventListener("click", function(){
+    var base = {}, dens = {};
+    Array.prototype.forEach.call(document.querySelectorAll("[data-base]"), function(i){ base[i.dataset.base] = i.value; });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-dens]"), function(i){ dens[i.dataset.dens] = i.value; });
+    api("/admin/precios", { method:"PUT", json:{ base: base, densidad: dens, envio: document.getElementById("p-envio").value } })
+      .then(function(d){ estado.precios = d.precios; pintarPrecios(); toast("Precios guardados."); }).catch(function(){});
+  });
+
+  /* ---------- stock ---------- */
+  function pintarStock(){
+    var cont = document.getElementById("stock-list");
+    var filas = [];
+    Object.keys(estado.stock || {}).forEach(function(estilo){
+      Object.keys(estado.stock[estilo] || {}).forEach(function(modelo){
+        filas.push('<tr><td>' + esc(estilo) + '</td><td>' + esc(modelo) + '</td><td>' + estado.stock[estilo][modelo] + '</td></tr>');
+      });
+    });
+    cont.innerHTML = filas.length
+      ? '<table><tr><th>Estilo</th><th>Modelo</th><th>Piezas</th></tr>' + filas.join("") + '</table>'
+      : '<p class="empty">Sin límites capturados: todos los modelos se ofrecen como disponibles.</p>';
+  }
+
+  document.getElementById("s-save").addEventListener("click", function(){
+    api("/admin/stock", { method:"PUT", json:{
+      estilo: document.getElementById("s-estilo").value,
+      modelo: document.getElementById("s-modelo").value,
+      cantidad: document.getElementById("s-cantidad").value
+    }}).then(function(d){ estado.stock = d.stock; pintarStock(); toast("Stock actualizado."); }).catch(function(){});
+  });
+
+  /* ---------- fotos ---------- */
+  function pintarFotos(){
+    var seccion = document.getElementById("f-seccion").value;
+    var lista = estado.fotos[seccion] || [];
+    var cont = document.getElementById("fotos-list");
+    cont.innerHTML = lista.length ? lista.map(function(id){
+      return '<div class="item" data-img="' + esc(id) + '"><img src="/img/' + esc(id) + '" alt="">' +
+        '<div class="meta">' + esc(id) + '</div>' +
+        '<div class="acts"><button class="btn btn-danger btn-small" data-act="quitar">Quitar</button></div></div>';
+    }).join("") : '<p class="empty">Sin fotos en esta sección.</p>';
+  }
+
+  function guardarFotos(seccion, lista){
+    return api("/admin/fotos/" + seccion, { method:"PUT", json:{ fotos: lista } })
+      .then(function(d){ estado.fotos[seccion] = d.fotos; pintarFotos(); });
+  }
+
+  document.getElementById("f-seccion").addEventListener("change", pintarFotos);
+  document.getElementById("f-file").addEventListener("change", function(e){
+    var files = Array.prototype.slice.call(e.target.files);
+    if (!files.length) return;
+    var seccion = document.getElementById("f-seccion").value;
+    toast("Subiendo " + files.length + " imagen(es)…");
+    files.reduce(function(p, f){
+      return p.then(function(acc){ return subir(f).then(function(id){ return acc.concat(id); }); });
+    }, Promise.resolve([])).then(function(ids){
+      return guardarFotos(seccion, (estado.fotos[seccion] || []).concat(ids));
+    }).then(function(){ toast("Fotos agregadas."); e.target.value = ""; })
+      .catch(function(err){ toast("No se pudo subir: " + err.message, true); });
+  });
+
+  document.getElementById("fotos-list").addEventListener("click", function(e){
+    var b = e.target.closest('button[data-act="quitar"]'); if(!b) return;
+    var id = b.closest(".item").dataset.img;
+    var seccion = document.getElementById("f-seccion").value;
+    guardarFotos(seccion, (estado.fotos[seccion] || []).filter(function(x){ return x !== id; }))
+      .then(function(){ toast("Foto quitada de la sección."); }).catch(function(){});
+  });
+
+  /* ---------- gastos ---------- */
+  function cargarGastos(){
+    api("/admin/gastos").then(function(d){
+      var cont = document.getElementById("gastos-list");
+      if (!d.gastos.length) { cont.innerHTML = '<p class="empty">Sin gastos registrados.</p>'; return; }
+      cont.innerHTML = '<table><tr><th>Fecha</th><th>Concepto</th><th>Categoría</th><th>Monto</th><th></th></tr>' +
+        d.gastos.map(function(g){
+          return '<tr><td>' + esc(g.fecha) + '</td><td>' + esc(g.concepto) + '</td><td>' + esc(g.categoria) + '</td><td>' + money(g.monto) + '</td>' +
+            '<td><button class="btn btn-danger btn-small" data-gasto="' + esc(g.id) + '">Borrar</button></td></tr>';
+        }).join("") + '</table>';
+    }).catch(function(){});
+  }
+
+  document.getElementById("gastos-list").addEventListener("click", function(e){
+    var b = e.target.closest("button[data-gasto]"); if(!b) return;
+    if (!confirm("¿Borrar este gasto?")) return;
+    api("/admin/gastos/" + b.dataset.gasto, { method:"DELETE" }).then(function(){ cargarGastos(); toast("Gasto borrado."); }).catch(function(){});
+  });
+
+  document.getElementById("g-add").addEventListener("click", function(){
+    api("/admin/gastos", { method:"POST", json:{
+      fecha: document.getElementById("g-fecha").value,
+      concepto: document.getElementById("g-concepto").value,
+      categoria: document.getElementById("g-categoria").value,
+      monto: document.getElementById("g-monto").value
+    }}).then(function(){
+      ["g-concepto","g-monto"].forEach(function(id){ document.getElementById(id).value = ""; });
+      cargarGastos(); toast("Gasto registrado.");
+    }).catch(function(){});
+  });
+
+  /* ---------- rendimiento ---------- */
+  function cargarRendimiento(){
+    var q = [];
+    var d1 = document.getElementById("r-desde").value, d2 = document.getElementById("r-hasta").value;
+    if (d1) q.push("desde=" + d1);
+    if (d2) q.push("hasta=" + d2);
+    api("/admin/rendimiento" + (q.length ? "?" + q.join("&") : "")).then(function(r){
+      // Solo la utilidad negativa se marca: en el sitio el maroon es acento, no adorno.
+      var clase = r.utilidad < 0 ? "neg" : "";
+      document.getElementById("r-kpis").innerHTML =
+        '<div class="kpi"><div class="n">' + money(r.ingresos) + '</div><div class="l">Ingresos</div></div>' +
+        '<div class="kpi"><div class="n">' + money(r.gastos) + '</div><div class="l">Gastos</div></div>' +
+        '<div class="kpi"><div class="n ' + clase + '">' + money(r.utilidad) + '</div><div class="l">Utilidad</div></div>' +
+        '<div class="kpi"><div class="n">' + r.pedidos + '</div><div class="l">Pedidos</div></div>';
+      var cats = Object.keys(r.gastosPorCategoria || {});
+      document.getElementById("r-cats").innerHTML = cats.length
+        ? '<table><tr><th>Categoría</th><th>Total</th></tr>' + cats.map(function(c){
+            return '<tr><td>' + esc(c) + '</td><td>' + money(r.gastosPorCategoria[c]) + '</td></tr>'; }).join("") + '</table>'
+        : '<p class="empty">Sin gastos en el periodo.</p>';
+      var main = document.querySelector("#tab-rendimiento .sub");
+      main.textContent = r.pedidosSinPrecio
+        ? r.pedidosSinPrecio + " pedido(s) del sistema anterior no traen precio, así que no suman a los ingresos."
+        : "Ingresos tomados de los pedidos con precio calculado por el servidor.";
+    }).catch(function(){});
+  }
+  document.getElementById("r-load").addEventListener("click", cargarRendimiento);
+
+  /* ---------- arranque ---------- */
+  if (!KEY) { document.querySelector("main").innerHTML = '<div class="warn">Falta la clave: entra con <b>/panel?key=TU_ADMIN_KEY</b>.</div>'; return; }
+  document.getElementById("g-fecha").value = new Date().toISOString().slice(0,10);
+
+  fetch("/catalog").then(function(r){ return r.json(); }).then(function(cat){
+    estado.estilos = cat.estilos; estado.densidades = cat.densidades;
+    estado.stock = cat.stock || {}; estado.fotos = cat.fotos || {};
+    estado.secciones = Object.keys(estado.fotos);
+    document.getElementById("s-estilo").innerHTML = estado.estilos.map(function(e){ return '<option>' + esc(e) + '</option>'; }).join("");
+    document.getElementById("s-modelo").innerHTML = MODELOS.map(function(m){ return '<option>' + esc(m) + '</option>'; }).join("");
+    document.getElementById("f-seccion").innerHTML = estado.secciones.map(function(s){ return '<option>' + esc(s) + '</option>'; }).join("");
+    pintarStock(); pintarFotos();
+    return Promise.all([ api("/admin/charms"), api("/admin/precios") ]);
+  }).then(function(res){
+    estado.charms = res[0].charms; estado.precios = res[1].precios;
+    pintarCharms(); pintarPrecios();
+  }).catch(function(){ toast("No se pudo cargar el catálogo.", true); });
+})();
+</script>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consulta tu pedido · ASTÉRIA</title>
+<meta name="description" content="Busca tu pedido de ASTÉRIA con tu folio para ver el resumen de lo que elegiste.">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://asteriamx.pages.dev/pedido.html">
+
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="180x180" href="favicon-180.png">
+<link rel="apple-touch-icon" href="favicon-180.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Oswald:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#050403;--char:#443f3b;--maroon:#922939;
+    --stone:#c8c2ad;--taupe:#6b655e;--paper:#f2efe9;--paper-2:#eae4d9;
+    --line:rgba(5,4,3,.14);
+    --font-display:'Cormorant Garamond', Georgia, serif;
+    --font-label:'Oswald', system-ui, sans-serif;
+    --font-body:'Jost', system-ui, -apple-system, sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--font-body);background:var(--paper);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased}
+  a{color:var(--maroon)}
+  .wrap{max-width:520px;margin:0 auto;padding:0 24px}
+  header{padding:36px 0 8px}
+  .back{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.74rem;color:var(--char)}
+  h1{font-family:var(--font-display);font-weight:500;font-size:clamp(2rem,5vw,2.6rem);margin:22px 0 10px}
+  p.lead{color:var(--char);font-weight:300;margin-bottom:30px}
+  main{padding-bottom:80px}
+  .searchbox{display:flex;gap:10px;margin-bottom:18px}
+  input{flex:1;padding:14px 16px;border:1px solid var(--line);background:#fff;font-family:var(--font-body);font-size:1rem;color:var(--ink);text-transform:uppercase}
+  input:focus{outline:none;border-color:var(--maroon)}
+  button{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.14em;font-size:.78rem;padding:14px 24px;background:var(--ink);color:var(--paper);border:none;cursor:pointer}
+  button:hover{background:var(--maroon)}
+  button:disabled{opacity:.6;cursor:default}
+  #msg{font-size:.9rem;color:var(--taupe);margin-bottom:18px;min-height:1.2em}
+  #msg.error{color:var(--maroon)}
+  .summary{display:none;border:1px solid var(--line);background:#fff;padding:22px 24px}
+  .summary.show{display:block}
+  .summary h4{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.7rem;color:var(--maroon);margin-bottom:14px}
+  .summary .row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:.9rem}
+  .summary .row:last-child{border-bottom:none}
+  .summary .row b{font-weight:500}
+  .summary .row span{color:var(--char);text-align:right}
+  .notif{margin-top:14px;font-size:.82rem;color:var(--taupe)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="index.html">← Volver a ASTÉRIA</a>
+    <h1>Consulta tu pedido</h1>
+    <p class="lead">Escribe el folio que te dimos al enviar tu formulario (por ejemplo AST-260829-K7QZ).</p>
+  </header>
+  <main>
+    <div class="searchbox">
+      <input type="text" id="folio" placeholder="AST-XXXXXX-XXXX" autocomplete="off">
+      <button id="buscar">Buscar</button>
+    </div>
+    <div id="msg"></div>
+    <div class="summary" id="summary"></div>
+  </main>
+</div>
+<script>
+  const WORKER_URL='https://asteria-orders.asteria-telegram-worker.workers.dev';
+  function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+  const folioInput=document.getElementById('folio');
+  const btn=document.getElementById('buscar');
+  const msg=document.getElementById('msg');
+  const summary=document.getElementById('summary');
+
+  async function buscar(){
+    const folio=folioInput.value.trim().toUpperCase();
+    summary.classList.remove('show');
+    if(!folio){ msg.textContent='Escribe tu folio para buscar.'; msg.className='error'; return; }
+    btn.disabled=true; const orig=btn.textContent; btn.textContent='Buscando…';
+    msg.textContent=''; msg.className='';
+    try{
+      const ctrl=new AbortController();
+      const t=setTimeout(()=>ctrl.abort(),8000);
+      const r=await fetch(`${WORKER_URL}/order?folio=${encodeURIComponent(folio)}`,{signal:ctrl.signal});
+      clearTimeout(t);
+      const data=await r.json();
+      if(!data.found){
+        msg.textContent='No encontramos ese folio. Revisa que esté bien escrito, o escríbenos por Instagram.';
+        msg.className='error';
+      }else{
+        const o=data.order;
+        summary.innerHTML=`
+          <h4>Folio ${esc(o.orderId)}</h4>
+          <div class="row"><b>Instagram</b><span>@${esc(o.ig)}</span></div>
+          ${o.nombre?`<div class="row"><b>Nombre</b><span>${esc(o.nombre)}</span></div>`:''}
+          <div class="row"><b>Estilo</b><span>${esc(o.style)}</span></div>
+          ${o.pasta?`<div class="row"><b>Color de pasta</b><span>${esc(o.pasta)}</span></div>`:''}
+          <div class="row"><b>Modelo</b><span>${esc(o.modelo)}</span></div>
+          <div class="row"><b>Densidad</b><span>${esc(o.dens)}</span></div>
+          <div class="row"><b>Priorizar</b><span>${esc(o.prio||'Ninguna')}</span></div>
+          <div class="row"><b>No incluir</b><span>${esc(o.excl||'Ninguna')}</span></div>
+          <div class="row"><b>Recibido</b><span>${esc(new Date(o.receivedAt).toLocaleString('es-MX'))}</span></div>`;
+        summary.classList.add('show');
+        if(!o.notificado){
+          const n=document.createElement('div');
+          n.className='notif';
+          n.textContent='Tu pedido quedó registrado. Si aún no te hemos escrito por Instagram, mándanos un mensaje mencionando tu folio.';
+          summary.appendChild(n);
+        }
+      }
+    }catch(e){
+      msg.textContent='No pudimos buscar tu pedido ahora. Intenta de nuevo en un momento.';
+      msg.className='error';
+    }
+    btn.disabled=false; btn.textContent=orig;
+  }
+
+  btn.addEventListener('click',buscar);
+  folioInput.addEventListener('keydown',(e)=>{if(e.key==='Enter')buscar();});
+
+  const params=new URLSearchParams(location.search);
+  const pref=params.get('folio');
+  if(pref){ folioInput.value=pref.toUpperCase(); buscar(); }
+</script>
+</body>
+</html>
