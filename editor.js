@@ -112,6 +112,12 @@
    * Dos capas, como en el taller: el silicon (blanco o negro) y encima la pasta
    * (blanca o negra) donde se asientan los charms. Pueden ser de colores
    * contrarios, y por eso se dibujan por separado.
+   *
+   * La camara cambia la zona util:
+   *   - del 12 al 16 el modulo es un cuadro en la esquina, asi que a su derecha
+   *     queda una franja donde tambien se pueden poner charms;
+   *   - del 17 en adelante la camara es una barra de lado a lado y arriba no
+   *     queda nada libre.
    */
   const SILICON = {
     Blanca: { cuerpo: "#fbfaf7", borde: "rgba(5,4,3,.2)", lente: "#eceae4", aro: "#cfc9bd" },
@@ -122,9 +128,57 @@
     Negra: { base: "#151311", sombra: "rgba(0,0,0,.5)" },
   };
 
-  function svgFunda(color, pasta) {
+  // Modelos con la camara en barra completa.
+  const CAMARA_BARRA = ["iPhone 17", "iPhone 17 Pro", "iPhone 17 Pro Max", "iPhone Air"];
+  const esBarra = (modelo) => CAMARA_BARRA.indexOf(String(modelo || "")) !== -1;
+
+  /* Zona prohibida (la camara) en coordenadas de la caja de charms, en %.
+     La caja va de 6% a 94% a lo ancho y de 4% a 96% a lo alto de la funda. */
+  function zonaCamara(modelo) {
+    return esBarra(modelo)
+      ? { x0: -2, y0: -2, x1: 102, y1: 21 }   // barra: todo el ancho de arriba
+      : { x0: -2, y0: -2, x1: 51, y1: 23 };   // modulo: solo la esquina
+  }
+
+  function dentroDeCamara(zona, x, y, margen) {
+    const m = margen || 0;
+    return x > zona.x0 - m && x < zona.x1 + m && y > zona.y0 - m && y < zona.y1 + m;
+  }
+
+  /* Saca un punto de la camara por el lado mas cercano: hacia abajo o, cuando
+     hay franja libre al lado (modelos 12-16), hacia la derecha. */
+  function fueraDeCamara(zona, x, y, margen) {
+    if (!dentroDeCamara(zona, x, y, margen)) return { x: x, y: y };
+    const m = margen || 0;
+    const bajar = zona.y1 + m;
+    const derecha = zona.x1 + m;
+    if (zona.x1 < 90 && (derecha - x) < (bajar - y)) return { x: Math.min(94, derecha), y: y };
+    return { x: x, y: Math.min(96, bajar) };
+  }
+
+  function svgFunda(color, pasta, modelo) {
     const s = SILICON[color] || SILICON.Blanca;
     const p = PASTA[pasta || color] || PASTA.Blanca;
+    const barra = esBarra(modelo);
+
+    // La pasta llega hasta donde la camara lo permite.
+    const pastaPrincipal = barra
+      ? '<rect x="52" y="276" width="396" height="640" rx="26" fill="' + p.base + '"/>'
+      : '<rect x="52" y="276" width="396" height="640" rx="26" fill="' + p.base + '"/>'
+        + '<rect x="272" y="60" width="176" height="216" rx="24" fill="' + p.base + '"/>';
+
+    const camara = barra
+      ? '<rect x="46" y="46" width="408" height="164" rx="60" fill="' + s.lente + '" stroke="' + s.aro + '" stroke-width="2"/>'
+        + '<circle cx="112" cy="128" r="36" fill="' + s.aro + '"/><circle cx="112" cy="128" r="21" fill="' + s.lente + '"/>'
+        + '<circle cx="228" cy="128" r="36" fill="' + s.aro + '"/><circle cx="228" cy="128" r="21" fill="' + s.lente + '"/>'
+        + '<circle cx="344" cy="128" r="36" fill="' + s.aro + '"/><circle cx="344" cy="128" r="21" fill="' + s.lente + '"/>'
+        + '<circle cx="412" cy="90" r="13" fill="' + s.aro + '"/>'
+      : '<rect x="52" y="52" width="196" height="196" rx="52" fill="' + s.lente + '" stroke="' + s.aro + '" stroke-width="2"/>'
+        + '<circle cx="106" cy="106" r="34" fill="' + s.aro + '"/><circle cx="106" cy="106" r="20" fill="' + s.lente + '"/>'
+        + '<circle cx="194" cy="106" r="34" fill="' + s.aro + '"/><circle cx="194" cy="106" r="20" fill="' + s.lente + '"/>'
+        + '<circle cx="106" cy="194" r="34" fill="' + s.aro + '"/><circle cx="106" cy="194" r="20" fill="' + s.lente + '"/>'
+        + '<circle cx="196" cy="196" r="14" fill="' + s.aro + '"/>';
+
     return '<svg viewBox="0 0 500 996" role="img" aria-label="Vista trasera de tu funda">'
       + '<defs><filter id="pastaTex" x="-10%" y="-10%" width="120%" height="120%">'
       + '<feTurbulence type="fractalNoise" baseFrequency="0.022 0.03" numOctaves="3" seed="7" result="n"/>'
@@ -134,18 +188,9 @@
       + '</defs>'
       + '<rect x="6" y="6" width="488" height="984" rx="112" fill="' + s.cuerpo + '" stroke="' + s.borde + '" stroke-width="3"/>'
       + '<rect x="26" y="26" width="448" height="944" rx="94" fill="none" stroke="' + s.borde + '" stroke-width="1.4" opacity=".5"/>'
-      // La pasta: el area irregular donde se pegan las piezas.
       // La textura desplaza los bordes: sin recortar, la pasta se sale de la funda.
-      + '<g clip-path="url(#cuerpoFunda)">'
-      + '<g filter="url(#pastaTex)"><rect x="52" y="276" width="396" height="640" rx="26" fill="' + p.base + '"/></g>'
-      + '</g>'
-      + '<g>'
-      + '<rect x="52" y="52" width="196" height="196" rx="52" fill="' + s.lente + '" stroke="' + s.aro + '" stroke-width="2"/>'
-      + '<circle cx="106" cy="106" r="34" fill="' + s.aro + '"/><circle cx="106" cy="106" r="20" fill="' + s.lente + '"/>'
-      + '<circle cx="194" cy="106" r="34" fill="' + s.aro + '"/><circle cx="194" cy="106" r="20" fill="' + s.lente + '"/>'
-      + '<circle cx="106" cy="194" r="34" fill="' + s.aro + '"/><circle cx="106" cy="194" r="20" fill="' + s.lente + '"/>'
-      + '<circle cx="196" cy="196" r="14" fill="' + s.aro + '"/>'
-      + '</g>'
+      + '<g clip-path="url(#cuerpoFunda)"><g filter="url(#pastaTex)">' + pastaPrincipal + '</g></g>'
+      + '<g>' + camara + '</g>'
       + '<rect x="494" y="300" width="8" height="86" rx="4" fill="' + s.aro + '"/>'
       + '<rect x="494" y="410" width="8" height="86" rx="4" fill="' + s.aro + '"/>'
       + '<rect x="-2" y="330" width="8" height="58" rx="4" fill="' + s.aro + '"/>'
@@ -160,6 +205,8 @@
     let sonEjemplo = true;
     let colorFunda = opciones.color || "Blanca";
     let colorPasta = opciones.pasta || colorFunda;
+    let modelo = opciones.modelo || "";
+    let camara = zonaCamara(modelo);
     let puestos = [];          // { uid, id, x, y, rot }
     let seleccion = null;      // uid
     let categoria = "Todas";
@@ -170,7 +217,7 @@
       <div class="ed">
         <div class="ed-stage">
           <div class="ed-case" id="edCase">
-            ${svgFunda(colorFunda, colorPasta)}
+            ${svgFunda(colorFunda, colorPasta, modelo)}
             <div class="ed-area" id="edArea"></div>
           </div>
         </div>
@@ -220,13 +267,16 @@
     // donde se ve bien, y la clienta solo mueve si quiere.
     function puntoLibre(tam) {
       const separacion = tam * 0.85;
+      // Con la camara en barra el centro util baja; con modulo en esquina no.
+      const centroY = esBarra(modelo) ? 56 : 50;
       for (let radio = 0; radio <= 60; radio += 4) {
         const pasos = radio === 0 ? 1 : Math.max(6, Math.round(radio / 2));
         for (let i = 0; i < pasos; i++) {
           const ang = (i / pasos) * Math.PI * 2 + radio * 0.7;
           const x = 50 + Math.cos(ang) * radio;
-          const y = 50 + Math.sin(ang) * radio * 1.55;
-          if (x < 8 || x > 92 || y < 6 || y > 94) continue;
+          const y = centroY + Math.sin(ang) * radio * 1.55;
+          if (x < 8 || x > 92 || y < 4 || y > 94) continue;
+          if (dentroDeCamara(camara, x, y, tam * 0.5)) continue;
           const choca = puestos.some((p) => {
             const otra = porId().get(p.id);
             const d = Math.hypot((p.x - x) * 0.9, (p.y - y) * 0.45);
@@ -268,10 +318,14 @@
       const filas = Math.ceil(n / cols);
       puestos.forEach((p, i) => {
         const c = i % cols, f = Math.floor(i / cols);
+        // Con modulo en esquina se empieza desde arriba para aprovechar la
+        // franja de al lado; con barra completa no hay nada que aprovechar.
+        const arriba = esBarra(modelo) ? camara.y1 + 4 : 8;
         const px = ((c + 0.5) / cols) * 74 + 13;
-        const py = ((f + 0.5) / filas) * 82 + 9;
-        p.x = px + (Math.random() * 5 - 2.5);
-        p.y = py + (Math.random() * 4 - 2);
+        const py = arriba + ((f + 0.5) / filas) * (92 - arriba);
+        const ajustado = fueraDeCamara(camara, px + (Math.random() * 5 - 2.5), py + (Math.random() * 4 - 2), 6);
+        p.x = ajustado.x;
+        p.y = ajustado.y;
         p.rot = Math.round(Math.random() * 30 - 15);
       });
       pintar();
@@ -378,7 +432,9 @@
 
     /* ---------- arrastrar ---------- */
     function limites(x, y) {
-      return { x: Math.max(6, Math.min(94, x)), y: Math.max(4, Math.min(96, y)) };
+      const dentro = { x: Math.max(6, Math.min(94, x)), y: Math.max(4, Math.min(96, y)) };
+      // Un charm sobre el lente no se puede pegar: la pieza se desvia sola.
+      return fueraDeCamara(camara, dentro.x, dentro.y, 5);
     }
 
     area.addEventListener("pointerdown", (e) => {
@@ -506,6 +562,7 @@
       return {
         color: colorFunda,
         pasta: colorPasta,
+        modelo: modelo,
         piezas: puestos.map((p) => ({
           id: p.id,
           nombre: (mapa.get(p.id) || {}).nombre || p.id,
@@ -536,10 +593,16 @@
         pintar();
         return true;
       },
-      cambiarColor(color, pasta) {
+      cambiarColor(color, pasta, nuevoModelo) {
         colorFunda = color || "Blanca";
         colorPasta = pasta || colorFunda;
-        caseBox.innerHTML = svgFunda(colorFunda, colorPasta);
+        if (nuevoModelo !== undefined && nuevoModelo !== null) {
+          modelo = nuevoModelo;
+          camara = zonaCamara(modelo);
+          // Al cambiar de modelo lo que quedo bajo la camara se reacomoda solo.
+          puestos.forEach((q) => { const f = fueraDeCamara(camara, q.x, q.y, 5); q.x = f.x; q.y = f.y; });
+        }
+        caseBox.innerHTML = svgFunda(colorFunda, colorPasta, modelo);
         // el area de charms se vuelve a colgar tal cual, con todo lo que lleva
         caseBox.appendChild(area);
         pintar();

@@ -153,12 +153,22 @@
   .ig-head a{color:var(--maroon)}
   /* Carrusel infinito: dos copias identicas de la fila; cuando la primera
      termina de pasar, el desplazamiento vuelve a cero y el salto no se ve. */
-  .ig-marquee{overflow:hidden;position:relative;
-    -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
-    mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+  /* De borde a borde: se sale del contenedor para ocupar el ancho completo de
+     la pantalla, sin degradado en las orillas. Las fotos entran y salen de la
+     nada, no se desvanecen. */
+  .ig-marquee{overflow:hidden;position:relative;width:100%}
   .ig-track{display:flex;width:max-content;will-change:transform}
   .ig-run{display:flex;gap:14px;padding-right:14px}
   .ig-tile{flex:0 0 auto;width:clamp(150px,20vw,230px);aspect-ratio:1;overflow:hidden;position:relative;background:var(--ink);display:block}
+  /* Entrada: las fotos suben una tras otra, de izquierda a derecha, mientras la
+     tira arranca su pasada rapida. */
+  .ig-marquee .ig-tile{opacity:0;transform:translateY(30px) scale(.94);
+    transition:opacity .55s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1);
+    transition-delay:calc(var(--i,0) * 45ms)}
+  .ig-marquee.entrando .ig-tile{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    .ig-marquee .ig-tile{opacity:1;transform:none;transition:none}
+  }
   .ig-tile img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
   .ig-tile:hover img{transform:scale(1.06)}
   .ig-tile.gem{font-size:2rem}
@@ -465,7 +475,8 @@
       <div class="eyebrow">La comunidad</div>
       <h2>Presume tu ASTÉRIA · <a href="https://www.instagram.com/asteria__mx/" target="_blank" rel="noopener">@asteria__mx</a></h2>
     </div>
-    <div class="ig-marquee reveal" id="igMarquee">
+  </div>
+  <div class="ig-marquee reveal" id="igMarquee">
       <div class="ig-track" id="igTrack">
         <div class="ig-run">
           <a class="ig-tile" href="https://www.instagram.com/asteria__mx/" target="_blank" rel="noopener"><img src="img/i24.webp" alt="Clienta frente al espejo con su funda ASTÉRIA de charms" loading="lazy" decoding="async"><span class="mk">Ver en Instagram</span></a>
@@ -492,7 +503,6 @@
           <a class="ig-tile" href="https://www.instagram.com/asteria__mx/" target="_blank" rel="noopener"><img src="img/i33.webp" alt="Funda negra ASTÉRIA con sol, luna, serpiente y flor" loading="lazy" decoding="async"><span class="mk">Ver en Instagram</span></a>
         </div>
       </div>
-    </div>
   </div>
 </section>
 
@@ -765,6 +775,7 @@
     if(reduce.matches){
       // Sin animacion: la fila se puede recorrer a mano y no se duplica al lector.
       marquee.style.overflowX='auto';
+      marquee.classList.add('entrando');
       track.querySelectorAll('.ig-run')[1].remove();
       return;
     }
@@ -812,9 +823,19 @@
     },{rootMargin:'900px 0px'});
     precarga.observe(marquee);
 
+    // La entrada corre una sola vez, cuando la seccion llega.
+    let entro=false;
+    function entrar(){
+      if(entro) return;
+      entro=true;
+      const tiles=track.querySelectorAll('.ig-tile');
+      tiles.forEach((t,i)=>{ t.style.setProperty('--i', Math.min(i,9)); });
+      requestAnimationFrame(()=>marquee.classList.add('entrando'));
+    }
+
     // Solo se mueve cuando esta a la vista: fuera de pantalla no gasta bateria.
     const io=new IntersectionObserver(es=>{
-      es.forEach(e=>{ e.isIntersecting?arrancar():detener(); });
+      es.forEach(e=>{ if(e.isIntersecting){ entrar(); arrancar(); } else { detener(); } });
     },{threshold:.12});
     io.observe(marquee);
 
@@ -1153,10 +1174,11 @@
         mount:document.getElementById('charmEditor'),
         color:state.funda||'Blanca',
         pasta:state.pasta||state.funda||'Blanca',
+        modelo:state.modelo,
         onChange:d=>{disenoCharms=d;}
       });
     }else{
-      editor.cambiarColor(state.funda||'Blanca', state.pasta||state.funda||'Blanca');
+      editor.cambiarColor(state.funda||'Blanca', state.pasta||state.funda||'Blanca', state.modelo);
     }
     if(catalogoPedido) return;
     catalogoPedido=true;
@@ -1214,7 +1236,7 @@
     document.querySelectorAll('.pastabtn[data-'+campo+']').forEach(x=>x.classList.remove('on'));
     b.classList.add('on');
     state[campo] = b.dataset[campo];
-    if(editor) editor.cambiarColor(state.funda, state.pasta);
+    if(editor) editor.cambiarColor(state.funda, state.pasta, state.modelo);
   }));
   document.querySelectorAll('.pick[data-dens]').forEach(c=>{
     makeKeyClickable(c);
