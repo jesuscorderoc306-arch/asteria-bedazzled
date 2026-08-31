@@ -267,7 +267,13 @@
   /* El paso 2 usa fotos de fundas reales recortadas sobre transparente, igual
      que el paso de estilo. Altura fija en vez de proporcion: son fundas
      completas y con aspect-ratio la caja crecia con la foto. */
-  .pick[data-tipo] .media{aspect-ratio:auto;height:min(44vh,360px)}
+  /* El paso 2 se compacta para que la foto Y su descripcion quepan sin scroll:
+     antes el nombre de cada opcion caia detras de la barra de Continuar. */
+  .fstep.paso-tipo .fstep-head{margin-bottom:20px}
+  .fstep.paso-tipo .fstep-head h2{font-size:clamp(1.7rem,3.4vw,2.3rem)}
+  .fstep.paso-tipo .fstep-head p{margin-top:6px;font-size:.92rem}
+  .pick[data-tipo] .media{aspect-ratio:auto;height:min(34vh,300px)}
+  .pick[data-tipo] .cap{padding:16px 12px 0}
   /* height/width al 100% con contain: el max-height en porcentaje no resuelve
      dentro del grid y la foto se desbordaba de su caja. */
   .pick[data-tipo] .media img{height:100%;width:100%;max-height:none;object-fit:contain}
@@ -606,7 +612,7 @@
     </div>
 
     <!-- STEP 2 -->
-    <div class="fstep" data-step="2">
+    <div class="fstep paso-tipo" data-step="2">
       <div class="fstep-head">
         <div class="kick">Paso 2</div>
         <h2>¿Qué tipo de funda quieres?</h2>
