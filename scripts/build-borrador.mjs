@@ -28,7 +28,7 @@ const NOINDEX = '<meta name="robots" content="noindex, nofollow">';
 const PAGINAS = ["index.html", "pedido.html", "privacidad.html"];
 const SUELTOS = ["favicon.svg", "favicon-32.png", "favicon-180.png", "og-image.jpg"];
 // Solo existen en la rama del borrador; master no los tiene todavia.
-const SUELTOS_V2 = SUELTOS.concat(["editor.js", "editor.css", "charms.js"]);
+const SUELTOS_V2 = SUELTOS.concat(["editor.js", "editor.css", "charms.js", "modelos.js"]);
 
 const gitBuffer = (ref) => execFileSync("git", ["show", ref], { cwd: raiz, maxBuffer: 64 * 1024 * 1024 });
 const gitTexto = (ref) => gitBuffer(ref).toString("utf8");

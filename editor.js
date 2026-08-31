@@ -18,7 +18,20 @@
    * llegan las fotos recortadas. La que no tiene silueta propia se dibuja como
    * dije con argolla, que es lo que es.
    */
-  const ANCHO_FUNDA_MM = 71; // ancho tipico de un iPhone: la escala de todo
+  /* Cada iPhone mide distinto y por eso no a todos les caben los mismos
+     charms. La escala sale del ancho real del modelo (mas el silicon), no de
+     un numero fijo: en un 13 mini una estrella de 4 cm se come la funda, y en
+     un 17 Pro Max se ve holgada. */
+  const MODELOS = window.ASTERIA_MODELOS || {};
+  const GROSOR = window.ASTERIA_GROSOR_FUNDA_MM || 2;
+  const MEDIDA_POR_DEFECTO = { alto: 147, ancho: 71.5, camara: "esquina" };
+
+  function medidas(modelo) {
+    return MODELOS[String(modelo || "")] || MEDIDA_POR_DEFECTO;
+  }
+  // Lo que mide la funda por fuera: el telefono mas el silicon de cada lado.
+  const anchoFunda = (modelo) => medidas(modelo).ancho + GROSOR * 2;
+  const altoFunda = (modelo) => medidas(modelo).alto + GROSOR * 2;
 
   const TONOS = {
     oro: ["#dcbe73", "#9d7a2c"],
@@ -128,9 +141,7 @@
     Negra: { base: "#151311", sombra: "rgba(0,0,0,.5)" },
   };
 
-  // Modelos con la camara en barra completa.
-  const CAMARA_BARRA = ["iPhone 17 Pro", "iPhone 17 Pro Max", "iPhone Air"];
-  const esBarra = (modelo) => CAMARA_BARRA.indexOf(String(modelo || "")) !== -1;
+  const esBarra = (modelo) => medidas(modelo).camara === "barra";
 
   /* Zona prohibida (la camara) en coordenadas de la caja de charms, en %.
      La caja va de 6% a 94% a lo ancho y de 4% a 96% a lo alto de la funda. */
@@ -160,11 +171,14 @@
     const s = SILICON[color] || SILICON.Blanca;
     const p = PASTA[pasta || color] || PASTA.Blanca;
     const barra = esBarra(modelo);
+    // El alto del lienzo sale de la proporcion real del modelo.
+    const alto = Math.round(500 * (altoFunda(modelo) / anchoFunda(modelo)));
+    const pastaAlto = alto - 356;
 
     // La pasta llega hasta donde la camara lo permite.
     const pastaPrincipal = barra
-      ? '<rect x="52" y="276" width="396" height="640" rx="26" fill="' + p.base + '"/>'
-      : '<rect x="52" y="276" width="396" height="640" rx="26" fill="' + p.base + '"/>'
+      ? '<rect x="52" y="276" width="396" height="' + pastaAlto + '" rx="26" fill="' + p.base + '"/>'
+      : '<rect x="52" y="276" width="396" height="' + pastaAlto + '" rx="26" fill="' + p.base + '"/>'
         + '<rect x="272" y="60" width="176" height="216" rx="24" fill="' + p.base + '"/>';
 
     const camara = barra
@@ -179,21 +193,21 @@
         + '<circle cx="106" cy="194" r="34" fill="' + s.aro + '"/><circle cx="106" cy="194" r="20" fill="' + s.lente + '"/>'
         + '<circle cx="196" cy="196" r="14" fill="' + s.aro + '"/>';
 
-    return '<svg viewBox="0 0 500 996" role="img" aria-label="Vista trasera de tu funda">'
+    return '<svg viewBox="0 0 500 ' + alto + '" role="img" aria-label="Vista trasera de tu funda">'
       + '<defs><filter id="pastaTex" x="-10%" y="-10%" width="120%" height="120%">'
       + '<feTurbulence type="fractalNoise" baseFrequency="0.022 0.03" numOctaves="3" seed="7" result="n"/>'
       + '<feDisplacementMap in="SourceGraphic" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G"/>'
       + '</filter>'
-      + '<clipPath id="cuerpoFunda"><rect x="6" y="6" width="488" height="984" rx="112"/></clipPath>'
+      + '<clipPath id="cuerpoFunda"><rect x="6" y="6" width="488" height="' + (alto - 12) + '" rx="112"/></clipPath>'
       + '</defs>'
-      + '<rect x="6" y="6" width="488" height="984" rx="112" fill="' + s.cuerpo + '" stroke="' + s.borde + '" stroke-width="3"/>'
-      + '<rect x="26" y="26" width="448" height="944" rx="94" fill="none" stroke="' + s.borde + '" stroke-width="1.4" opacity=".5"/>'
+      + '<rect x="6" y="6" width="488" height="' + (alto - 12) + '" rx="112" fill="' + s.cuerpo + '" stroke="' + s.borde + '" stroke-width="3"/>'
+      + '<rect x="26" y="26" width="448" height="' + (alto - 52) + '" rx="94" fill="none" stroke="' + s.borde + '" stroke-width="1.4" opacity=".5"/>'
       // La textura desplaza los bordes: sin recortar, la pasta se sale de la funda.
       + '<g clip-path="url(#cuerpoFunda)"><g filter="url(#pastaTex)">' + pastaPrincipal + '</g></g>'
       + '<g>' + camara + '</g>'
-      + '<rect x="494" y="300" width="8" height="86" rx="4" fill="' + s.aro + '"/>'
-      + '<rect x="494" y="410" width="8" height="86" rx="4" fill="' + s.aro + '"/>'
-      + '<rect x="-2" y="330" width="8" height="58" rx="4" fill="' + s.aro + '"/>'
+      + '<rect x="494" y="' + Math.round(alto * 0.30) + '" width="8" height="86" rx="4" fill="' + s.aro + '"/>'
+      + '<rect x="494" y="' + Math.round(alto * 0.41) + '" width="8" height="86" rx="4" fill="' + s.aro + '"/>'
+      + '<rect x="-2" y="' + Math.round(alto * 0.33) + '" width="8" height="58" rx="4" fill="' + s.aro + '"/>'
       + '</svg>';
   }
 
@@ -238,6 +252,10 @@
       </div>`;
 
     const area = cont.querySelector("#edArea");
+    function ajustarProporcion() {
+      const caja = cont.querySelector("#edCase");
+      if (caja) caja.style.aspectRatio = anchoFunda(modelo) + " / " + altoFunda(modelo);
+    }
     const caseBox = cont.querySelector("#edCase");
     const tira = cont.querySelector("#edTira");
     const cats = cont.querySelector("#edCats");
@@ -250,10 +268,27 @@
     const porId = () => new Map(piezas.map((p) => [p.id, p]));
     const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-    /* tamaño en % del ancho de la funda, a partir de los mm reales */
-    function anchoPct(pieza) {
+    /* La medida del taller va al lado que le toca: "3 cm de largo" es alto,
+       "2 cm de ancho" es ancho, y el diametro da los dos. Se mide contra las
+       medidas reales del modelo, asi que la misma pieza ocupa mas en un 13 mini
+       que en un 17 Pro Max. */
+    function tamPieza(pieza) {
       const mm = pieza.mm || 12;
-      return Math.max(6, Math.min(34, (mm / ANCHO_FUNDA_MM) * 100));
+      const eje = pieza.eje || "largo";
+      if (eje === "largo") {
+        const pct = Math.max(3, Math.min(60, (mm / altoFunda(modelo)) * 100));
+        return { eje: "alto", pct: pct };
+      }
+      const pct = Math.max(4, Math.min(46, (mm / anchoFunda(modelo)) * 100));
+      return { eje: "ancho", pct: pct };
+    }
+
+    /* Cuanto ocupa a lo ancho, para separar unas piezas de otras. Las medidas a
+       lo largo se convierten usando la proporcion de la funda. */
+    function anchoPct(pieza) {
+      const t = tamPieza(pieza);
+      if (t.eje === "ancho") return t.pct;
+      return t.pct * (altoFunda(modelo) / anchoFunda(modelo));
     }
 
     function guardarHistorial() {
@@ -332,6 +367,14 @@
     }
 
     /* ---------- pintar ---------- */
+    function medidaCss(pieza) {
+      const t = tamPieza(pieza);
+      // El % del alto se mide contra el alto de la caja de charms, no de la funda.
+      return t.eje === "ancho"
+        ? "--w:" + t.pct + "%;--h:auto"
+        : "--w:auto;--h:" + (t.pct * (altoFunda(modelo) / (altoFunda(modelo) * 0.92))) + "%";
+    }
+
     function pintar() {
       const mapa = porId();
       area.innerHTML = puestos.map((p) => {
@@ -343,7 +386,7 @@
           : svgPieza(pieza);
         return `<div class="ed-charm${sel ? " sel" : ""}" data-uid="${p.uid}" tabindex="0"
           role="button" aria-label="${esc(pieza.nombre)}, arrastra para mover"
-          style="left:${p.x}%;top:${p.y}%;--rot:${p.rot}deg;--size:${anchoPct(pieza)}%">${cuerpo}</div>`;
+          style="left:${p.x}%;top:${p.y}%;--rot:${p.rot}deg;${medidaCss(pieza)}">${cuerpo}</div>`;
       }).join("");
 
       if (seleccion) {
@@ -563,6 +606,7 @@
         color: colorFunda,
         pasta: colorPasta,
         modelo: modelo,
+        fundaMm: { ancho: Math.round(anchoFunda(modelo) * 10) / 10, alto: Math.round(altoFunda(modelo) * 10) / 10 },
         piezas: puestos.map((p) => ({
           id: p.id,
           nombre: (mapa.get(p.id) || {}).nombre || p.id,
@@ -573,6 +617,7 @@
       };
     }
 
+    ajustarProporcion();
     pintar();
 
     return {
@@ -602,6 +647,7 @@
           // Al cambiar de modelo lo que quedo bajo la camara se reacomoda solo.
           puestos.forEach((q) => { const f = fueraDeCamara(camara, q.x, q.y, 5); q.x = f.x; q.y = f.y; });
         }
+        ajustarProporcion();
         caseBox.innerHTML = svgFunda(colorFunda, colorPasta, modelo);
         // el area de charms se vuelve a colgar tal cual, con todo lo que lleva
         caseBox.appendChild(area);
