@@ -1,0 +1,19 @@
+# Worker v2 — AISLADO de produccion a proposito.
+#
+# `asteria-orders` (carpeta C:\Claude\asteria-telegram-worker) sigue siendo el de
+# produccion y no se toca. Este archivo apunta a otro nombre de worker y a un KV
+# distinto, asi que un `wrangler deploy` accidental desde aqui NO puede pisar el
+# sitio en vivo: fallara hasta que se cree el namespace y se ponga su id abajo.
+name = "asteria-orders-v2"
+main = "src/index.js"
+compatibility_date = "2026-08-27"
+
+[vars]
+TELEGRAM_CHAT_IDS = "1413731119,8673158213"
+ALLOWED_ORIGINS = "https://asteriamx.pages.dev,http://localhost:3000,http://localhost:5000"
+
+[[kv_namespaces]]
+binding = "ASTERIA_ORDERS"
+# Pendiente: crear con `wrangler kv namespace create ASTERIA_ORDERS_V2` y pegar el id.
+# Mientras diga PENDIENTE, no se puede desplegar. Es intencional.
+id = "PENDIENTE_CREAR_NAMESPACE_V2"
