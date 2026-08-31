@@ -26,8 +26,9 @@ if (!destino) throw new Error("uso: node scripts/build-borrador.mjs <carpeta-des
 
 const NOINDEX = '<meta name="robots" content="noindex, nofollow">';
 const PAGINAS = ["index.html", "pedido.html", "privacidad.html"];
-const SUELTOS = ["favicon.svg", "favicon-32.png", "favicon-180.png", "og-image.jpg",
-  "editor.js", "editor.css", "charms.js"];
+const SUELTOS = ["favicon.svg", "favicon-32.png", "favicon-180.png", "og-image.jpg"];
+// Solo existen en la rama del borrador; master no los tiene todavia.
+const SUELTOS_V2 = SUELTOS.concat(["editor.js", "editor.css", "charms.js"]);
 
 const gitBuffer = (ref) => execFileSync("git", ["show", ref], { cwd: raiz, maxBuffer: 64 * 1024 * 1024 });
 const gitTexto = (ref) => gitBuffer(ref).toString("utf8");
@@ -66,7 +67,7 @@ const v2 = path.join(destino, "v2");
 for (const f of PAGINAS) {
   escribe(path.join(v2, "sitio", f), conAviso(fs.readFileSync(path.join(raiz, f), "utf8"), "Borrador v2 · todavía no está en la tienda", "#922939"));
 }
-for (const f of SUELTOS) escribe(path.join(v2, "sitio", f), fs.readFileSync(path.join(raiz, f)));
+for (const f of SUELTOS_V2) escribe(path.join(v2, "sitio", f), fs.readFileSync(path.join(raiz, f)));
 for (const f of fs.readdirSync(path.join(raiz, "img"))) {
   escribe(path.join(v2, "sitio", "img", f), fs.readFileSync(path.join(raiz, "img", f)));
 }
