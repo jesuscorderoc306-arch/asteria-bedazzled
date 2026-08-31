@@ -1,0 +1,109 @@
+/* Editor de charms de ASTÉRIA.
+   Mismos tokens que index.html: no define colores propios, los hereda. */
+
+/* En el paso del editor la pantalla es el taller: el titulo se encoge para que
+   la funda y la bandeja de charms quepan juntas, sin scroll entre una y otra. */
+/* .pick2 es grid: el atributo hidden por si solo no lo oculta. */
+.pick2[hidden]{display:none}
+
+.fstep.ed-modo .fstep-head{margin-bottom:16px}
+.fstep.ed-modo .fstep-head h2{font-size:clamp(1.5rem,3vw,1.9rem)}
+.fstep.ed-modo .fstep-head p{display:none}
+.fstep.ed-modo .turnstile-wrap{margin:14px 0 0}
+
+/* minmax(0,1fr): sin esto la tira de 60 charms estira la columna del grid a
+   varios miles de px y la funda se va fuera de la pantalla. */
+.ed{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+.ed-bandeja,.ed-tira,.ed-cats{min-width:0}
+
+/* ---------- lienzo ---------- */
+.ed-stage{position:relative;display:grid;place-items:center;min-height:0;padding:4px 0;touch-action:none}
+/* La funda se dimensiona por altura: la bandeja de charms tiene que caber en la
+   misma pantalla, sin hacer scroll para ir por una pieza y volver. */
+.ed-case{position:relative;height:min(38vh,340px);width:auto;aspect-ratio:500/996;
+  filter:drop-shadow(0 26px 34px rgba(5,4,3,.22));-webkit-user-select:none;user-select:none}
+.ed-case svg{width:100%;height:100%;display:block;pointer-events:none}
+
+/* Zona donde sí se pueden poner charms. La cámara queda fuera a propósito:
+   un charm ahí taparía el lente y en el taller no se pega. */
+.ed-area{position:absolute;left:6%;top:26%;width:88%;height:70%}
+
+.ed-charm{position:absolute;transform:translate(-50%,-50%) rotate(var(--rot,0deg));width:var(--size,13%);
+  cursor:grab;touch-action:none;transition:filter .2s}
+.ed-charm svg{width:100%;height:auto;display:block;filter:drop-shadow(0 3px 4px rgba(5,4,3,.35));pointer-events:none}
+.ed-charm.dragging{cursor:grabbing;z-index:20}
+.ed-charm.entra{animation:edPop .32s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes edPop{from{opacity:0;transform:translate(-50%,-50%) rotate(var(--rot,0deg)) scale(.4)}
+  to{opacity:1;transform:translate(-50%,-50%) rotate(var(--rot,0deg)) scale(1)}}
+
+.ed-charm::after{content:"";position:absolute;inset:-14%;border-radius:50%;border:1px dashed transparent;transition:border-color .2s}
+.ed-charm.sel::after{border-color:var(--ink)}
+.ed-charm:focus-visible{outline:none}
+.ed-charm:focus-visible::after{border-color:var(--maroon);border-style:solid}
+
+/* controles del charm seleccionado */
+.ed-tool{position:absolute;width:28px;height:28px;border-radius:50%;border:1px solid var(--ink);background:var(--paper);
+  display:grid;place-items:center;cursor:pointer;padding:0;line-height:1;font-size:.85rem;color:var(--ink);z-index:22}
+.ed-tool:hover{background:var(--ink);color:var(--paper)}
+.ed-tool:focus-visible{outline:2px solid var(--maroon);outline-offset:2px}
+.ed-tool.quitar{border-color:var(--maroon);color:var(--maroon)}
+.ed-tool.quitar:hover{background:var(--maroon);color:#fff}
+.ed-tool.girar{cursor:grab}
+.ed-tool.girar.dragging{cursor:grabbing}
+
+/* ---------- barra de acciones ---------- */
+.ed-acciones{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.ed-btn{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.14em;font-size:.68rem;
+  padding:9px 16px;border:1px solid var(--line);background:none;color:var(--char);cursor:pointer;
+  transition:border-color .2s,color .2s,background .2s}
+.ed-btn:hover:not(:disabled){border-color:var(--ink);color:var(--ink)}
+.ed-btn:disabled{opacity:.4;cursor:not-allowed}
+.ed-btn:focus-visible{outline:2px solid var(--maroon);outline-offset:2px}
+.ed-btn.principal{border-color:var(--ink);color:var(--ink)}
+.ed-btn.principal:hover{background:var(--ink);color:var(--paper)}
+
+/* ---------- bandeja de charms ---------- */
+.ed-bandeja{border-top:1px solid var(--line);padding-top:14px}
+.ed-cats{display:flex;gap:20px;overflow-x:auto;scrollbar-width:none;margin-bottom:12px}
+.ed-cats::-webkit-scrollbar{display:none}
+.ed-cat{flex:0 0 auto;background:none;border:none;padding:4px 0;cursor:pointer;position:relative;
+  font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.7rem;color:var(--taupe);transition:color .2s}
+.ed-cat::after{content:"";position:absolute;left:0;bottom:0;height:1px;width:100%;background:var(--maroon);
+  transform:scaleX(0);transform-origin:left center;transition:transform .25s}
+.ed-cat:hover{color:var(--char)}
+.ed-cat[aria-pressed="true"]{color:var(--ink)}
+.ed-cat[aria-pressed="true"]::after{transform:scaleX(1)}
+.ed-cat:focus-visible{outline:2px solid var(--maroon);outline-offset:3px}
+
+.ed-tira{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x proximity}
+.ed-tira::-webkit-scrollbar{height:3px}
+.ed-tira::-webkit-scrollbar-thumb{background:var(--line)}
+.ed-pieza{flex:0 0 auto;width:74px;scroll-snap-align:start;border:1px solid var(--line);background:var(--paper);
+  padding:8px 6px 6px;cursor:pointer;text-align:center;transition:border-color .2s,transform .2s,background .2s}
+.ed-pieza:hover{border-color:var(--ink);transform:translateY(-2px)}
+.ed-pieza:focus-visible{outline:2px solid var(--maroon);outline-offset:2px}
+.ed-pieza svg,.ed-pieza img{width:38px;height:38px;margin:0 auto;display:block;object-fit:contain}
+.ed-pieza .nb{display:block;font-size:.66rem;color:var(--taupe);margin-top:6px;line-height:1.25;font-weight:300}
+.ed-pieza .n-en-uso{display:block;font-family:var(--font-label);font-size:.62rem;letter-spacing:.1em;color:var(--maroon);min-height:.9em}
+.ed-pieza[disabled]{opacity:.4;cursor:not-allowed}
+
+/* ---------- resumen ---------- */
+.ed-resumen{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:6px 16px;
+  border-top:1px dashed var(--line);margin-top:14px;padding-top:14px}
+.ed-resumen .lbl{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.7rem;color:var(--taupe)}
+.ed-resumen .val{font-family:var(--font-display);font-size:1.6rem;line-height:1;font-variant-numeric:lining-nums;text-align:right}
+.ed-resumen .val.sin{font-family:var(--font-label);font-size:.78rem;text-transform:uppercase;letter-spacing:.14em;color:var(--maroon)}
+.ed-resumen .nota{grid-column:1/-1;font-size:.78rem;color:var(--taupe);font-weight:300}
+
+.ed-ayuda{text-align:center;font-size:.8rem;color:var(--taupe);font-weight:300;margin-top:-4px}
+.ed-aviso{text-align:center;font-size:.74rem;color:var(--maroon);font-weight:300;margin-top:8px}
+
+@media(max-width:900px){
+  .ed-case{height:min(34vh,280px)}
+  .ed-pieza{width:66px}
+  .ed-pieza svg,.ed-pieza img{width:34px;height:34px}
+}
+@media(prefers-reduced-motion:reduce){
+  .ed-charm.entra{animation:none}
+  .ed-btn,.ed-pieza,.ed-cat::after{transition:none}
+}
