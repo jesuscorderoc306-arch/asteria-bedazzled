@@ -1,70 +1,1080 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>ASTÉRIA · Borrador v2</title>
-<link rel="icon" href="sitio/favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASTÉRIA · Fundas de iPhone Personalizadas Hechas a Mano</title>
+<meta name="description" content="Fundas de iPhone personalizadas con gemas, dijes y pedrería (bedazzled), hechas a mano en México, gema por gema. Piezas únicas. Envíos a todo el país.">
+
+<link rel="canonical" href="https://asteriamx.pages.dev/">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="180x180" href="favicon-180.png">
+<link rel="apple-touch-icon" href="favicon-180.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ASTÉRIA">
+<meta property="og:title" content="ASTÉRIA · Fundas de iPhone Personalizadas Hechas a Mano">
+<meta property="og:description" content="Fundas de iPhone personalizadas con gemas, dijes y pedrería (bedazzled), hechas a mano en México, gema por gema. Piezas únicas. Envíos a todo el país.">
+<meta property="og:url" content="https://asteriamx.pages.dev/">
+<meta property="og:image" content="https://asteriamx.pages.dev/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ASTÉRIA · Fundas de iPhone Personalizadas Hechas a Mano">
+<meta name="twitter:description" content="Fundas de iPhone personalizadas con gemas, dijes y pedrería (bedazzled), hechas a mano en México, gema por gema. Piezas únicas. Envíos a todo el país.">
+<meta name="twitter:image" content="https://asteriamx.pages.dev/og-image.jpg">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "ASTÉRIA",
+  "url": "https://asteriamx.pages.dev/",
+  "logo": "https://asteriamx.pages.dev/favicon-180.png",
+  "image": "https://asteriamx.pages.dev/og-image.jpg",
+  "description": "Fundas de iPhone personalizadas con gemas, dijes y pedrería, hechas a mano en México, gema por gema. Piezas únicas.",
+  "areaServed": "MX",
+  "foundingLocation": "Guadalajara, Jalisco, México",
+  "sameAs": ["https://www.instagram.com/asteria__mx/"]
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Oswald:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
-  :root{--ink:#050403;--char:#443f3b;--maroon:#922939;--stone:#c8c2ad;--taupe:#6b655e;
-    --paper:#f2efe9;--paper-2:#eae4d9;--line:rgba(5,4,3,.14);
-    --display:'Cormorant Garamond',Georgia,serif;--label:'Oswald',system-ui,sans-serif;--body:'Jost',system-ui,sans-serif}
+  :root{
+    --ink:#050403;--char:#443f3b;--brown:#472d1d;--maroon:#922939;--blue:#2d70ad;
+    --stone:#c8c2ad;--mist:#b9bcb8;--taupe:#6b655e;--paper:#f2efe9;--paper-2:#eae4d9;
+    --line:rgba(5,4,3,.14);
+    --font-display:'Cormorant Garamond', Georgia, serif; /* sustituto de The Seasons */
+    --font-label:'Oswald', system-ui, sans-serif;
+    --font-body:'Jost', system-ui, -apple-system, sans-serif;
+  }
+  /* Para usar la fuente real The Seasons: descomenta y apunta a tus archivos, luego cambia --font-display.
+  @font-face{font-family:'The Seasons';src:url('/fonts/theseasons.woff2') format('woff2');font-weight:400;font-display:swap;} */
+
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:var(--body);background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
-  .announce{background:var(--ink);color:var(--paper);font-family:var(--label);text-transform:uppercase;
-    letter-spacing:.28em;font-size:.66rem;font-weight:300;text-align:center;padding:9px 14px}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--font-body);background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  img{display:block;max-width:100%}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+  .eyebrow{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.32em;font-size:.72rem;font-weight:500;color:var(--maroon)}
+  .serif{font-family:var(--font-display)}.italic{font-style:italic}
+
+  .announce{background:var(--ink);color:var(--paper);font-family:var(--font-label);text-transform:uppercase;letter-spacing:.28em;font-size:.66rem;font-weight:300;text-align:center;padding:9px 14px}
   .announce .star{color:var(--stone);margin:0 .7em}
-  main{max-width:900px;margin:0 auto;padding:70px 28px 90px}
-  .eyebrow{font-family:var(--label);text-transform:uppercase;letter-spacing:.32em;font-size:.72rem;font-weight:500;color:var(--maroon)}
-  h1{font-family:var(--display);font-weight:400;font-size:clamp(2.6rem,6vw,4rem);line-height:1;margin:16px 0 14px}
-  .lead{color:var(--char);font-weight:300;max-width:52ch;margin-bottom:14px}
-  .stamp{font-family:var(--label);text-transform:uppercase;letter-spacing:.16em;font-size:.64rem;color:var(--taupe);margin-bottom:48px}
-  .cards{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
-  a.card{display:block;text-decoration:none;color:inherit;border:1px solid var(--line);background:var(--paper-2);
-    padding:30px 28px;transition:background .25s,transform .25s,border-color .25s}
-  a.card:hover,a.card:focus-visible{background:var(--ink);color:var(--paper);border-color:var(--ink);transform:translateY(-2px)}
-  a.card:focus-visible{outline:2px solid var(--maroon);outline-offset:3px}
-  a.card h2{font-family:var(--display);font-weight:400;font-size:1.9rem;line-height:1.1;margin-bottom:8px}
-  a.card p{font-size:.92rem;font-weight:300;color:var(--taupe)}
-  a.card:hover p,a.card:focus-visible p{color:var(--stone)}
-  a.card .go{font-family:var(--label);text-transform:uppercase;letter-spacing:.16em;font-size:.68rem;color:var(--maroon);margin-top:18px;display:block}
-  a.card:hover .go,a.card:focus-visible .go{color:var(--paper)}
-  .nota{border:1px solid var(--line);padding:22px 24px;margin-top:44px;font-size:.9rem;font-weight:300;color:var(--char)}
-  .nota b{font-weight:500}
-  .nota a{color:var(--maroon)}
-  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  /* NAV — logo más grande */
+  header.nav{position:sticky;top:0;z-index:50;background:rgba(242,239,233,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:92px}
+  .nav-logo img{height:52px;width:auto;aspect-ratio:900/540;transition:transform .3s}
+  .nav-logo:hover img{transform:rotate(-3deg) scale(1.05)}
+  .nav-links{display:flex;gap:34px;align-items:center}
+  .nav-links a{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.18em;font-size:.76rem;color:var(--char);position:relative;padding:4px 0;transition:color .2s}
+  .nav-links a::after{content:"";position:absolute;left:0;bottom:-2px;height:1px;width:0;background:var(--maroon);transition:width .28s}
+  .nav-links a:hover{color:var(--ink)}.nav-links a:hover::after{width:100%}
+  .nav-cta{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.74rem;border:1px solid var(--ink);padding:11px 20px;color:var(--ink);cursor:pointer;background:none;transition:background .25s,color .25s}
+  .nav-cta:hover{background:var(--ink);color:var(--paper)}
+  .nav-toggle{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;padding:6px}
+  .nav-toggle span{width:26px;height:2px;background:var(--ink);transition:transform .3s ease,opacity .25s ease}
+  .nav-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .nav-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+  .nav-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .mobile-menu{display:none}
+
+  /* HERO con animación de entrada */
+  .hero{position:relative;padding:64px 0 90px;overflow:hidden}
+  .hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:48px;align-items:center}
+  .hero h1{font-family:var(--font-display);font-weight:400;font-size:clamp(3rem,6.6vw,5.6rem);line-height:.98;letter-spacing:-.01em;margin:22px 0 26px}
+  .hero h1 .italic{color:var(--maroon)}
+  .hero p.lead{font-size:1.06rem;color:var(--char);max-width:34ch;margin-bottom:34px;font-weight:300}
+  .hero-actions{display:flex;gap:16px;flex-wrap:wrap}
+  .btn{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.78rem;padding:16px 32px;cursor:pointer;border:1px solid var(--ink);display:inline-flex;align-items:center;gap:10px;transition:all .25s;background:none;color:var(--ink)}
+  .btn-solid{background:var(--ink);color:var(--paper)}
+  .btn-solid:hover{background:var(--maroon);border-color:var(--maroon);transform:translateY(-2px)}
+  .btn-ghost:hover{background:var(--ink);color:var(--paper)}
+  .btn .arw{transition:transform .25s}.btn:hover .arw{transform:translateX(4px)}
+
+  .hero-copy{opacity:0;animation:riseIn .9s .1s ease forwards}
+  .hero-stage{position:relative;height:560px;display:flex;align-items:center;justify-content:center;touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none}
+  .hero-stage.dragging{cursor:grabbing}
+  .hero-case{position:absolute;filter:drop-shadow(0 30px 40px rgba(5,4,3,.28));will-change:translate}
+  .hero-case.main{width:300px;aspect-ratio:500/996;z-index:2;opacity:0;animation:caseIn 1s .35s cubic-bezier(.2,.8,.25,1) forwards, floaty 6s 1.4s ease-in-out infinite}
+  .hero-case.side{width:240px;aspect-ratio:500/998;z-index:1;left:52%;top:8%;opacity:0;animation:caseIn 1s .6s cubic-bezier(.2,.8,.25,1) forwards, floaty 7s 1.7s ease-in-out infinite reverse}
+  .hero-case.orbit-ready{left:50%;top:50%}
+  .hero-glow{position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(200,194,173,.55),transparent 68%);z-index:0;filter:blur(6px);animation:pulse 7s ease-in-out infinite}
+  .hero-spark{position:absolute;color:var(--maroon);font-size:1.7rem;z-index:3;opacity:0;animation:spark 3.4s ease-in-out infinite}
+  .hero-spark.s1{top:12%;left:30%;animation-delay:1.6s}
+  .hero-spark.s2{bottom:16%;right:26%;animation-delay:2.4s;color:var(--blue);font-size:1.3rem}
+  .hero-spark.s3{top:44%;right:16%;animation-delay:3s;color:var(--brown);font-size:1rem}
+
+  @keyframes riseIn{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+  @keyframes caseIn{from{opacity:0;transform:translateY(60px) rotate(-8deg) scale(.9)}to{opacity:1;transform:none}}
+  @keyframes floaty{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-16px) rotate(1.5deg)}}
+  @keyframes pulse{0%,100%{transform:scale(.95);opacity:.7}50%{transform:scale(1.05);opacity:1}}
+  @keyframes spark{0%,100%{opacity:0;transform:scale(.6) rotate(0)}50%{opacity:1;transform:scale(1.15) rotate(20deg)}}
+
+  /* BANDS */
+  .band{padding:96px 0;position:relative}
+  .band.stone{background:var(--paper-2)}
+  .sec-head{text-align:center;max-width:640px;margin:0 auto 54px}
+  .sec-head .eyebrow{display:inline-block;margin-bottom:16px}
+  .sec-head h2{font-family:var(--font-display);font-weight:400;font-size:clamp(2.3rem,4.6vw,3.6rem);line-height:1.02}
+  .sec-head p{color:var(--char);margin-top:18px;font-weight:300}
+  .rule-star{display:flex;align-items:center;justify-content:center;gap:14px;margin:0 auto 24px;color:var(--maroon)}
+  .rule-star::before,.rule-star::after{content:"";height:1px;width:46px;background:var(--line)}
+
+  /* NOSOTRAS */
+  .about{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+  .about-quote{font-family:var(--font-display);font-weight:400;font-size:clamp(1.9rem,3.4vw,2.9rem);line-height:1.14}
+  .about-quote .italic{color:var(--maroon)}
+  .about-body .eyebrow{display:block;margin-bottom:22px}
+  .about-body p{color:var(--char);margin-bottom:18px;font-weight:300}
+  .about-note{font-size:.82rem;color:var(--taupe);border-left:2px solid var(--maroon);padding-left:14px;margin-top:26px}
+
+  /* CTA BAND */
+  .cta-band{background:var(--ink);color:var(--paper);text-align:center;padding:96px 0}
+  .cta-band h2{font-family:var(--font-display);font-weight:400;font-size:clamp(2.4rem,5vw,4rem);line-height:1.02;margin-bottom:18px}
+  .cta-band h2 .italic{color:var(--stone)}
+  .cta-band p{color:var(--mist);font-weight:300;max-width:44ch;margin:0 auto 34px}
+  .cta-band .btn-solid{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .cta-band .btn-solid:hover{background:var(--maroon);color:var(--paper);border-color:var(--maroon)}
+  .cta-band .star-row{color:var(--maroon);letter-spacing:.5em;margin-bottom:22px;font-size:.9rem}
+
+  /* IG STRIP */
+  .ig-head{text-align:center;margin-bottom:36px}
+  .ig-head .eyebrow{display:inline-block;margin-bottom:12px}
+  .ig-head h2{font-family:var(--font-display);font-weight:400;font-size:clamp(1.8rem,3.4vw,2.6rem)}
+  .ig-head a{color:var(--maroon)}
+  .ig-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .ig-tile{aspect-ratio:1;overflow:hidden;position:relative;background:var(--ink);display:block}
+  .ig-tile img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+  .ig-tile:hover img{transform:scale(1.06)}
+  .ig-tile.gem{font-size:2rem}
+  .ig-tile .mk{position:absolute;inset:0;display:grid;place-items:center;opacity:0;background:rgba(5,4,3,.34);color:var(--paper);font-family:var(--font-label);letter-spacing:.16em;text-transform:uppercase;font-size:.66rem;transition:opacity .3s}
+  .ig-tile:hover .mk{opacity:1}
+
+  /* FAQ */
+  .faq-list{max-width:760px;margin:0 auto}
+  .faq-list details{border-bottom:1px solid var(--line);padding:20px 0}
+  .faq-list summary{cursor:pointer;font-family:var(--font-display);font-size:1.15rem;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px}
+  .faq-list summary::-webkit-details-marker{display:none}
+  .faq-list summary::after{content:"+";font-family:var(--font-label);font-size:1.4rem;color:var(--maroon);transition:transform .25s;flex-shrink:0}
+  .faq-list details[open] summary::after{transform:rotate(45deg)}
+  .faq-list p{color:var(--char);font-weight:300;margin-top:14px;max-width:64ch}
+
+  /* FOOTER */
+  footer{background:var(--ink);color:var(--paper);padding:72px 0 34px}
+  .foot-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:52px;border-bottom:1px solid rgba(242,239,233,.16)}
+  .foot-brand img{height:52px;width:auto;aspect-ratio:900/540;margin-bottom:20px}
+  .foot-brand p{color:var(--mist);font-size:.9rem;font-weight:300;max-width:30ch}
+  .foot-col h4{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.2em;font-size:.72rem;color:var(--stone);margin-bottom:18px}
+  .foot-col a,.foot-col button{display:block;width:100%;text-align:left;border:none;background:none;font-family:inherit;color:var(--mist);font-size:.9rem;margin-bottom:12px;font-weight:300;transition:color .2s;cursor:pointer}
+  .foot-col a:hover,.foot-col button:hover{color:var(--paper)}
+  .foot-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;font-size:.76rem;color:var(--taupe);flex-wrap:wrap;gap:12px}
+  .foot-bottom .star{color:var(--maroon)}
+
+  /* REVEAL */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s,transform .7s}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ============ FORM OVERLAY ============ */
+  .form-overlay{position:fixed;inset:0;z-index:100;background:var(--paper);display:none;flex-direction:column;overflow-y:auto}
+  .form-overlay.open{display:flex;animation:fadeUp .5s ease}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .form-top{position:sticky;top:0;background:rgba(242,239,233,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:5}
+  .form-top-inner{max-width:900px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between}
+  .form-top img{height:40px;width:auto;aspect-ratio:900/540}
+  .form-close{background:none;border:1px solid var(--line);width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:1.1rem;color:var(--char);transition:all .2s;display:grid;place-items:center}
+  .form-close:hover{background:var(--ink);color:var(--paper);border-color:var(--ink);transform:rotate(90deg)}
+
+  .progress{max-width:900px;margin:0 auto;padding:24px 28px 0;display:flex;gap:12px;align-items:center}
+  .pstep{flex:1;display:flex;flex-direction:column;gap:8px}
+  .pstep .bar{height:4px;background:var(--line);border-radius:4px;overflow:hidden}
+  .pstep .bar i{display:block;height:100%;width:0;background:var(--maroon);transition:width .5s ease}
+  .pstep.active .bar i,.pstep.done .bar i{width:100%}
+  .pstep .lbl{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.14em;font-size:.62rem;color:var(--taupe)}
+  .pstep.active .lbl,.pstep.done .lbl{color:var(--ink)}
+
+  .form-body{max-width:900px;margin:0 auto;padding:40px 28px 120px;width:100%}
+  .fstep{display:none;animation:stepIn .5s ease}
+  .fstep.active{display:block}
+  @keyframes stepIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+  .fstep-head{text-align:center;margin-bottom:38px}
+  .fstep-head .kick{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.24em;font-size:.7rem;color:var(--maroon);margin-bottom:12px}
+  .fstep-head h2{font-family:var(--font-display);font-weight:400;font-size:clamp(2rem,4.4vw,3rem);line-height:1.04}
+  .fstep-head p{color:var(--char);font-weight:300;margin-top:10px}
+
+  /* Step 1 inputs */
+  .field{max-width:440px;margin:0 auto 22px}
+  .field label{display:block;font-family:var(--font-label);text-transform:uppercase;letter-spacing:.14em;font-size:.7rem;color:var(--char);margin-bottom:9px}
+  .field .inputwrap{position:relative}
+  .field .at{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--taupe);font-size:1rem}
+  .field input,.field select{width:100%;padding:15px 16px;border:1px solid var(--line);background:var(--paper);font-family:var(--font-body);font-size:1rem;color:var(--ink);transition:border-color .2s,box-shadow .2s}
+  .field select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23443f3b' stroke-width='1.5'><path d='M5 8l5 5 5-5'/></svg>");background-repeat:no-repeat;background-position:right 16px center;background-size:14px;cursor:pointer}
+  .field select:invalid{color:var(--taupe)}
+  .field input.pad{padding-left:34px}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--maroon);box-shadow:0 0 0 3px rgba(146,41,57,.1)}
+  .field .err{color:var(--maroon);font-size:.78rem;margin-top:7px;display:none}
+  .field.invalid .err{display:block}
+  .field.invalid input,.field.invalid select{border-color:var(--maroon)}
+  .hp-field{position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden}
+
+  /* Turnstile (verificacion anti-bot) */
+  .turnstile-wrap{display:flex;justify-content:center;margin:30px 0 6px}
+
+  /* modelo de iPhone (dentro del paso 2, debajo del color de pasta) */
+  .modelbox{max-height:0;opacity:0;overflow:hidden;transition:max-height .5s cubic-bezier(.2,.8,.25,1),opacity .4s,margin .4s;max-width:440px;margin:0 auto}
+  .modelbox.show{max-height:420px;opacity:1;margin-top:34px}
+  .modelbox-card{background:var(--paper-2);border:1px solid var(--line);border-radius:20px;padding:38px 34px 32px;text-align:center}
+  .modelbox-star{display:block;color:var(--maroon);font-size:1.25rem;margin-bottom:14px}
+  .modelbox .field{margin:0}
+  .pastawrap,.modelbox,.gemblock{scroll-margin-top:150px}
+
+  /* bracket connector (como el PDF) */
+  .bracket{display:flex;justify-content:center;margin:0 auto 30px;width:60%;max-width:420px}
+  .bracket svg{width:100%;height:46px}
+  .bracket path{stroke:var(--ink);stroke-width:1.4;fill:none}
+
+  /* selectable cards */
+  .pick2{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:680px;margin:0 auto}
+  .pick{position:relative;border:none;background:transparent;cursor:pointer;transition:transform .45s cubic-bezier(.2,.8,.25,1),opacity .35s;text-align:center}
+  .pick:hover{transform:translateY(-4px)}
+  .pick .media{aspect-ratio:3/4;display:grid;place-items:center;background:transparent;padding:10px}
+  .pick .media img{max-height:100%;max-width:100%;height:auto;width:auto;object-fit:contain;filter:drop-shadow(0 14px 20px rgba(5,4,3,.18));transition:transform .4s}
+  .pick:hover .media img{transform:scale(1.04)}
+  .pick .cap{padding:18px 18px 22px}
+  .pick .cap h3{font-family:var(--font-display);font-size:1.4rem;font-weight:500;line-height:1.1;margin-bottom:4px}
+  .pick .cap span{font-size:.84rem;color:var(--taupe);font-weight:300}
+  .pick .tick{display:none}
+  @keyframes pickPop{0%{transform:scale(1)}55%{transform:scale(1.12)}100%{transform:scale(1.07)}}
+  .pick.sel{transform:scale(1.07);z-index:2;animation:pickPop .5s cubic-bezier(.2,.8,.25,1)}
+  .pick.sel:hover{transform:scale(1.07)}
+  .pick.sel .media img{transform:scale(1.06)}
+  .pick2:has(.pick.sel) .pick:not(.sel){opacity:.4;transform:scale(.94)}
+  .pick2:has(.pick.sel) .pick:not(.sel):hover{opacity:.7;transform:scale(.97)}
+
+  /* color de pasta */
+  .pastawrap{max-height:0;opacity:0;overflow:hidden;transition:max-height .5s cubic-bezier(.2,.8,.25,1),opacity .4s,margin .4s;text-align:center}
+  .pastawrap.show{max-height:240px;opacity:1;margin-top:34px}
+  .pastawrap .rowlbl{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.2em;font-size:.74rem;margin-bottom:16px;color:var(--char)}
+  .pastaopts{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .pastabtn{display:flex;align-items:center;gap:10px;padding:12px 22px;border:1px solid var(--line);border-radius:999px;background:var(--paper);cursor:pointer;font-family:var(--font-label);text-transform:uppercase;letter-spacing:.14em;font-size:.7rem;color:var(--char);transition:transform .25s,background .25s,color .25s,border-color .25s}
+  .pastabtn:hover{transform:translateY(-2px)}
+  .pastabtn .sw{width:16px;height:16px;border-radius:50%;display:inline-block;border:1px solid rgba(5,4,3,.18)}
+  .pastabtn .sw-w{background:#fff}
+  .pastabtn .sw-b{background:#151311}
+  .pastabtn.on{background:var(--ink);color:var(--paper);border-color:var(--ink);transform:translateY(-2px)}
+  .pastabtn.on .sw{border-color:rgba(255,255,255,.5)}
+  .pastawrap .pnote{font-size:.8rem;color:var(--taupe);font-weight:300;margin-top:14px}
+  .note-strip{text-align:center;max-width:520px;margin:30px auto 0;font-size:.85rem;color:var(--taupe);font-weight:300}
+
+  /* gems interactive */
+  .gemblock{max-width:680px;margin:52px auto 0;border-top:1px solid var(--line);padding-top:40px}
+  .gemblock .intro{text-align:center;color:var(--char);font-weight:300;margin-bottom:30px}
+  .gemrow{margin-bottom:26px}
+  .gemrow .rowlbl{display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-label);text-transform:uppercase;letter-spacing:.2em;font-size:.74rem;text-align:center;margin-bottom:16px}
+  .gemrow.prio .rowlbl{color:var(--blue)}
+  .gemrow.excl .rowlbl{color:var(--maroon)}
+  .rowlbl-ic{font-size:.9em}
+
+  @keyframes gemPulse{0%,100%{box-shadow:0 0 0 0 rgba(146,41,57,0)}50%{box-shadow:0 0 0 6px rgba(146,41,57,.14)}}
+  .gemblock.hint .gembtn{animation:gemPulse 1.5s ease-in-out 2}
+  .gemgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .gembtn{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:16px 8px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:transform .2s,border-color .2s,background .2s,box-shadow .2s;position:relative}
+  .gembtn img{width:42px;height:42px;object-fit:contain;transition:transform .3s}
+  .gembtn span{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.1em;font-size:.66rem;color:var(--char)}
+  .gembtn:hover{transform:translateY(-3px)}
+  .gembtn:hover img{transform:scale(1.12) rotate(6deg)}
+  .gemrow.prio .gembtn.on{border-color:var(--blue);background:rgba(45,112,173,.08);box-shadow:0 0 0 2px var(--blue)}
+  .gemrow.excl .gembtn.on{border-color:var(--maroon);background:rgba(146,41,57,.07);box-shadow:0 0 0 2px var(--maroon)}
+  .gemrow.excl .gembtn.on img{filter:grayscale(.5) opacity(.7)}
+  .gemrow.excl .gembtn.on span{text-decoration:line-through}
+  .gembtn .badge{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;color:#fff;display:grid;place-items:center;font-size:.7rem;opacity:0;transform:scale(.4);transition:.2s}
+  .gemrow.prio .gembtn.on .badge{opacity:1;transform:scale(1);background:var(--blue)}
+  .gemrow.excl .gembtn.on .badge{opacity:1;transform:scale(1);background:var(--maroon)}
+
+  /* form nav */
+  .form-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(242,239,233,.94);backdrop-filter:blur(8px);border-top:1px solid var(--line);z-index:6}
+  .form-nav-inner{max-width:900px;margin:0 auto;padding:16px 28px;display:flex;justify-content:space-between;align-items:center;gap:14px}
+  .btn-back{background:none;border:none;font-family:var(--font-label);text-transform:uppercase;letter-spacing:.14em;font-size:.76rem;color:var(--taupe);cursor:pointer;padding:10px;visibility:hidden}
+  .btn-back:hover{color:var(--ink)}
+
+  /* success */
+  .success{display:none;text-align:center;padding:60px 20px;animation:stepIn .5s ease}
+  .success.show{display:block}
+  .success .big-star{font-size:3rem;color:var(--maroon);animation:spark 2s infinite}
+  .success h2{font-family:var(--font-display);font-weight:400;font-size:clamp(2.2rem,4.6vw,3.2rem);margin:16px 0 12px}
+  .success p{color:var(--char);font-weight:300;max-width:40ch;margin:0 auto 20px}
+  .summary{max-width:420px;margin:0 auto 30px;text-align:left;border:1px solid var(--line);padding:22px 24px;background:var(--paper)}
+  .summary h4{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.7rem;color:var(--maroon);margin-bottom:14px}
+  .summary .row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:.9rem}
+  .summary .row:last-child{border-bottom:none}
+  .summary .row b{font-weight:500}
+  .summary .row span{color:var(--char);text-align:right}
+  .order-id{text-align:center;font-family:var(--font-label);text-transform:uppercase;letter-spacing:.14em;font-size:.68rem;color:var(--taupe);background:var(--paper-2);border:1px dashed var(--line);border-radius:8px;padding:12px;margin-bottom:20px}
+  .order-id b{display:block;font-family:var(--font-display);font-size:1.3rem;letter-spacing:.04em;color:var(--ink);margin-top:4px;text-transform:none}
+
+  @media(max-width:900px){
+    .nav-links,.nav-cta{display:none}
+    .nav-toggle{display:flex}
+    .nav-inner{height:76px}.nav-logo img{height:44px}
+    .hero-grid{grid-template-columns:1fr;gap:20px}
+    .hero-stage{order:-1;height:400px}
+    .hero-case.main{width:230px}.hero-case.side{width:180px}
+    .about{grid-template-columns:1fr;gap:34px}
+    .ig-grid{grid-template-columns:repeat(2,1fr)}
+    .foot-top{grid-template-columns:1fr 1fr}.foot-brand{grid-column:1/-1}
+    .band,.cta-band{padding:66px 0}
+    .pick2{grid-template-columns:1fr 1fr;gap:14px}
+    .pick .cap h3{font-size:1.15rem}
+    .mobile-menu{display:block;max-height:0;opacity:0;overflow:hidden;background:var(--paper);transition:max-height .6s cubic-bezier(.22,1,.36,1),opacity .45s ease}
+    .mobile-menu.open{max-height:360px;opacity:1;border-top:1px solid var(--line)}
+    .mobile-menu a,.mobile-menu button{display:block;width:100%;text-align:left;border:none;background:none;color:inherit;padding:15px 28px;font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.82rem;border-bottom:1px solid var(--line);cursor:pointer;opacity:0;transform:translateY(-10px);transition:opacity .45s ease,transform .5s cubic-bezier(.22,1,.36,1),background .2s,padding-left .25s}
+    .mobile-menu.open a,.mobile-menu.open button{opacity:1;transform:none}
+    .mobile-menu.open a:nth-child(1),.mobile-menu.open button:nth-child(1){transition-delay:.12s}
+    .mobile-menu.open a:nth-child(2),.mobile-menu.open button:nth-child(2){transition-delay:.20s}
+    .mobile-menu.open a:nth-child(3),.mobile-menu.open button:nth-child(3){transition-delay:.28s}
+    .mobile-menu a:hover,.mobile-menu button:hover{background:var(--paper-2);padding-left:36px}
+  }
+  @media(max-width:520px){
+    .gemgrid{grid-template-columns:repeat(2,1fr)}
+    .foot-top{grid-template-columns:1fr 1fr}
+  }
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}.reveal{opacity:1;transform:none}.hero-copy,.hero-case{opacity:1!important}}
+  :focus-visible{outline:2px solid var(--maroon);outline-offset:3px}
 </style>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "bfae4ad9ded040d1bb2dd8bfbd3eb8a0"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
 <body>
-<div class="announce"><span class="star">★</span> Borrador · no es la tienda en vivo <span class="star">★</span></div>
-<main>
-  <p class="eyebrow">Rama v2</p>
-  <h1>Borrador de ASTÉRIA</h1>
-  <p class="lead">Aquí se ve lo que se está construyendo antes de que llegue a la tienda.
-     Nada de esto afecta a <a href="https://asteriamx.pages.dev">asteriamx.pages.dev</a>, que sigue saliendo de la rama master.</p>
-  <p class="stamp">Actualizado 2026-08-31 · commit 163c4d6</p>
+<div style="background:#472d1d;color:#f2efe9;font-family:'Oswald',system-ui,sans-serif;
+text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center;padding:7px 14px;position:relative;z-index:999">Copia de revisión · la tienda real está en asteriamx.pages.dev</div>
 
-  <div class="cards">
-    <a class="card" href="panel/">
-      <h2>Panel de administración</h2>
-      <p>Charms, precios, stock, fotos, gastos y rendimiento. Funciona de verdad: los datos son de ejemplo y viven solo en tu navegador.</p>
-      <span class="go">Abrir el panel →</span>
-    </a>
-    <a class="card" href="sitio/">
-      <h2>La página</h2>
-      <p>El sitio tal como está en esta rama, con el formulario de pedido. Todavía sin el personalizador de charms.</p>
-      <span class="go">Abrir la página →</span>
-    </a>
+<div class="announce"><span class="star">★</span> Hecho a mano en México · Cada pieza es única <span class="star">★</span></div>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="nav-logo" href="#top" aria-label="ASTÉRIA inicio"><img src="img/i1.webp" alt="ASTÉRIA"></a>
+    <nav class="nav-links">
+      <a href="#nosotras">Nosotras</a>
+      <a href="#pedido">Tu pedido</a>
+      <a href="https://www.instagram.com/asteria__mx/" target="_blank" rel="noopener">Instagram</a>
+    </nav>
+    <button class="nav-cta" data-open-form>Empezar a personalizar</button>
+    <button class="nav-toggle" aria-label="Menú" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-menu">
+    <a href="#nosotras">Nosotras</a>
+    <button type="button" data-open-form>Empezar a personalizar</button>
+    <a href="https://www.instagram.com/asteria__mx/" target="_blank" rel="noopener">Instagram</a>
+  </div>
+</header>
+<a id="top"></a>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow">Más que una funda, un diseño que trasciende</div>
+      <h1>Ninguna es igual<br><span class="serif italic">a la tuya.</span></h1>
+      <p class="lead">Fundas de iPhone personalizadas hechas a mano, charm por charm, con gemas, dijes y pedrería. Creadas para acompañarte y complementar tu estilo.</p>
+      <div class="hero-actions">
+        <button class="btn btn-solid" data-open-form>Empezar a personalizar <span class="arw">→</span></button>
+        <a href="#nosotras" class="btn btn-ghost">Conócenos</a>
+      </div>
+    </div>
+    <div class="hero-stage" id="heroStage">
+      <div class="hero-glow"></div>
+      <span class="hero-spark s1">✦</span>
+      <span class="hero-spark s2">✦</span>
+      <span class="hero-spark s3">★</span>
+      <img class="hero-case side" id="heroCaseSide" src="img/i2.webp" alt="Funda transparente con gemas">
+      <img class="hero-case main" id="heroCaseMain" src="img/i3.webp" alt="Funda con pasta blanca y gemas de colores" fetchpriority="high">
+    </div>
+  </div>
+</section>
+
+<!-- NOSOTRAS -->
+<section class="band stone" id="nosotras">
+  <div class="wrap about">
+    <h2 class="about-quote reveal">
+      ASTÉRIA nació de una idea simple: que tu funda también <span class="italic">diga algo de ti.</span>
+    </h2>
+    <div class="about-body reveal">
+      <span class="eyebrow">Nosotras</span>
+      <p>Somos un pequeño estudio mexicano creado en Guadalajara en 2025 que convierte fundas de iPhone en piezas irrepetibles y siempre protagónicas. Cada una se arma a mano, gema por gema, colocando lo necesario para proyectar tu esencia y complementar tu estilo.</p>
+      <p>No hay catálogo fijo ni dos iguales. Tú eliges el concepto (maxi o minimalista, las formas que amas y las que prefieres dejar fuera) y nosotras lo montamos como una pequeña obra que solo existe una vez.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA principal -->
+<section class="cta-band" id="pedido">
+  <div class="wrap reveal">
+    <div class="star-row">★ ★ ★</div>
+    <h2>Volvámosla <span class="italic">realidad.</span></h2>
+    <p>Nosotras te contactamos para afinar cada detalle.</p>
+    <button class="btn btn-solid" data-open-form>Empezar a personalizar <span class="arw">→</span></button>
+  </div>
+</section>
+
+<!-- IG STRIP -->
+<section class="band" id="instagram">
+  <div class="wrap">
+    <div class="ig-head reveal">
+      <div class="eyebrow">La comunidad</div>
+      <h2>Presume tu ASTÉRIA · <a href="https://www.instagram.com/asteria__mx/" target="_blank" rel="noopener">@asteria__mx</a></h2>
+    </div>
+    <div class="ig-grid reveal">
+      <a class="ig-tile" href="https://www.instagram.com/asteria__mx/" target="_blank" rel="noopener"><img src="img/i4.webp" alt="Funda ASTÉRIA con dijes plateados, sostenida junto a botas y accesorios" loading="lazy" decoding="async"></a>
+      <a class="ig-tile" href="https://www.instagram.com/asteria__mx/" target="_blank" rel="noopener"><img src="img/i5.webp" alt="Funda ASTÉRIA transparente maximalista con gemas de colores en forma de corazones y estrellas" loading="lazy" decoding="async"></a>
+      <a class="ig-tile" href="https://www.instagram.com/asteria__mx/" target="_blank" rel="noopener"><img src="img/i6.webp" alt="Funda ASTÉRIA negra con dijes dorados, en la playa" loading="lazy" decoding="async"></a>
+      <a class="ig-tile" href="https://www.instagram.com/asteria__mx/" target="_blank" rel="noopener"><img src="img/i7.webp" alt="Funda ASTÉRIA negra minimalista con dijes, tomando una foto al espejo" loading="lazy" decoding="async"></a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ (oculta por el momento, se deja el enlace en header/footer) -->
+<section class="band stone" id="preguntas" hidden>
+  <div class="wrap">
+    <div class="ig-head reveal">
+      <div class="eyebrow">Preguntas frecuentes</div>
+      <h2>Sobre tu funda de iPhone personalizada</h2>
+    </div>
+    <div class="faq-list reveal">
+      <details>
+        <summary>¿Cómo hago mi pedido de funda personalizada?</summary>
+        <p>Llenas un formulario en el sitio eligiendo el estilo de tu funda, el modelo de iPhone y las gemas que quieres priorizar o excluir. Después te contactamos por Instagram para coordinar los detalles y el pago.</p>
+      </details>
+      <details>
+        <summary>¿Hacen envíos a todo México?</summary>
+        <p>Sí, ASTÉRIA envía fundas personalizadas a toda la República Mexicana.</p>
+      </details>
+      <details>
+        <summary>¿De qué está hecha una funda bedazzled de ASTÉRIA?</summary>
+        <p>Cada funda se arma a mano pegando gemas, dijes y pedrería sobre una funda base de pasta blanca, negra o transparente. Además del pegamento, la funda cuenta con una capa protectora.</p>
+      </details>
+      <details>
+        <summary>¿Todas las fundas son diferentes?</summary>
+        <p>Sí. No hay catálogo fijo: tú eliges el concepto (maximalista o minimalista, las gemas que priorizas o excluyes) y cada funda se monta a mano como una pieza que solo existe una vez.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <img src="img/i8.webp" alt="ASTÉRIA" loading="lazy" decoding="async">
+        <p>Diseñado y customizado en México. Piezas únicas.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Explora</h4>
+        <a href="#nosotras">Nosotras</a>
+        <button type="button" data-open-form>Tu pedido</button>
+        <a href="https://www.instagram.com/asteria__mx/" target="_blank" rel="noopener">Instagram</a>
+      </div>
+      <div class="foot-col">
+        <h4>Pedido</h4>
+        <button type="button" data-open-form>Formulario</button>
+        <a href="pedido.html">Consultar mi pedido</a>
+        <a href="https://www.instagram.com/asteria__mx/" target="_blank" rel="noopener">Instagram</a>
+      </div>
+      <div class="foot-col">
+        <h4>Contacto</h4>
+        <a href="https://www.instagram.com/asteria__mx/" target="_blank" rel="noopener">@asteria__mx</a>
+        <a href="privacidad.html">Aviso de privacidad</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 ASTÉRIA. Todas las piezas hechas a mano. <a href="privacidad.html" style="color:inherit;text-decoration:underline">Aviso de privacidad</a></span>
+      <span><span class="star">★</span> Diseñado con amor y muchas gemas</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ FORM OVERLAY ============ -->
+<div class="form-overlay" id="formOverlay" role="dialog" aria-modal="true" aria-label="Formulario de pedido">
+  <div class="form-top">
+    <div class="form-top-inner">
+      <img src="img/i9.webp" alt="ASTÉRIA">
+      <button class="form-close" id="formClose" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="progress">
+      <div class="pstep active" data-p="1"><div class="bar"><i></i></div><span class="lbl">1 · Instagram</span></div>
+      <div class="pstep" data-p="2"><div class="bar"><i></i></div><span class="lbl">2 · Tu estilo</span></div>
+      <div class="pstep" data-p="3"><div class="bar"><i></i></div><span class="lbl">3 · Tu diseño</span></div>
+    </div>
   </div>
 
-  <div class="nota">
-    <b>Cómo se actualiza:</b> cada vez que se termina un cambio en la rama <code>v2</code>, se vuelve a generar este borrador
-    con <code>node scripts/build-borrador.mjs</code> y se publica. Lo que ves aquí siempre corresponde al commit de arriba.
+  <div class="form-body">
+    <!-- STEP 1 -->
+    <div class="fstep active" data-step="1">
+      <div class="fstep-head">
+        <div class="kick">Paso 1</div>
+        <h2>Déjanos tu Instagram</h2>
+        <p>Es donde te contactamos para coordinar tu pedido.</p>
+      </div>
+      <div class="field" id="fld-ig">
+        <label for="ig">Usuario de Instagram</label>
+        <div class="inputwrap">
+          <span class="at">@</span>
+          <input class="pad" type="text" id="ig" placeholder="tu_usuario" autocomplete="off">
+        </div>
+        <div class="err" id="err-ig">Escribe tu usuario para continuar.</div>
+      </div>
+      <div class="hp-field" aria-hidden="true">
+        <label for="website">Deja este campo vacio</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="nombre">Tu nombre <span style="color:var(--taupe);text-transform:none;letter-spacing:0">(opcional)</span></label>
+        <div class="inputwrap"><input type="text" id="nombre" placeholder="Como quieres que te llamemos"></div>
+      </div>
+      <p style="max-width:440px;margin:0 auto;font-size:.76rem;color:var(--taupe);text-align:center">Al continuar aceptas nuestro <a href="privacidad.html" target="_blank" style="color:var(--maroon)">aviso de privacidad</a>.</p>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="fstep" data-step="2">
+      <div class="fstep-head">
+        <div class="kick">Paso 2</div>
+        <h2>Elige un estilo</h2>
+        <p>para tu bedazzled phone case</p>
+      </div>
+      <div class="bracket" aria-hidden="true">
+        <svg viewBox="0 0 400 46" preserveAspectRatio="none"><path d="M200 0 V16 M60 46 V28 H340 V46 M200 16 V28"/></svg>
+      </div>
+      <div class="pick2">
+        <div class="pick" data-style="Pasta blanca/negra" role="button" tabindex="0" aria-pressed="false">
+          <div class="tick">✓</div>
+          <div class="media"><img src="img/i10.webp" alt="Funda con pasta de color" loading="lazy" decoding="async"></div>
+          <div class="cap"><h3>Pasta blanca o negra</h3><span>Base de color sólido</span></div>
+        </div>
+        <div class="pick" data-style="Transparente" role="button" tabindex="0" aria-pressed="false">
+          <div class="tick">✓</div>
+          <div class="media"><img src="img/i11.webp" alt="Funda transparente" loading="lazy" decoding="async"></div>
+          <div class="cap"><h3>Funda transparente</h3><span>Base cristalina</span></div>
+        </div>
+      </div>
+      <div class="pastawrap" id="pastaWrap">
+          <div class="rowlbl">¿De qué color quieres la pasta?</div>
+          <div class="pastaopts">
+            <button type="button" class="pastabtn" data-pasta="Blanca"><span class="sw sw-w"></span>Blanca</button>
+            <button type="button" class="pastabtn" data-pasta="Negra"><span class="sw sw-b"></span>Negra</button>
+          </div>
+        </div>
+        <div class="modelbox" id="modelBox">
+          <div class="modelbox-card">
+            <span class="modelbox-star" aria-hidden="true">★</span>
+            <div class="field" id="fld-modelo">
+              <label for="modelo">Modelo de iPhone</label>
+              <div class="inputwrap">
+                <select id="modelo"><option value="">Selecciona tu modelo…</option></select>
+              </div>
+              <div class="err">Elige tu modelo de iPhone para continuar.</div>
+            </div>
+          </div>
+        </div>
+        <p class="note-strip">Tu funda cuenta con una capa protectora además del pegamento para adherir las gemas.</p>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="fstep" data-step="3">
+      <div class="fstep-head">
+        <div class="kick">Paso 3</div>
+        <h2>Elige entre MAXI o minimalista</h2>
+      </div>
+      <div class="pick2">
+        <div class="pick" data-dens="Maximalista" role="button" tabindex="0" aria-pressed="false">
+          <div class="tick">✓</div>
+          <div class="media"><img src="img/i12.webp" alt="Funda maximalista" loading="lazy" decoding="async"></div>
+          <div class="cap"><h3>Maximalista</h3><span>Ni un espacio vacío</span></div>
+        </div>
+        <div class="pick" data-dens="Minimalista" role="button" tabindex="0" aria-pressed="false">
+          <div class="tick">✓</div>
+          <div class="media"><img src="img/i13.webp" alt="Funda minimalista" loading="lazy" decoding="async"></div>
+          <div class="cap"><h3>Minimalista</h3><span>Solo las gemas necesarias</span></div>
+        </div>
+      </div>
+
+      <div class="gemblock" id="gemblock">
+        <p class="intro">Las gemas en tu funda son aleatorias, pero puedes <b>priorizar</b> o <b>no incluir</b> un estilo.</p>
+        <div class="gemrow prio">
+          <div class="rowlbl"><span class="rowlbl-ic">★</span>Priorizar</div>
+          <div class="gemgrid">
+            <button class="gembtn" data-shape="Estrellas" data-mode="prio" aria-pressed="false"><span class="badge">✓</span><img src="img/i14.webp" alt="" loading="lazy" decoding="async"><span>Estrellas</span></button>
+            <button class="gembtn" data-shape="Círculos" data-mode="prio" aria-pressed="false"><span class="badge">✓</span><img src="img/i15.webp" alt="" loading="lazy" decoding="async"><span>Círculos</span></button>
+            <button class="gembtn" data-shape="Corazones" data-mode="prio" aria-pressed="false"><span class="badge">✓</span><img src="img/i16.webp" alt="" loading="lazy" decoding="async"><span>Corazones</span></button>
+            <button class="gembtn" data-shape="Flores" data-mode="prio" aria-pressed="false"><span class="badge">✓</span><img src="img/i17.webp" alt="" loading="lazy" decoding="async"><span>Flores</span></button>
+          </div>
+        </div>
+        <div class="gemrow excl">
+          <div class="rowlbl"><span class="rowlbl-ic">✕</span>No incluir</div>
+          <div class="gemgrid">
+            <button class="gembtn" data-shape="Estrellas" data-mode="excl" aria-pressed="false"><span class="badge">✕</span><img src="img/i18.webp" alt="" loading="lazy" decoding="async"><span>Estrellas</span></button>
+            <button class="gembtn" data-shape="Círculos" data-mode="excl" aria-pressed="false"><span class="badge">✕</span><img src="img/i19.webp" alt="" loading="lazy" decoding="async"><span>Círculos</span></button>
+            <button class="gembtn" data-shape="Corazones" data-mode="excl" aria-pressed="false"><span class="badge">✕</span><img src="img/i20.webp" alt="" loading="lazy" decoding="async"><span>Corazones</span></button>
+<button class="gembtn" data-shape="Flores" data-mode="excl" aria-pressed="false"><span class="badge">✕</span><img src="img/i21.webp" alt="" loading="lazy" decoding="async"><span>Flores</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="turnstile-wrap">
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAEe5aKlueV4Uwu7E" data-theme="light" data-appearance="interaction-only"></div>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success" id="success">
+      <div class="big-star">★</div>
+      <h2>¡Pedido enviado!</h2>
+      <p>Gracias. Te escribimos por Instagram para afinar los detalles de tu funda.</p>
+      <div class="summary" id="summary"></div>
+      <p class="note-strip"><a id="lookupLink" href="pedido.html" target="_blank">Guarda este link para consultar tu pedido después →</a></p>
+      <button class="btn btn-ghost" id="againBtn">Hacer otro pedido</button>
+    </div>
   </div>
-</main>
+
+  <div class="form-nav" id="formNav">
+    <div class="form-nav-inner">
+      <button class="btn-back" id="backBtn">← Atrás</button>
+      <button class="btn btn-solid" id="nextBtn">Continuar <span class="arw">→</span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ---------- mobile menu ---------- */
+  const toggle=document.querySelector('.nav-toggle');
+  const menu=document.querySelector('.mobile-menu');
+  toggle.addEventListener('click',()=>{const o=menu.classList.toggle('open');toggle.setAttribute('aria-expanded',o);});
+  menu.querySelectorAll('a, button').forEach(a=>a.addEventListener('click',()=>menu.classList.remove('open')));
+
+  /* ---------- reveal ---------- */
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.14});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  /* ---------- hero cases: drag to orbit ---------- */
+  (function(){
+    const stage=document.getElementById('heroStage');
+    const main=document.getElementById('heroCaseMain');
+    const side=document.getElementById('heroCaseSide');
+    if(!stage||!main||!side) return;
+    const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let angle=0;          // radianes
+    let velocity=0;        // radianes/frame al soltar
+    let dragging=false;
+    let startX=0, lastX=0, lastT=0, pointerId=null;
+    let ready=false;
+    let raf=null;
+
+    function sizeFor(){
+      const w=stage.clientWidth||320;
+      return { rx:Math.max(70,w*0.16), ry:Math.max(26,w*0.055) };
+    }
+
+    function place(angleRad){
+      const {rx,ry}=sizeFor();
+      [{el:main,offset:0,front:true},{el:side,offset:Math.PI,front:false}].forEach(({el,offset})=>{
+        const t=angleRad+offset;
+        const x=Math.sin(t)*rx;
+        const depth=Math.cos(t); // 1 = al frente, -1 = atrás
+        const y=-depth*ry*0.35;
+        const scale=0.86+((depth+1)/2)*0.2;
+        el.style.translate=`calc(-50% + ${x}px) calc(-50% + ${y}px)`;
+        el.style.scale=scale.toFixed(3);
+        el.style.zIndex=depth>0?3:1;
+      });
+    }
+
+    function enableOrbit(){
+      if(ready) return;
+      ready=true;
+      main.classList.add('orbit-ready');
+      side.classList.add('orbit-ready');
+      place(angle);
+      stage.addEventListener('pointerdown',onDown);
+      window.addEventListener('pointermove',onMove);
+      window.addEventListener('pointerup',onUp);
+      window.addEventListener('pointercancel',onUp);
+      if(!reduceMotion){ cancelAnimationFrame(raf); raf=requestAnimationFrame(loop); }
+    }
+
+    function onDown(e){
+      dragging=true;
+      velocity=0;
+      startX=lastX=e.clientX;
+      lastT=performance.now();
+      pointerId=e.pointerId;
+      stage.classList.add('dragging');
+      stage.setPointerCapture && stage.setPointerCapture(pointerId);
+      cancelAnimationFrame(raf);
+    }
+
+    function onMove(e){
+      if(!dragging||e.pointerId!==pointerId) return;
+      const now=performance.now();
+      const dx=e.clientX-lastX;
+      const dt=Math.max(1,now-lastT);
+      const sensitivity=0.012;
+      angle+=dx*sensitivity;
+      velocity=(dx*sensitivity)/(dt/16.7);
+      lastX=e.clientX;
+      lastT=now;
+      place(angle);
+    }
+
+    function onUp(e){
+      if(!dragging) return;
+      dragging=false;
+      stage.classList.remove('dragging');
+    }
+
+    // Giro lento constante; al soltar, la inercia decae hacia ese giro
+    const IDLE=0.0024;
+    function loop(){
+      if(!dragging){
+        velocity=velocity*0.94+IDLE*0.06;
+        angle+=velocity;
+        place(angle);
+      }
+      raf=requestAnimationFrame(loop);
+    }
+
+    // Espera a que termine la animación de entrada antes de activar el orbit
+    window.addEventListener('resize',()=>{ if(ready) place(angle); });
+    setTimeout(enableOrbit, reduceMotion?0:1650);
+  })();
+
+  /* ---------- form state ---------- */
+  const WORKER_URL='https://asteria-orders.asteria-telegram-worker.workers.dev';
+  /* metrica de embudo, sin datos personales: solo cuenta que se llego a cada paso */
+  function trackEvent(name){
+    try{
+      const body=JSON.stringify({event:name});
+      if(navigator.sendBeacon){
+        navigator.sendBeacon(`${WORKER_URL}/event`, new Blob([body],{type:'application/json'}));
+      }else{
+        fetch(`${WORKER_URL}/event`,{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:true}).catch(()=>{});
+      }
+    }catch(e){ /* nunca romper el sitio por una metrica */ }
+  }
+  const overlay=document.getElementById('formOverlay');
+  const state={ig:'',nombre:'',style:null,pasta:null,modelo:null,dens:null,shapes:{Estrellas:'none',Círculos:'none',Corazones:'none',Flores:'none'}};
+  let step=1;
+  let gemHinted=false;
+  let gemsWarned=false;
+  let pendingOrderId=null;
+
+  /* modelos de iPhone disponibles por estilo de funda */
+  const MODELOS_PASTA=['iPhone 12','iPhone 12 Pro','iPhone 12 Pro Max','iPhone 13 mini','iPhone 13','iPhone 13 Pro','iPhone 13 Pro Max','iPhone 14','iPhone 14 Plus','iPhone 14 Pro','iPhone 14 Pro Max','iPhone 15','iPhone 15 Plus','iPhone 15 Pro','iPhone 15 Pro Max','iPhone 16','iPhone 16 Plus','iPhone 16 Pro','iPhone 16 Pro Max','iPhone 17e','iPhone 17','iPhone Air','iPhone 17 Pro','iPhone 17 Pro Max'];
+  const MODELOS_TRANSPARENTE=['iPhone 12','iPhone 12 Pro','iPhone 12 Pro Max','iPhone 13 mini','iPhone 13','iPhone 13 Pro','iPhone 13 Pro Max','iPhone 14','iPhone 14 Plus','iPhone 14 Pro','iPhone 14 Pro Max','iPhone 15','iPhone 15 Pro','iPhone 15 Pro Max','iPhone 16','iPhone 16 Plus','iPhone 16 Pro','iPhone 16 Pro Max','iPhone 17e','iPhone 17','iPhone Air','iPhone 17 Pro','iPhone 17 Pro Max'];
+  const modeloSelect=document.getElementById('modelo');
+  const fldModelo=document.getElementById('fld-modelo');
+  const modelBox=document.getElementById('modelBox');
+  function populateModelos(){
+    const esPasta = state.style && state.style.indexOf('Pasta')===0;
+    const lista = esPasta ? MODELOS_PASTA : MODELOS_TRANSPARENTE;
+    const prev=state.modelo;
+    modeloSelect.innerHTML='<option value="">Selecciona tu modelo…</option>'+lista.map(m=>`<option value="${m}">${m}</option>`).join('');
+    if(prev && lista.includes(prev)){modeloSelect.value=prev;} else {state.modelo=null;}
+  }
+  modeloSelect.addEventListener('change',()=>{state.modelo=modeloSelect.value||null;fldModelo.classList.remove('invalid');});
+
+  let formOpenedAt=0;
+  let formOpenerEl=null;
+  let trackedStep2=false, trackedStep3=false;
+  function focusableInOverlay(){
+    return Array.from(overlay.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+      .filter(el=>!el.disabled && el.offsetParent!==null);
+  }
+  function openForm(e){
+    formOpenerEl = (e && e.currentTarget) || document.activeElement;
+    overlay.classList.add('open');document.body.style.overflow='hidden';formOpenedAt=Date.now();goStep(1);
+    trackedStep2=false; trackedStep3=false;
+    trackEvent('form_open');
+    const focusables=focusableInOverlay();
+    (focusables[0]||overlay).focus();
+  }
+  function closeForm(){
+    overlay.classList.remove('open');document.body.style.overflow='';
+    if(formOpenerEl && document.body.contains(formOpenerEl)) formOpenerEl.focus();
+  }
+  document.querySelectorAll('[data-open-form]').forEach(b=>b.addEventListener('click',openForm));
+  document.getElementById('formClose').addEventListener('click',closeForm);
+
+  /* focus trap: keep Tab cycling within the overlay while it's open */
+  overlay.addEventListener('keydown',(e)=>{
+    if(e.key!=='Tab'||!overlay.classList.contains('open')) return;
+    const focusables=focusableInOverlay();
+    if(!focusables.length) return;
+    const first=focusables[0], last=focusables[focusables.length-1];
+    if(e.shiftKey && document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey && document.activeElement===last){e.preventDefault();first.focus();}
+  });
+
+  const steps=document.querySelectorAll('.fstep');
+  const psteps=document.querySelectorAll('.pstep');
+  const backBtn=document.getElementById('backBtn');
+  const nextBtn=document.getElementById('nextBtn');
+  const success=document.getElementById('success');
+  const formNav=document.getElementById('formNav');
+
+  function goStep(n){
+    step=n;
+    steps.forEach(s=>s.classList.toggle('active', +s.dataset.step===n));
+    psteps.forEach(p=>{const pn=+p.dataset.p;p.classList.toggle('active',pn===n);p.classList.toggle('done',pn<n);});
+    backBtn.style.visibility = n>1 ? 'visible':'hidden';
+    nextBtn.innerHTML = n<3 ? 'Continuar <span class="arw">→</span>' : 'Enviar pedido <span class="arw">→</span>';
+    success.classList.remove('show');
+    steps.forEach(s=>s.style.display='');
+    if(n===3 && !gemHinted){
+      gemHinted=true;
+      const gemblock=document.getElementById('gemblock');
+      gemblock.classList.add('hint');
+      setTimeout(()=>gemblock.classList.remove('hint'),3200);
+    }
+    document.querySelector('.form-body').scrollTop=0;
+    overlay.scrollTop=0;
+  }
+
+  /* validation + advance */
+  nextBtn.addEventListener('click',async()=>{
+    if(step===1){
+      const igField=document.getElementById('fld-ig');
+      const errIg=document.getElementById('err-ig');
+      const v=document.getElementById('ig').value.trim().replace(/^@/,'');
+      const igValido=/^(?!.*\.\.)(?!\.)[a-zA-Z0-9._]{1,30}(?<!\.)$/.test(v);
+      if(!v){errIg.textContent='Escribe tu usuario para continuar.';igField.classList.add('invalid');return;}
+      if(!igValido){errIg.textContent='Ese no parece un usuario válido de Instagram.';igField.classList.add('invalid');return;}
+      igField.classList.remove('invalid');
+
+      nextBtn.disabled=true;
+      const nextBtnOrig=nextBtn.innerHTML;
+      nextBtn.innerHTML='Verificando… <span class="arw">→</span>';
+      let existe=null;
+      try{
+        const ctrl=new AbortController();
+        const t=setTimeout(()=>ctrl.abort(),5000);
+        const r=await fetch(`${WORKER_URL}/check-ig?u=${encodeURIComponent(v)}`,{signal:ctrl.signal});
+        clearTimeout(t);
+        const data=await r.json();
+        existe=data.exists;
+      }catch(e){
+        existe=null; // no se pudo verificar: no bloqueamos al usuario
+      }
+      nextBtn.disabled=false;
+      nextBtn.innerHTML=nextBtnOrig;
+
+      if(existe===false){
+        errIg.textContent='Escribe un usuario existente.';
+        igField.classList.add('invalid');
+        return;
+      }
+      if(existe===null){
+        flash('No pudimos verificar tu usuario. Revisa que esté bien escrito antes de continuar.');
+      }
+      state.ig=v; state.nombre=document.getElementById('nombre').value.trim();
+      if(!trackedStep2){trackedStep2=true;trackEvent('step2');}
+      goStep(2);
+    } else if(step===2){
+      if(!state.style){flash('Elige un estilo para continuar.');return;}
+      if(state.style.indexOf('Pasta')===0 && !state.pasta){flash('Elige el color de la pasta: blanca o negra.');return;}
+      if(!state.modelo){fldModelo.classList.add('invalid');flash('Elige tu modelo de iPhone.');return;}
+      fldModelo.classList.remove('invalid');
+      if(!trackedStep3){trackedStep3=true;trackEvent('step3');}
+      goStep(3);
+    } else if(step===3){
+      if(!state.dens){flash('Elige entre maxi o minimalista.');return;}
+      const sinGemas=Object.values(state.shapes).every(v=>v==='none');
+      if(sinGemas && !gemsWarned){
+        gemsWarned=true;
+        flash('Puedes priorizar o excluir gemas arriba. Dale "Enviar pedido" de nuevo si no quieres elegir.');
+        return;
+      }
+      submit();
+    }
+  });
+  backBtn.addEventListener('click',()=>{if(step>1)goStep(step-1);});
+  document.getElementById('ig').addEventListener('input',()=>document.getElementById('fld-ig').classList.remove('invalid'));
+
+  /* style + density selection */
+  const pastaWrap=document.getElementById('pastaWrap');
+  /* las tarjetas .pick son div con role="button": Enter/Espacio deben activarlas igual que un clic */
+  function makeKeyClickable(el){
+    el.addEventListener('keydown',(e)=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}
+    });
+  }
+  document.querySelectorAll('.pick[data-style]').forEach(c=>{
+    makeKeyClickable(c);
+    c.addEventListener('click',()=>{
+      document.querySelectorAll('.pick[data-style]').forEach(x=>{x.classList.remove('sel');x.setAttribute('aria-pressed','false');});
+      c.classList.add('sel'); c.setAttribute('aria-pressed','true'); state.style=c.dataset.style;
+      const esPasta = state.style.indexOf('Pasta')===0;
+      pastaWrap.classList.toggle('show',esPasta);
+      if(!esPasta){state.pasta=null;document.querySelectorAll('.pastabtn').forEach(b=>b.classList.remove('on'));}
+      modelBox.classList.add('show');
+      populateModelos();
+      const scrollTarget = esPasta ? pastaWrap : modelBox;
+      setTimeout(()=>scrollTarget.scrollIntoView({behavior:'smooth',block:'start'}),380);
+    });
+  });
+  document.querySelectorAll('.pastabtn').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.pastabtn').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); state.pasta=b.dataset.pasta;
+  }));
+  document.querySelectorAll('.pick[data-dens]').forEach(c=>{
+    makeKeyClickable(c);
+    c.addEventListener('click',()=>{
+      document.querySelectorAll('.pick[data-dens]').forEach(x=>{x.classList.remove('sel');x.setAttribute('aria-pressed','false');});
+      c.classList.add('sel'); c.setAttribute('aria-pressed','true'); state.dens=c.dataset.dens;
+      document.getElementById('gemblock').scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  });
+
+  /* gems: prioritize / exclude mutually exclusive per shape */
+  document.querySelectorAll('.gembtn').forEach(b=>b.addEventListener('click',()=>{
+    const shape=b.dataset.shape, mode=b.dataset.mode;
+    const cur=state.shapes[shape];
+    const target = mode==='prio' ? 'prio':'excl';
+    state.shapes[shape] = (cur===target) ? 'none' : target;
+    renderGems();
+  }));
+  function renderGems(){
+    document.querySelectorAll('.gembtn').forEach(b=>{
+      const on = state.shapes[b.dataset.shape]===b.dataset.mode;
+      b.classList.toggle('on',on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  }
+
+  /* toast */
+  let toastT;
+  function flash(msg){
+    let t=document.getElementById('toast');
+    if(!t){t=document.createElement('div');t.id='toast';t.setAttribute('role','status');t.setAttribute('aria-live','polite');
+      t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--maroon);color:#fff;padding:12px 22px;font-size:.86rem;z-index:200;border-radius:6px;box-shadow:0 10px 24px -10px rgba(0,0,0,.5);transition:opacity .3s;max-width:86vw;text-align:center';
+      document.body.appendChild(t);}
+    t.textContent=msg;t.style.opacity='1';clearTimeout(toastT);
+    toastT=setTimeout(()=>t.style.opacity='0',3200);
+  }
+
+  /* submit -> summary (Telegram se conecta después) */
+  function genOrderId(){
+    const d=new Date();
+    const ymd=String(d.getFullYear()).slice(2)+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+    const rand=Math.random().toString(36).slice(2,6).toUpperCase();
+    return `AST-${ymd}-${rand}`;
+  }
+
+  function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+  function showSuccess(orderId, prio, excl){
+    document.getElementById('summary').innerHTML=`
+      <div class="order-id">Folio de tu pedido<br><b>${esc(orderId)}</b></div>
+      <h4>Resumen de tu pedido</h4>
+      <div class="row"><b>Instagram</b><span>@${esc(state.ig)}</span></div>
+      ${state.nombre?`<div class="row"><b>Nombre</b><span>${esc(state.nombre)}</span></div>`:''}
+      <div class="row"><b>Estilo</b><span>${state.style}</span></div>
+      ${state.pasta?`<div class="row"><b>Color de pasta</b><span>${state.pasta}</span></div>`:''}
+      <div class="row"><b>Modelo</b><span>${state.modelo}</span></div>
+      <div class="row"><b>Densidad</b><span>${state.dens}</span></div>
+      <div class="row"><b>Priorizar</b><span>${prio.length?prio.join(', '):'Ninguna'}</span></div>
+      <div class="row"><b>No incluir</b><span>${excl.length?excl.join(', '):'Ninguna'}</span></div>`;
+    document.getElementById('lookupLink').href=`pedido.html?folio=${encodeURIComponent(orderId)}`;
+    steps.forEach(s=>s.style.display='none');
+    formNav.style.display='none';
+    success.classList.add('show');
+    psteps.forEach(p=>p.classList.add('done'));
+  }
+
+  async function submit(){
+    const prio=Object.keys(state.shapes).filter(s=>state.shapes[s]==='prio');
+    const excl=Object.keys(state.shapes).filter(s=>state.shapes[s]==='excl');
+    if(!pendingOrderId) pendingOrderId=genOrderId();
+    const orderId=pendingOrderId;
+
+    nextBtn.disabled=true;
+    const nextBtnOrig=nextBtn.innerHTML;
+    nextBtn.innerHTML='Enviando… <span class="arw">→</span>';
+
+    const website=(document.getElementById('website').value||'').trim();
+    const elapsed=Date.now()-formOpenedAt;
+    const esBotObvio = website || elapsed<2000;
+
+    if(esBotObvio){
+      // No delatamos el filtro: mostramos exito pero nunca mandamos el pedido.
+      console.warn('Envio descartado por filtro anti-bot');
+      nextBtn.disabled=false;
+      nextBtn.innerHTML=nextBtnOrig;
+      pendingOrderId=null;
+      showSuccess(orderId, prio, excl);
+      return;
+    }
+
+    let enviado=false;
+    try{
+      // el widget managed suele resolverse solo en <1s; le damos un margen antes de enviar
+      let turnstileToken='';
+      for(let i=0;i<15;i++){
+        const tsInput=document.querySelector('[name="cf-turnstile-response"]');
+        turnstileToken=tsInput?tsInput.value:'';
+        if(turnstileToken) break;
+        await new Promise(r=>setTimeout(r,150));
+      }
+      const ctrl=new AbortController();
+      const t=setTimeout(()=>ctrl.abort(),8000);
+      const res=await fetch(WORKER_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          orderId, ig:state.ig, nombre:state.nombre, style:state.style, pasta:state.pasta,
+          modelo:state.modelo, dens:state.dens,
+          prio:prio.length?prio.join(', '):'', excl:excl.length?excl.join(', '):'',
+          website, turnstileToken
+        }),
+        signal:ctrl.signal
+      });
+      clearTimeout(t);
+      let data=null;
+      try{ data=await res.json(); }catch{ /* respuesta sin json: nos quedamos con res.ok */ }
+      enviado = res.ok && !(data && data.ok===false);
+    }catch(e){
+      console.error('No se pudo notificar el pedido por Telegram', e);
+      enviado=false;
+    }
+
+    nextBtn.disabled=false;
+    nextBtn.innerHTML=nextBtnOrig;
+
+    if(enviado){
+      pendingOrderId=null;
+      trackEvent('submit');
+      showSuccess(orderId, prio, excl);
+    }else{
+      flash('No pudimos enviar tu pedido. Revisa tu conexión y dale "Enviar pedido" de nuevo.');
+    }
+  }
+  document.getElementById('againBtn').addEventListener('click',()=>{
+    state.style=null;state.dens=null;state.pasta=null;state.modelo=null;gemHinted=false;gemsWarned=false;pendingOrderId=null;
+    document.querySelectorAll('.pastabtn').forEach(x=>x.classList.remove('on'));pastaWrap.classList.remove('show');Object.keys(state.shapes).forEach(k=>state.shapes[k]='none');
+    modeloSelect.value='';fldModelo.classList.remove('invalid');modelBox.classList.remove('show');
+    document.querySelectorAll('.pick').forEach(x=>{x.classList.remove('sel');x.setAttribute('aria-pressed','false');});renderGems();
+    document.getElementById('ig').value='';document.getElementById('nombre').value='';document.getElementById('website').value='';
+    if(window.turnstile) turnstile.reset();
+    trackedStep2=false; trackedStep3=false;
+    trackEvent('form_open');
+    formNav.style.display='';goStep(1);
+  });
+
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('open'))closeForm();});
+</script>
 </body>
 </html>
