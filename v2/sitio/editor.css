@@ -17,11 +17,14 @@
 .ed-bandeja,.ed-tira,.ed-cats{min-width:0}
 
 /* ---------- lienzo ---------- */
-.ed-stage{position:relative;display:grid;place-items:center;min-height:0;padding:4px 0;touch-action:none}
+/* Sin touch-action aqui: el lienzo ocupa casi toda la pantalla del telefono y
+   con "none" el dedo no podia hacer scroll para llegar a la bandeja de charms.
+   El bloqueo vive solo en cada pieza, que es lo que si se arrastra. */
+.ed-stage{position:relative;display:grid;place-items:center;min-height:0;padding:4px 0}
 /* La funda se dimensiona por altura: la bandeja de charms tiene que caber en la
    misma pantalla, sin hacer scroll para ir por una pieza y volver. */
 /* La proporcion la pone el editor segun el modelo; aqui solo el tamano. */
-.ed-case{position:relative;height:min(38vh,340px);width:auto;aspect-ratio:71.5/147;
+.ed-case{position:relative;height:min(38vh,340px);height:min(38dvh,340px);width:auto;aspect-ratio:71.5/147;
   filter:drop-shadow(0 26px 34px rgba(5,4,3,.22));-webkit-user-select:none;user-select:none}
 .ed-case svg{width:100%;height:100%;display:block;pointer-events:none}
 
@@ -86,7 +89,7 @@
 .ed-cat[aria-pressed="true"]::after{transform:scaleX(1)}
 .ed-cat:focus-visible{outline:2px solid var(--maroon);outline-offset:3px}
 
-.ed-tira{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x proximity}
+.ed-tira{display:flex;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;padding-bottom:6px;scroll-snap-type:x proximity}
 .ed-tira::-webkit-scrollbar{height:3px}
 .ed-tira::-webkit-scrollbar-thumb{background:var(--line)}
 .ed-pieza{flex:0 0 auto;width:74px;scroll-snap-align:start;border:1px solid var(--line);background:var(--paper);
@@ -110,7 +113,7 @@
 .ed-aviso{text-align:center;font-size:.74rem;color:var(--maroon);font-weight:300;margin-top:8px}
 
 @media(max-width:900px){
-  .ed-case{height:min(34vh,280px)}
+  .ed-case{height:min(34vh,280px);height:min(34dvh,280px)}
   .ed-pieza{width:66px}
   .ed-pieza svg,.ed-pieza img{width:34px;height:34px}
 }
