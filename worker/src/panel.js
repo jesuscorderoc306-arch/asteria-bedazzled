@@ -69,7 +69,7 @@ export function panelHtml() {
   th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left}
   th{font-family:var(--label);text-transform:uppercase;letter-spacing:.12em;font-size:.62rem;color:var(--taupe);font-weight:500}
   .empty{color:var(--taupe);font-size:.9rem;padding:14px 0}
-  .warn{border-left:3px solid var(--maroon);background:#fdeceb;padding:12px 14px;font-size:.88rem;margin-bottom:18px}
+  .warn{border:1px solid var(--maroon);color:var(--maroon);background:var(--card);padding:14px 16px;font-size:.88rem;margin-bottom:18px}
   #toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:24px;background:var(--ink);color:var(--paper);
     padding:12px 20px;font-size:.86rem;opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;z-index:50;max-width:90vw}
   #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
