@@ -122,23 +122,21 @@
   });
 
   /* ---------- la funda ----------
-   * Dos capas, como en el taller: el silicon (blanco o negro) y encima la pasta
-   * (blanca o negra) donde se asientan los charms. Pueden ser de colores
-   * contrarios, y por eso se dibujan por separado.
+   * Solo el silicon (blanco o negro) y la camara. La pasta ya no se dibuja: no
+   * aportaba nada al acomodo y su textura se hacia con un filtro SVG de
+   * turbulencia que en el celular provocaba parpadeos negros al hacer scroll.
+   * El color de pasta se sigue preguntando y viaja en el pedido, que es donde
+   * de verdad importa.
    *
    * La camara cambia la zona util:
-   *   - del 12 al 16 el modulo es un cuadro en la esquina, asi que a su derecha
-   *     queda una franja donde tambien se pueden poner charms;
-   *   - del 17 en adelante la camara es una barra de lado a lado y arriba no
+   *   - del 12 al 16 (y 17 / 17e) el modulo es un cuadro en la esquina, asi que
+   *     a su derecha queda una franja donde tambien se pueden poner charms;
+   *   - en Pro, Pro Max y Air la camara es una barra de lado a lado y arriba no
    *     queda nada libre.
    */
   const SILICON = {
     Blanca: { cuerpo: "#fbfaf7", borde: "rgba(5,4,3,.2)", lente: "#eceae4", aro: "#cfc9bd" },
     Negra: { cuerpo: "#1b1917", borde: "#413d38", lente: "#0d0c0b", aro: "#33302c" },
-  };
-  const PASTA = {
-    Blanca: { base: "#f4f1ea", sombra: "rgba(5,4,3,.16)" },
-    Negra: { base: "#151311", sombra: "rgba(0,0,0,.5)" },
   };
 
   const esBarra = (modelo) => medidas(modelo).camara === "barra";
@@ -157,7 +155,7 @@
   }
 
   /* Saca un punto de la camara por el lado mas cercano: hacia abajo o, cuando
-     hay franja libre al lado (modelos 12-16), hacia la derecha. */
+     hay franja libre al lado, hacia la derecha. */
   function fueraDeCamara(zona, x, y, margen) {
     if (!dentroDeCamara(zona, x, y, margen)) return { x: x, y: y };
     const m = margen || 0;
@@ -169,17 +167,9 @@
 
   function svgFunda(color, pasta, modelo) {
     const s = SILICON[color] || SILICON.Blanca;
-    const p = PASTA[pasta || color] || PASTA.Blanca;
     const barra = esBarra(modelo);
     // El alto del lienzo sale de la proporcion real del modelo.
     const alto = Math.round(500 * (altoFunda(modelo) / anchoFunda(modelo)));
-    const pastaAlto = alto - 356;
-
-    // La pasta llega hasta donde la camara lo permite.
-    const pastaPrincipal = barra
-      ? '<rect x="52" y="276" width="396" height="' + pastaAlto + '" rx="26" fill="' + p.base + '"/>'
-      : '<rect x="52" y="276" width="396" height="' + pastaAlto + '" rx="26" fill="' + p.base + '"/>'
-        + '<rect x="272" y="60" width="176" height="216" rx="24" fill="' + p.base + '"/>';
 
     const camara = barra
       ? '<rect x="46" y="46" width="408" height="164" rx="60" fill="' + s.lente + '" stroke="' + s.aro + '" stroke-width="2"/>'
@@ -194,16 +184,8 @@
         + '<circle cx="196" cy="196" r="14" fill="' + s.aro + '"/>';
 
     return '<svg viewBox="0 0 500 ' + alto + '" role="img" aria-label="Vista trasera de tu funda">'
-      + '<defs><filter id="pastaTex" x="-10%" y="-10%" width="120%" height="120%">'
-      + '<feTurbulence type="fractalNoise" baseFrequency="0.022 0.03" numOctaves="3" seed="7" result="n"/>'
-      + '<feDisplacementMap in="SourceGraphic" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G"/>'
-      + '</filter>'
-      + '<clipPath id="cuerpoFunda"><rect x="6" y="6" width="488" height="' + (alto - 12) + '" rx="112"/></clipPath>'
-      + '</defs>'
       + '<rect x="6" y="6" width="488" height="' + (alto - 12) + '" rx="112" fill="' + s.cuerpo + '" stroke="' + s.borde + '" stroke-width="3"/>'
       + '<rect x="26" y="26" width="448" height="' + (alto - 52) + '" rx="94" fill="none" stroke="' + s.borde + '" stroke-width="1.4" opacity=".5"/>'
-      // La textura desplaza los bordes: sin recortar, la pasta se sale de la funda.
-      + '<g clip-path="url(#cuerpoFunda)"><g filter="url(#pastaTex)">' + pastaPrincipal + '</g></g>'
       + '<g>' + camara + '</g>'
       + '<rect x="494" y="' + Math.round(alto * 0.30) + '" width="8" height="86" rx="4" fill="' + s.aro + '"/>'
       + '<rect x="494" y="' + Math.round(alto * 0.41) + '" width="8" height="86" rx="4" fill="' + s.aro + '"/>'
