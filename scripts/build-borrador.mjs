@@ -26,7 +26,8 @@ if (!destino) throw new Error("uso: node scripts/build-borrador.mjs <carpeta-des
 
 const NOINDEX = '<meta name="robots" content="noindex, nofollow">';
 const PAGINAS = ["index.html", "pedido.html", "privacidad.html"];
-const SUELTOS = ["favicon.svg", "favicon-32.png", "favicon-180.png", "og-image.jpg"];
+const SUELTOS = ["favicon.svg", "favicon-32.png", "favicon-180.png", "og-image.jpg",
+  "editor.js", "editor.css", "charms.js"];
 
 const gitBuffer = (ref) => execFileSync("git", ["show", ref], { cwd: raiz, maxBuffer: 64 * 1024 * 1024 });
 const gitTexto = (ref) => gitBuffer(ref).toString("utf8");
