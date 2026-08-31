@@ -267,6 +267,12 @@
 
   /* selectable cards */
   .pick2{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:680px;margin:0 auto}
+  /* Sin resaltado de toque: el navegador del telefono pintaba un rectangulo
+     gris sobre toda la tarjeta al tocarla, y se veia como un cuadro sombreado
+     detras de la funda recortada. La seleccion ya se nota por si sola (escala)
+     y el foco de teclado sigue teniendo su contorno. */
+  .pick,.pastabtn,.gembtn,.nav-cta,.btn,.ig-tile,.form-close,.nav-toggle,.btn-back,
+  .pastaopts button,.pick2 .pick{-webkit-tap-highlight-color:transparent}
   .pick{position:relative;border:none;background:transparent;cursor:pointer;transition:transform .45s cubic-bezier(.2,.8,.25,1),opacity .35s;text-align:center}
   .pick:hover{transform:translateY(-4px)}
   .pick .media{aspect-ratio:3/4;display:grid;place-items:center;background:transparent;padding:10px}
