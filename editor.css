@@ -65,6 +65,9 @@
 .ed-tool.girar{cursor:grab}
 .ed-tool.girar.dragging{cursor:grabbing}
 
+/* Mismo motivo que en las tarjetas: nada de rectangulo gris al tocar. */
+.ed-charm,.ed-tool,.ed-btn,.ed-cat,.ed-pieza{-webkit-tap-highlight-color:transparent}
+
 /* ---------- barra de acciones ---------- */
 .ed-acciones{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
 .ed-btn{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.14em;font-size:.68rem;
