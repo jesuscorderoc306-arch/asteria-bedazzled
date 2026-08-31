@@ -43,6 +43,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="editor.css">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Oswald:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
@@ -248,6 +249,10 @@
   .pick .media{aspect-ratio:3/4;display:grid;place-items:center;background:transparent;padding:10px}
   .pick .media img{max-height:100%;max-width:100%;height:auto;width:auto;object-fit:contain;filter:drop-shadow(0 14px 20px rgba(5,4,3,.18));transition:transform .4s}
   .pick:hover .media img{transform:scale(1.04)}
+  /* Las fotos del paso 2 son de uso real, no recortes sobre transparente como
+     las de estilo: se encuadran iguales para que las dos opciones pesen igual. */
+  .pick[data-tipo] .media{padding:0;aspect-ratio:3/4}
+  .pick[data-tipo] .media img{width:100%;height:100%;max-height:none;max-width:none;object-fit:cover;filter:none}
   .pick .cap{padding:18px 18px 22px}
   .pick .cap h3{font-family:var(--font-display);font-size:1.4rem;font-weight:500;line-height:1.1;margin-bottom:4px}
   .pick .cap span{font-size:.84rem;color:var(--taupe);font-weight:300}
@@ -298,6 +303,30 @@
   .gembtn .badge{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;color:#fff;display:grid;place-items:center;font-size:.7rem;opacity:0;transform:scale(.4);transition:.2s}
   .gemrow.prio .gembtn.on .badge{opacity:1;transform:scale(1);background:var(--blue)}
   .gemrow.excl .gembtn.on .badge{opacity:1;transform:scale(1);background:var(--maroon)}
+
+  /* charms: misma familia visual que los botones de gemas, con cantidad */
+  .charm-intro{max-width:440px;margin:0 auto 26px;text-align:center;font-size:.92rem;color:var(--char);font-weight:300}
+  .charmgrid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));max-width:640px;margin:0 auto}
+  .charmcard{border:1px solid var(--line);background:var(--paper);padding:14px 14px 12px;display:flex;flex-direction:column;gap:10px;transition:border-color .25s,background .25s}
+  .charmcard.on{border-color:var(--ink);background:var(--paper-2)}
+  .charmcard .ph,.charmcard img{width:100%;aspect-ratio:1;object-fit:cover;background:var(--paper-2)}
+  .charmcard .ph{display:grid;place-items:center;color:var(--stone);font-size:1.4rem}
+  .charmcard .nm{font-family:var(--font-display);font-size:1.15rem;line-height:1.15}
+  .charmcard .pr{font-size:.8rem;color:var(--taupe);font-weight:300;margin-top:-6px}
+  .qty{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
+  .qty button{width:34px;height:34px;border:1px solid var(--line);background:none;color:var(--ink);font-size:1.1rem;line-height:1;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+  .qty button:hover:not(:disabled){background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .qty button:disabled{opacity:.35;cursor:not-allowed}
+  .qty button:focus-visible{outline:2px solid var(--maroon);outline-offset:2px}
+  .qty .n{font-family:var(--font-label);font-size:1rem;min-width:2ch;text-align:center;font-variant-numeric:tabular-nums}
+  .charm-total{max-width:640px;margin:26px auto 0;border-top:1px dashed var(--line);padding-top:18px;
+    display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:8px 18px}
+  .charm-total .lbl{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.16em;font-size:.7rem;color:var(--taupe)}
+  .charm-total .val{font-family:var(--font-display);font-size:1.7rem;line-height:1;font-variant-numeric:lining-nums;text-align:right}
+  /* Sin precio capturado no hay cifra que lucir: el texto no finge ser un total. */
+  .charm-total .val.sin{font-family:var(--font-label);font-size:.82rem;text-transform:uppercase;letter-spacing:.14em;color:var(--maroon)}
+  .charm-total .nota{grid-column:1/-1;font-size:.8rem;color:var(--taupe);font-weight:300}
+  .charm-empty{max-width:440px;margin:0 auto;text-align:center;color:var(--taupe);font-weight:300;font-size:.92rem}
 
   /* form nav */
   .form-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(242,239,233,.94);backdrop-filter:blur(8px);border-top:1px solid var(--line);z-index:6}
@@ -509,8 +538,9 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
     </div>
     <div class="progress">
       <div class="pstep active" data-p="1"><div class="bar"><i></i></div><span class="lbl">1 · Instagram</span></div>
-      <div class="pstep" data-p="2"><div class="bar"><i></i></div><span class="lbl">2 · Tu estilo</span></div>
-      <div class="pstep" data-p="3"><div class="bar"><i></i></div><span class="lbl">3 · Tu diseño</span></div>
+      <div class="pstep" data-p="2"><div class="bar"><i></i></div><span class="lbl">2 · Tu funda</span></div>
+      <div class="pstep" data-p="3"><div class="bar"><i></i></div><span class="lbl">3 · Tu estilo</span></div>
+      <div class="pstep" data-p="4"><div class="bar"><i></i></div><span class="lbl">4 · Tu diseño</span></div>
     </div>
   </div>
 
@@ -545,6 +575,27 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
     <div class="fstep" data-step="2">
       <div class="fstep-head">
         <div class="kick">Paso 2</div>
+        <h2>¿Qué tipo de funda quieres?</h2>
+        <p>De aquí en adelante el pedido cambia según lo que elijas.</p>
+      </div>
+      <div class="pick2">
+        <div class="pick" data-tipo="charms" role="button" tabindex="0" aria-pressed="false">
+          <div class="tick">✓</div>
+          <div class="media"><img src="img/i4.webp" alt="Funda ASTÉRIA con charms plateados" loading="lazy" decoding="async"></div>
+          <div class="cap"><h3>Funda con charms personalizadas</h3><span>Tú eliges cada charm</span></div>
+        </div>
+        <div class="pick" data-tipo="bedazzled" role="button" tabindex="0" aria-pressed="false">
+          <div class="tick">✓</div>
+          <div class="media"><img src="img/i5.webp" alt="Funda ASTÉRIA transparente cubierta de gemas" loading="lazy" decoding="async"></div>
+          <div class="cap"><h3>Funda bedazzled</h3><span>Cubierta de gemas y pedrería</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="fstep" data-step="3">
+      <div class="fstep-head">
+        <div class="kick">Paso 3</div>
         <h2>Elige un estilo</h2>
         <p>para tu bedazzled phone case</p>
       </div>
@@ -585,12 +636,13 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
         <p class="note-strip">Tu funda cuenta con una capa protectora además del pegamento para adherir las gemas.</p>
     </div>
 
-    <!-- STEP 3 -->
-    <div class="fstep" data-step="3">
+    <!-- STEP 4 -->
+    <div class="fstep" data-step="4">
       <div class="fstep-head">
-        <div class="kick">Paso 3</div>
+        <div class="kick">Paso 4</div>
         <h2>Elige entre MAXI o minimalista</h2>
       </div>
+      <div id="panel-bedazzled">
       <div class="pick2">
         <div class="pick" data-dens="Maximalista" role="button" tabindex="0" aria-pressed="false">
           <div class="tick">✓</div>
@@ -625,6 +677,12 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
           </div>
         </div>
       </div>
+      </div><!-- /panel-bedazzled -->
+
+      <div id="panel-charms" hidden>
+        <div id="charmEditor"></div>
+      </div>
+
       <div class="turnstile-wrap">
         <div class="cf-turnstile" data-sitekey="0x4AAAAAAEe5aKlueV4Uwu7E" data-theme="light" data-appearance="interaction-only"></div>
       </div>
@@ -649,6 +707,8 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
   </div>
 </div>
 
+<script src="charms.js"></script>
+<script src="editor.js"></script>
 <script>
   /* ---------- mobile menu ---------- */
   const toggle=document.querySelector('.nav-toggle');
@@ -767,7 +827,20 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
     }catch(e){ /* nunca romper el sitio por una metrica */ }
   }
   const overlay=document.getElementById('formOverlay');
-  const state={ig:'',nombre:'',style:null,pasta:null,modelo:null,dens:null,shapes:{Estrellas:'none',Círculos:'none',Corazones:'none',Flores:'none'}};
+  const state={ig:'',nombre:'',tipo:null,style:null,pasta:null,modelo:null,dens:null,charms:{},shapes:{Estrellas:'none',Círculos:'none',Corazones:'none',Flores:'none'}};
+  /* Catalogo de charms. Sale del worker (/catalog). Mientras el worker v2 no
+     este publicado, mostramos ejemplos SIN precio: el precio real solo puede
+     venir del catalogo, nunca de un numero escrito aqui. */
+  const CHARMS_EJEMPLO=[
+    {id:'demo-estrella',nombre:'Estrella',categoria:'Charms',precio:null,disponible:true,max:10,imgId:null},
+    {id:'demo-corazon',nombre:'Corazón',categoria:'Charms',precio:null,disponible:true,max:10,imgId:null},
+    {id:'demo-mono',nombre:'Moño',categoria:'Charms',precio:null,disponible:true,max:10,imgId:null},
+    {id:'demo-perla',nombre:'Perla',categoria:'Perlas',precio:null,disponible:true,max:10,imgId:null},
+    {id:'demo-flor',nombre:'Flor',categoria:'Charms',precio:null,disponible:true,max:10,imgId:null},
+    {id:'demo-mariposa',nombre:'Mariposa',categoria:'Charms',precio:null,disponible:true,max:10,imgId:null}
+  ];
+  let catalogo=null;      // lo que respondio el worker
+  let catalogoPedido=false;
   let step=1;
   let gemHinted=false;
   let gemsWarned=false;
@@ -798,6 +871,10 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
   function openForm(e){
     formOpenerEl = (e && e.currentTarget) || document.activeElement;
     overlay.classList.add('open');document.body.style.overflow='hidden';formOpenedAt=Date.now();goStep(1);
+    /* Las fotos del paso 2 viven en un contenedor oculto, asi que el navegador
+       las deja para el final y aparecen tarde. Al abrir el formulario faltan
+       segundos para llegar ahi: las pedimos ya. */
+    ['img/i4.webp','img/i5.webp'].forEach(src=>{const i=new Image();i.src=src;});
     trackedStep2=false; trackedStep3=false;
     trackEvent('form_open');
     const focusables=focusableInOverlay();
@@ -832,10 +909,40 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
     steps.forEach(s=>s.classList.toggle('active', +s.dataset.step===n));
     psteps.forEach(p=>{const pn=+p.dataset.p;p.classList.toggle('active',pn===n);p.classList.toggle('done',pn<n);});
     backBtn.style.visibility = n>1 ? 'visible':'hidden';
-    nextBtn.innerHTML = n<3 ? 'Continuar <span class="arw">→</span>' : 'Enviar pedido <span class="arw">→</span>';
+    nextBtn.innerHTML = n<4 ? 'Continuar <span class="arw">→</span>' : 'Enviar pedido <span class="arw">→</span>';
     success.classList.remove('show');
     steps.forEach(s=>s.style.display='');
-    if(n===3 && !gemHinted){
+    if(n===3){
+      /* Con charms solo hay funda de silicon blanca o negra: es lo que hay en
+         stock. El paso se reduce a color y modelo, sin elegir "estilo". */
+      const soloColor = state.tipo==='charms';
+      const paso3 = document.querySelector('[data-step="3"]');
+      paso3.querySelector('.pick2').hidden = soloColor;
+      paso3.querySelector('h2').textContent = soloColor ? 'Elige el color de tu funda' : 'Elige un estilo';
+      paso3.querySelector('.fstep-head p').textContent = soloColor
+        ? 'Silicón blanco o negro, que es lo que tenemos en stock.'
+        : 'para tu funda bedazzled';
+      const nota = paso3.querySelector('.note-strip');
+      if(nota) nota.hidden = soloColor;
+      const lblPasta = paso3.querySelector('.pastawrap .rowlbl');
+      if(lblPasta) lblPasta.textContent = soloColor ? 'Funda de silicón, ¿blanca o negra?' : '¿De qué color quieres la pasta?';
+      if(soloColor){
+        state.style='Pasta blanca/negra';
+        pastaWrap.classList.add('show');
+        populateModelos();
+        modelBox.classList.add('show');
+      }
+    }
+    if(n===4){
+      const esCharms = state.tipo==='charms';
+      const paso4 = document.querySelector('[data-step="4"]');
+      document.getElementById('panel-charms').hidden = !esCharms;
+      document.getElementById('panel-bedazzled').hidden = esCharms;
+      paso4.classList.toggle('ed-modo', esCharms);
+      document.querySelector('[data-step="4"] h2').textContent = esCharms ? 'Elige tus charms' : 'Elige entre MAXI o minimalista';
+      if(esCharms) cargarCharms();
+    }
+    if(n===4 && state.tipo!=='charms' && !gemHinted){
       gemHinted=true;
       const gemblock=document.getElementById('gemblock');
       gemblock.classList.add('hint');
@@ -885,13 +992,21 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
       if(!trackedStep2){trackedStep2=true;trackEvent('step2');}
       goStep(2);
     } else if(step===2){
+      if(!state.tipo){flash('Elige el tipo de funda para continuar.');return;}
+      goStep(3);
+    } else if(step===3){
       if(!state.style){flash('Elige un estilo para continuar.');return;}
       if(state.style.indexOf('Pasta')===0 && !state.pasta){flash('Elige el color de la pasta: blanca o negra.');return;}
       if(!state.modelo){fldModelo.classList.add('invalid');flash('Elige tu modelo de iPhone.');return;}
       fldModelo.classList.remove('invalid');
       if(!trackedStep3){trackedStep3=true;trackEvent('step3');}
-      goStep(3);
-    } else if(step===3){
+      goStep(4);
+    } else if(step===4){
+      if(state.tipo==='charms'){
+        if(!editor||!editor.total()){flash('Pon al menos un charm en tu funda.');return;}
+        submit();
+        return;
+      }
       if(!state.dens){flash('Elige entre maxi o minimalista.');return;}
       const sinGemas=Object.values(state.shapes).every(v=>v==='none');
       if(sinGemas && !gemsWarned){
@@ -904,6 +1019,61 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
   });
   backBtn.addEventListener('click',()=>{if(step>1)goStep(step-1);});
   document.getElementById('ig').addEventListener('input',()=>document.getElementById('fld-ig').classList.remove('invalid'));
+
+  /* tipo de funda: charms o bedazzled */
+  function pickTipo(card){
+    document.querySelectorAll('.pick[data-tipo]').forEach(x=>{x.classList.remove('sel');x.setAttribute('aria-pressed','false');});
+    card.classList.add('sel'); card.setAttribute('aria-pressed','true');
+    state.tipo=card.dataset.tipo;
+    /* Cambiar de camino no debe arrastrar decisiones del otro. */
+    if(state.tipo==='charms'){ state.dens=null; Object.keys(state.shapes).forEach(k=>state.shapes[k]='none'); renderGems(); }
+    else { state.charms={}; }
+  }
+  document.querySelectorAll('.pick[data-tipo]').forEach(c=>{
+    c.addEventListener('click',()=>pickTipo(c));
+    c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pickTipo(c);}});
+  });
+
+  /* ---------- charms: editor de colocacion ---------- */
+  let editor=null;
+  let disenoCharms={color:null,piezas:[]};
+
+  async function cargarCharms(){
+    if(!editor){
+      editor=AsteriaEditor.crear({
+        mount:document.getElementById('charmEditor'),
+        color:state.pasta||(state.style==='Transparente'?'Transparente':'Blanca'),
+        onChange:d=>{disenoCharms=d;}
+      });
+    }else{
+      editor.cambiarColor(state.pasta||(state.style==='Transparente'?'Transparente':'Blanca'));
+    }
+    if(catalogoPedido) return;
+    catalogoPedido=true;
+    try{
+      const ctrl=new AbortController();
+      const t=setTimeout(()=>ctrl.abort(),5000);
+      const r=await fetch(`${WORKER_URL}/catalog`,{signal:ctrl.signal});
+      clearTimeout(t);
+      if(!r.ok) throw new Error('sin catalogo');
+      catalogo=await r.json();
+      /* Mientras el catalogo no tenga charms cargados, el editor se queda con
+         sus piezas de ejemplo: es mejor que una funda vacia sin nada que tocar. */
+      editor.usarCatalogo(catalogo, WORKER_URL);
+    }catch(e){
+      catalogo=null;
+    }
+  }
+
+  function charmsElegidos(){
+    return (disenoCharms.piezas||[]).map(p=>({id:p.id,x:p.x,y:p.y,rot:p.rot}));
+  }
+  function resumenCharms(){
+    const cuenta={};
+    (disenoCharms.piezas||[]).forEach(p=>{cuenta[p.nombre]=(cuenta[p.nombre]||0)+1;});
+    const partes=Object.entries(cuenta).map(([n,q])=>q>1?`${n} x${q}`:n);
+    return partes.length?partes.join(', '):'Ninguno';
+  }
 
   /* style + density selection */
   const pastaWrap=document.getElementById('pastaWrap');
@@ -976,18 +1146,22 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
   }
 
   function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
   function showSuccess(orderId, prio, excl){
     document.getElementById('summary').innerHTML=`
       <div class="order-id">Folio de tu pedido<br><b>${esc(orderId)}</b></div>
       <h4>Resumen de tu pedido</h4>
       <div class="row"><b>Instagram</b><span>@${esc(state.ig)}</span></div>
       ${state.nombre?`<div class="row"><b>Nombre</b><span>${esc(state.nombre)}</span></div>`:''}
+      <div class="row"><b>Tipo</b><span>${state.tipo==='charms'?'Funda con charms personalizadas':'Funda bedazzled'}</span></div>
       <div class="row"><b>Estilo</b><span>${state.style}</span></div>
       ${state.pasta?`<div class="row"><b>Color de pasta</b><span>${state.pasta}</span></div>`:''}
       <div class="row"><b>Modelo</b><span>${state.modelo}</span></div>
-      <div class="row"><b>Densidad</b><span>${state.dens}</span></div>
+      ${state.tipo==='charms'
+        ? `<div class="row"><b>Charms</b><span>${esc(resumenCharms())}</span></div>`
+        : `<div class="row"><b>Densidad</b><span>${state.dens}</span></div>
       <div class="row"><b>Priorizar</b><span>${prio.length?prio.join(', '):'Ninguna'}</span></div>
-      <div class="row"><b>No incluir</b><span>${excl.length?excl.join(', '):'Ninguna'}</span></div>`;
+      <div class="row"><b>No incluir</b><span>${excl.length?excl.join(', '):'Ninguna'}</span></div>`}`;
     document.getElementById('lookupLink').href=`pedido.html?folio=${encodeURIComponent(orderId)}`;
     steps.forEach(s=>s.style.display='none');
     formNav.style.display='none';
@@ -1035,8 +1209,11 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
-          orderId, ig:state.ig, nombre:state.nombre, style:state.style, pasta:state.pasta,
-          modelo:state.modelo, dens:state.dens,
+          orderId, ig:state.ig, nombre:state.nombre, tipo:state.tipo,
+          style:state.style, pasta:state.pasta,
+          modelo:state.modelo, dens:state.dens || '',
+          charms:charmsElegidos(), charmsTexto:state.tipo==='charms'?resumenCharms():'',
+          diseno:state.tipo==='charms'?disenoCharms:null,
           prio:prio.length?prio.join(', '):'', excl:excl.length?excl.join(', '):'',
           website, turnstileToken
         }),
@@ -1063,7 +1240,9 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
     }
   }
   document.getElementById('againBtn').addEventListener('click',()=>{
-    state.style=null;state.dens=null;state.pasta=null;state.modelo=null;gemHinted=false;gemsWarned=false;pendingOrderId=null;
+    state.tipo=null;state.charms={};state.style=null;state.dens=null;state.pasta=null;state.modelo=null;gemHinted=false;gemsWarned=false;pendingOrderId=null;
+    if(editor){editor=null;document.getElementById('charmEditor').innerHTML='';}
+    disenoCharms={color:null,piezas:[]};catalogoPedido=false;
     document.querySelectorAll('.pastabtn').forEach(x=>x.classList.remove('on'));pastaWrap.classList.remove('show');Object.keys(state.shapes).forEach(k=>state.shapes[k]='none');
     modeloSelect.value='';fldModelo.classList.remove('invalid');modelBox.classList.remove('show');
     document.querySelectorAll('.pick').forEach(x=>{x.classList.remove('sel');x.setAttribute('aria-pressed','false');});renderGems();
