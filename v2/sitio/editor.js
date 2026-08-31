@@ -108,27 +108,48 @@
       mm: c.mm, forma: c.forma, tono: c.tono, n: c.n };
   });
 
-  /* ---------- la funda ---------- */
-  function svgFunda(color) {
-    const negra = color === "Negra";
-    const cuerpo = negra ? "#1b1917" : color === "Transparente" ? "#f6f4f0" : "#fbfaf7";
-    const borde = negra ? "#3a3733" : "rgba(5,4,3,.18)";
-    const lente = negra ? "#0d0c0b" : "#e8e4dc";
-    const aro = negra ? "#2e2b27" : "#cfc9bd";
-    return `<svg viewBox="0 0 500 996" role="img" aria-label="Vista trasera de tu funda">
-      <rect x="6" y="6" width="488" height="984" rx="112" fill="${cuerpo}" stroke="${borde}" stroke-width="3"/>
-      <rect x="26" y="26" width="448" height="944" rx="94" fill="none" stroke="${borde}" stroke-width="1.4" opacity=".55"/>
-      <g>
-        <rect x="52" y="52" width="196" height="196" rx="52" fill="${lente}" stroke="${aro}" stroke-width="2"/>
-        <circle cx="106" cy="106" r="34" fill="${aro}"/><circle cx="106" cy="106" r="20" fill="${lente}"/>
-        <circle cx="194" cy="106" r="34" fill="${aro}"/><circle cx="194" cy="106" r="20" fill="${lente}"/>
-        <circle cx="106" cy="194" r="34" fill="${aro}"/><circle cx="106" cy="194" r="20" fill="${lente}"/>
-        <circle cx="196" cy="196" r="14" fill="${aro}"/>
-      </g>
-      <rect x="494" y="300" width="8" height="86" rx="4" fill="${aro}"/>
-      <rect x="494" y="410" width="8" height="86" rx="4" fill="${aro}"/>
-      <rect x="-2" y="330" width="8" height="58" rx="4" fill="${aro}"/>
-    </svg>`;
+  /* ---------- la funda ----------
+   * Dos capas, como en el taller: el silicon (blanco o negro) y encima la pasta
+   * (blanca o negra) donde se asientan los charms. Pueden ser de colores
+   * contrarios, y por eso se dibujan por separado.
+   */
+  const SILICON = {
+    Blanca: { cuerpo: "#fbfaf7", borde: "rgba(5,4,3,.2)", lente: "#eceae4", aro: "#cfc9bd" },
+    Negra: { cuerpo: "#1b1917", borde: "#413d38", lente: "#0d0c0b", aro: "#33302c" },
+  };
+  const PASTA = {
+    Blanca: { base: "#f4f1ea", sombra: "rgba(5,4,3,.16)" },
+    Negra: { base: "#151311", sombra: "rgba(0,0,0,.5)" },
+  };
+
+  function svgFunda(color, pasta) {
+    const s = SILICON[color] || SILICON.Blanca;
+    const p = PASTA[pasta || color] || PASTA.Blanca;
+    return '<svg viewBox="0 0 500 996" role="img" aria-label="Vista trasera de tu funda">'
+      + '<defs><filter id="pastaTex" x="-10%" y="-10%" width="120%" height="120%">'
+      + '<feTurbulence type="fractalNoise" baseFrequency="0.022 0.03" numOctaves="3" seed="7" result="n"/>'
+      + '<feDisplacementMap in="SourceGraphic" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G"/>'
+      + '</filter>'
+      + '<clipPath id="cuerpoFunda"><rect x="6" y="6" width="488" height="984" rx="112"/></clipPath>'
+      + '</defs>'
+      + '<rect x="6" y="6" width="488" height="984" rx="112" fill="' + s.cuerpo + '" stroke="' + s.borde + '" stroke-width="3"/>'
+      + '<rect x="26" y="26" width="448" height="944" rx="94" fill="none" stroke="' + s.borde + '" stroke-width="1.4" opacity=".5"/>'
+      // La pasta: el area irregular donde se pegan las piezas.
+      // La textura desplaza los bordes: sin recortar, la pasta se sale de la funda.
+      + '<g clip-path="url(#cuerpoFunda)">'
+      + '<g filter="url(#pastaTex)"><rect x="52" y="276" width="396" height="640" rx="26" fill="' + p.base + '"/></g>'
+      + '</g>'
+      + '<g>'
+      + '<rect x="52" y="52" width="196" height="196" rx="52" fill="' + s.lente + '" stroke="' + s.aro + '" stroke-width="2"/>'
+      + '<circle cx="106" cy="106" r="34" fill="' + s.aro + '"/><circle cx="106" cy="106" r="20" fill="' + s.lente + '"/>'
+      + '<circle cx="194" cy="106" r="34" fill="' + s.aro + '"/><circle cx="194" cy="106" r="20" fill="' + s.lente + '"/>'
+      + '<circle cx="106" cy="194" r="34" fill="' + s.aro + '"/><circle cx="106" cy="194" r="20" fill="' + s.lente + '"/>'
+      + '<circle cx="196" cy="196" r="14" fill="' + s.aro + '"/>'
+      + '</g>'
+      + '<rect x="494" y="300" width="8" height="86" rx="4" fill="' + s.aro + '"/>'
+      + '<rect x="494" y="410" width="8" height="86" rx="4" fill="' + s.aro + '"/>'
+      + '<rect x="-2" y="330" width="8" height="58" rx="4" fill="' + s.aro + '"/>'
+      + '</svg>';
   }
 
   /* ---------- editor ---------- */
@@ -138,6 +159,7 @@
     let piezas = PIEZAS_BASE.slice();
     let sonEjemplo = true;
     let colorFunda = opciones.color || "Blanca";
+    let colorPasta = opciones.pasta || colorFunda;
     let puestos = [];          // { uid, id, x, y, rot }
     let seleccion = null;      // uid
     let categoria = "Todas";
@@ -148,7 +170,7 @@
       <div class="ed">
         <div class="ed-stage">
           <div class="ed-case" id="edCase">
-            ${svgFunda(colorFunda)}
+            ${svgFunda(colorFunda, colorPasta)}
             <div class="ed-area" id="edArea"></div>
           </div>
         </div>
@@ -483,6 +505,7 @@
       const mapa = porId();
       return {
         color: colorFunda,
+        pasta: colorPasta,
         piezas: puestos.map((p) => ({
           id: p.id,
           nombre: (mapa.get(p.id) || {}).nombre || p.id,
@@ -513,12 +536,12 @@
         pintar();
         return true;
       },
-      cambiarColor(color) {
+      cambiarColor(color, pasta) {
         colorFunda = color || "Blanca";
-        caseBox.innerHTML = svgFunda(colorFunda) + '<div class="ed-area" id="edArea"></div>';
-        // el area se recreo: volvemos a colgar los charms
-        const nueva = caseBox.querySelector(".ed-area");
-        nueva.replaceWith(area);
+        colorPasta = pasta || colorFunda;
+        caseBox.innerHTML = svgFunda(colorFunda, colorPasta);
+        // el area de charms se vuelve a colgar tal cual, con todo lo que lleva
+        caseBox.appendChild(area);
         pintar();
       },
     };
