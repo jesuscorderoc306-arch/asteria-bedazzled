@@ -207,7 +207,9 @@
     display:none;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
   .form-overlay.open{display:flex;animation:fadeUp .5s ease}
   @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-  .form-top{position:sticky;top:0;background:rgba(242,239,233,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:5}
+  /* Fondo solido, sin desenfoque: es una barra fija sobre contenido que se
+     desplaza, y ahi es donde el navegador del telefono pinta negro. */
+  .form-top{position:sticky;top:0;background:var(--paper);border-bottom:1px solid var(--line);z-index:5}
   .form-top-inner{max-width:900px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between}
   .form-top img{height:40px;width:auto;aspect-ratio:900/540}
   .form-close{background:none;border:1px solid var(--line);width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:1.1rem;color:var(--char);transition:all .2s;display:grid;place-items:center}
@@ -274,18 +276,24 @@
      completas y con aspect-ratio la caja crecia con la foto. */
   /* El paso 2 se compacta para que la foto Y su descripcion quepan sin scroll:
      antes el nombre de cada opcion caia detras de la barra de Continuar. */
-  .fstep.paso-tipo .fstep-head{margin-bottom:20px}
+  .fstep.paso-tipo .fstep-head{margin-bottom:14px}
   .fstep.paso-tipo .fstep-head h2{font-size:clamp(1.7rem,3.4vw,2.3rem)}
   .fstep.paso-tipo .fstep-head p{margin-top:6px;font-size:.92rem}
-  .pick[data-tipo] .media{aspect-ratio:auto;height:min(34vh,300px)}
+  /* Flex en vez de grid: dentro de un grid el max-height en porcentaje no
+     resuelve y la foto se desbordaba de su caja, tapando el titulo de abajo.
+     overflow:hidden es el seguro: pase lo que pase, no invade el texto. */
+  /* La altura la calcula el JS con el espacio que de verdad queda entre el
+     encabezado y la barra de Continuar; los valores en vh son solo el respaldo
+     de la primera pintada. Flex + overflow:hidden evitan que la foto invada el
+     texto de abajo. */
+  .pick[data-tipo] .media{aspect-ratio:auto;height:min(30vh,260px);height:var(--pic,min(30dvh,260px));
+    display:flex;align-items:center;justify-content:center;overflow:hidden}
   .pick[data-tipo] .cap{padding:16px 12px 0}
   /* Las dos fotos se tomaron a la misma escala (2970x5280 cada una) y despues
      del recorte una quedo 1208 px de alto y la otra 1171. Se respeta esa
      diferencia en vez de igualarlas: la funda mas grande se ve mas grande. */
-  .pick[data-tipo="bedazzled"] .media img{height:96.9%}
-  /* height/width al 100% con contain: el max-height en porcentaje no resuelve
-     dentro del grid y la foto se desbordaba de su caja. */
-  .pick[data-tipo] .media img{height:100%;width:100%;max-height:none;object-fit:contain}
+  .pick[data-tipo="bedazzled"] .media img{max-height:96.9%}
+  .pick[data-tipo] .media img{width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain}
   .pick .cap{padding:18px 18px 22px}
   .pick .cap h3{font-family:var(--font-display);font-size:1.4rem;font-weight:500;line-height:1.1;margin-bottom:4px}
   .pick .cap span{font-size:.84rem;color:var(--taupe);font-weight:300}
@@ -363,7 +371,9 @@
   .charm-empty{max-width:440px;margin:0 auto;text-align:center;color:var(--taupe);font-weight:300;font-size:.92rem}
 
   /* form nav */
-  .form-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(242,239,233,.94);backdrop-filter:blur(8px);
+  /* Sin backdrop-filter: en el navegador del telefono el desenfoque sobre una
+     zona que se desplaza pinta cuadros negros. Un fondo solido se ve igual. */
+  .form-nav{position:fixed;bottom:0;left:0;right:0;background:var(--paper);
     border-top:1px solid var(--line);z-index:6;padding-bottom:env(safe-area-inset-bottom,0px)}
   .form-nav-inner{max-width:900px;margin:0 auto;padding:16px 28px;display:flex;justify-content:space-between;align-items:center;gap:14px}
   .btn-back{background:none;border:none;font-family:var(--font-label);text-transform:uppercase;letter-spacing:.14em;font-size:.76rem;color:var(--taupe);cursor:pointer;padding:10px;visibility:hidden}
@@ -1053,6 +1063,13 @@
     nextBtn.innerHTML = n<4 ? 'Continuar <span class="arw">→</span>' : 'Enviar pedido <span class="arw">→</span>';
     success.classList.remove('show');
     steps.forEach(s=>s.style.display='');
+    if(n===2){
+      // Directo y otra vez al asentarse: requestAnimationFrame no corre cuando
+      // la pestana esta en segundo plano, y el ajuste es de layout, no de animacion.
+      ajustarPaso2();
+      setTimeout(ajustarPaso2,0);
+      setTimeout(ajustarPaso2,250);
+    }
     if(n===3){
       /* Con charms solo hay funda de silicon blanca o negra: es lo que hay en
          stock. El paso se reduce a color y modelo, sin elegir "estilo". */
@@ -1091,6 +1108,30 @@
     document.querySelector('.form-body').scrollTop=0;
     overlay.scrollTop=0;
   }
+
+  /* El navegador del telefono cambia de alto al mostrar u ocultar su barra, y
+     con alturas en vh la descripcion de cada funda se escondia detras de
+     "Continuar". Aqui se mide lo que hay libre y de ahi sale la foto. */
+  function ajustarPaso2(){
+    const paso=document.querySelector('.fstep.paso-tipo');
+    if(!paso || !paso.classList.contains('active')) return;
+    const cap=paso.querySelector('.cap');
+    const head=paso.querySelector('.fstep-head');
+    if(!cap || !head) return;
+    paso.style.removeProperty('--pic');
+    const alturaOverlay=overlay.clientHeight;
+    const alturaTop=document.querySelector('.form-top').getBoundingClientRect().height;
+    const alturaNav=formNav.getBoundingClientRect().height;
+    const libre=alturaOverlay-alturaTop-alturaNav-head.getBoundingClientRect().height-cap.getBoundingClientRect().height-70;
+    paso.style.setProperty('--pic', Math.max(130, Math.min(300, Math.round(libre)))+'px');
+  }
+  // Las fotos entran despues y mueven el alto del texto: se remide al cargarlas.
+  document.querySelectorAll('.pick[data-tipo] img').forEach(img=>{
+    if(!img.complete) img.addEventListener('load',()=>ajustarPaso2(),{once:true});
+  });
+  let ajusteTimer=null;
+  window.addEventListener('resize',()=>{clearTimeout(ajusteTimer);ajusteTimer=setTimeout(ajustarPaso2,120);});
+  window.addEventListener('orientationchange',()=>setTimeout(ajustarPaso2,300));
 
   /* validation + advance */
   nextBtn.addEventListener('click',async()=>{
