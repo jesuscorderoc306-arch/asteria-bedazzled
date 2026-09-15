@@ -320,6 +320,9 @@
   .pastaopts{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
   .pastabtn{display:flex;align-items:center;gap:10px;padding:12px 22px;border:1px solid var(--line);border-radius:999px;background:var(--paper);cursor:pointer;font-family:var(--font-label);text-transform:uppercase;letter-spacing:.14em;font-size:.7rem;color:var(--char);transition:transform .25s,background .25s,color .25s,border-color .25s}
   .pastabtn:hover{transform:translateY(-2px)}
+  .pastabtn .sw-g{background:#9b9b98}
+  .pastabtn .sw-be{background:#dcc9ae}
+  .fundahint{font-size:.82rem;color:var(--taupe);font-weight:300}
   .pastabtn .sw{width:16px;height:16px;border-radius:50%;display:inline-block;border:1px solid rgba(5,4,3,.18)}
   .pastabtn .sw-w{background:#fff}
   .pastabtn .sw-b{background:#151311}
@@ -683,18 +686,6 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
           <div class="cap"><h3>Funda transparente</h3><span>Base cristalina</span></div>
         </div>
       </div>
-      <div class="pastawrap" id="pastaWrap">
-          <div class="rowlbl" id="lblFunda">¿De qué color quieres la funda?</div>
-          <div class="pastaopts">
-            <button type="button" class="pastabtn" data-funda="Blanca"><span class="sw sw-w"></span>Blanca</button>
-            <button type="button" class="pastabtn" data-funda="Negra"><span class="sw sw-b"></span>Negra</button>
-          </div>
-          <div class="rowlbl rowlbl-2" id="lblPasta">¿Y de qué color la pasta?</div>
-          <div class="pastaopts">
-            <button type="button" class="pastabtn" data-pasta="Blanca"><span class="sw sw-w"></span>Blanca</button>
-            <button type="button" class="pastabtn" data-pasta="Negra"><span class="sw sw-b"></span>Negra</button>
-          </div>
-        </div>
         <div class="modelbox" id="modelBox">
           <div class="modelbox-card">
             <span class="modelbox-star" aria-hidden="true">★</span>
@@ -705,6 +696,15 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
               </div>
               <div class="err">Elige tu modelo de iPhone para continuar.</div>
             </div>
+          </div>
+        </div>
+      <div class="pastawrap" id="pastaWrap">
+          <div class="rowlbl" id="lblFunda">¿De qué color quieres la funda?</div>
+          <div class="pastaopts" id="fundaOpts" aria-live="polite"></div>
+          <div class="rowlbl rowlbl-2" id="lblPasta">¿Y de qué color la pasta?</div>
+          <div class="pastaopts">
+            <button type="button" class="pastabtn" data-pasta="Blanca"><span class="sw sw-w"></span>Blanca</button>
+            <button type="button" class="pastabtn" data-pasta="Negra"><span class="sw sw-b"></span>Negra</button>
           </div>
         </div>
         <p class="note-strip">Tu funda cuenta con una capa protectora además del pegamento para adherir las gemas.</p>
@@ -1007,7 +1007,10 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
   let pendingOrderId=null;
 
   /* modelos de iPhone disponibles por estilo de funda */
-  const MODELOS_PASTA=['iPhone 12','iPhone 12 Pro','iPhone 12 Pro Max','iPhone 13 mini','iPhone 13','iPhone 13 Pro','iPhone 13 Pro Max','iPhone 14','iPhone 14 Plus','iPhone 14 Pro','iPhone 14 Pro Max','iPhone 15','iPhone 15 Plus','iPhone 15 Pro','iPhone 15 Pro Max','iPhone 16','iPhone 16 Plus','iPhone 16 Pro','iPhone 16 Pro Max','iPhone 17e','iPhone 17','iPhone Air','iPhone 17 Pro','iPhone 17 Pro Max'];
+  /* Silicon: solo los modelos que el taller tiene en stock, con sus fotos
+     (modelos.js). Transparente conserva su lista. */
+  const MODELOS_PASTA_ANTES=['iPhone 12','iPhone 12 Pro','iPhone 12 Pro Max','iPhone 13 mini','iPhone 13','iPhone 13 Pro','iPhone 13 Pro Max','iPhone 14','iPhone 14 Plus','iPhone 14 Pro','iPhone 14 Pro Max','iPhone 15','iPhone 15 Plus','iPhone 15 Pro','iPhone 15 Pro Max','iPhone 16','iPhone 16 Plus','iPhone 16 Pro','iPhone 16 Pro Max','iPhone 17e','iPhone 17','iPhone Air','iPhone 17 Pro','iPhone 17 Pro Max'];
+  const MODELOS_PASTA=Object.keys(window.ASTERIA_MODELOS||{}).length ? Object.keys(window.ASTERIA_MODELOS) : MODELOS_PASTA_ANTES;
   const MODELOS_TRANSPARENTE=['iPhone 12','iPhone 12 Pro','iPhone 12 Pro Max','iPhone 13 mini','iPhone 13','iPhone 13 Pro','iPhone 13 Pro Max','iPhone 14','iPhone 14 Plus','iPhone 14 Pro','iPhone 14 Pro Max','iPhone 15','iPhone 15 Pro','iPhone 15 Pro Max','iPhone 16','iPhone 16 Plus','iPhone 16 Pro','iPhone 16 Pro Max','iPhone 17e','iPhone 17','iPhone Air','iPhone 17 Pro','iPhone 17 Pro Max'];
   const modeloSelect=document.getElementById('modelo');
   const fldModelo=document.getElementById('fld-modelo');
@@ -1019,7 +1022,32 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
     modeloSelect.innerHTML='<option value="">Selecciona tu modelo…</option>'+lista.map(m=>`<option value="${m}">${m}</option>`).join('');
     if(prev && lista.includes(prev)){modeloSelect.value=prev;} else {state.modelo=null;}
   }
-  modeloSelect.addEventListener('change',()=>{state.modelo=modeloSelect.value||null;fldModelo.classList.remove('invalid');});
+  const COLORES_FUNDA={Blanco:['Blanca','sw-w'],Negro:['Negra','sw-b'],Gris:['Gris','sw-g'],Beige:['Beige','sw-be']};
+  const fundaOpts=document.getElementById('fundaOpts');
+  /* Cada modelo tiene sus propios colores en stock: los botones salen del
+     catalogo. Sin modelo elegido todavia no hay nada que ofrecer. */
+  function pintarColoresFunda(){
+    if(!fundaOpts) return;
+    const info=(window.ASTERIA_MODELOS||{})[state.modelo];
+    if(!info){ fundaOpts.innerHTML='<span class="fundahint">Elige primero tu modelo y te mostramos los colores que hay.</span>'; return; }
+    const disponibles=Object.keys(info.colores);
+    const actual=Object.keys(COLORES_FUNDA).find(k=>COLORES_FUNDA[k][0]===state.funda);
+    if(state.funda && !disponibles.includes(actual)){ state.funda=null; }
+    fundaOpts.innerHTML=disponibles.map(k=>{
+      const [nombre,sw]=COLORES_FUNDA[k]||[k,'sw-w'];
+      return `<button type="button" class="pastabtn${state.funda===nombre?' on':''}" data-funda="${nombre}"><span class="sw ${sw}"></span>${nombre}</button>`;
+    }).join('');
+  }
+  fundaOpts && fundaOpts.addEventListener('click',e=>{
+    const b=e.target.closest('[data-funda]'); if(!b) return;
+    fundaOpts.querySelectorAll('.pastabtn').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); state.funda=b.dataset.funda;
+    if(editor) editor.cambiarColor(state.funda, state.pasta, state.modelo);
+  });
+  modeloSelect.addEventListener('change',()=>{
+    state.modelo=modeloSelect.value||null; fldModelo.classList.remove('invalid');
+    if(state.style && state.style.indexOf('Pasta')===0) pintarColoresFunda();
+  });
 
   let formOpenedAt=0;
   let formOpenerEl=null;
@@ -1085,9 +1113,9 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
       const soloColor = state.tipo==='charms';
       const paso3 = document.querySelector('[data-step="3"]');
       paso3.querySelector('.pick2').hidden = soloColor;
-      paso3.querySelector('h2').textContent = soloColor ? 'Elige el color de tu funda' : 'Elige un estilo';
+      paso3.querySelector('h2').textContent = soloColor ? 'Elige tu funda' : 'Elige un estilo';
       paso3.querySelector('.fstep-head p').textContent = soloColor
-        ? 'Silicón blanco o negro, que es lo que tenemos en stock.'
+        ? 'Elige tu modelo y te mostramos los colores de silicón que tenemos.'
         : 'para tu funda bedazzled';
       const nota = paso3.querySelector('.note-strip');
       if(nota) nota.hidden = soloColor;
@@ -1098,6 +1126,7 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
         populateModelos();
         modelBox.classList.add('show');
       }
+      pintarColoresFunda();
     }
     if(n===4){
       const esCharms = state.tipo==='charms';
@@ -1187,7 +1216,7 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
     } else if(step===3){
       if(!state.style){flash('Elige un estilo para continuar.');return;}
       if(state.style.indexOf('Pasta')===0){
-        if(!state.funda){flash('Elige el color de la funda: blanca o negra.');return;}
+        if(!state.funda){flash('Elige el color de tu funda.');return;}
         if(!state.pasta){flash('Elige el color de la pasta: blanca o negra.');return;}
       }
       if(!state.modelo){fldModelo.classList.add('invalid');flash('Elige tu modelo de iPhone.');return;}
@@ -1288,14 +1317,16 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
       if(!esPasta){state.pasta=null;state.funda=null;document.querySelectorAll('.pastabtn').forEach(b=>b.classList.remove('on'));}
       modelBox.classList.add('show');
       populateModelos();
-      const scrollTarget = esPasta ? pastaWrap : modelBox;
+      if(esPasta) pintarColoresFunda();
+      // El modelo va primero: de el dependen los colores de funda que se ofrecen.
+      const scrollTarget = modelBox;
       setTimeout(()=>scrollTarget.scrollIntoView({behavior:'smooth',block:'start'}),380);
     });
   });
   /* Son dos decisiones distintas: el silicon de la funda y la pasta que va
      encima. Pueden ser del mismo color o de colores contrarios. */
-  document.querySelectorAll('.pastabtn').forEach(b=>b.addEventListener('click',()=>{
-    const campo = b.dataset.funda ? 'funda' : 'pasta';
+  document.querySelectorAll('.pastabtn[data-pasta]').forEach(b=>b.addEventListener('click',()=>{
+    const campo = 'pasta';
     document.querySelectorAll('.pastabtn[data-'+campo+']').forEach(x=>x.classList.remove('on'));
     b.classList.add('on');
     state[campo] = b.dataset[campo];
