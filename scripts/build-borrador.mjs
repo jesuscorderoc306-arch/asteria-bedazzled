@@ -68,8 +68,11 @@ for (const f of PAGINAS) {
   escribe(path.join(v2, "sitio", f), conAviso(fs.readFileSync(path.join(raiz, f), "utf8"), "Borrador v2 · todavía no está en la tienda", "#922939"));
 }
 for (const f of SUELTOS_V2) escribe(path.join(v2, "sitio", f), fs.readFileSync(path.join(raiz, f)));
-for (const f of fs.readdirSync(path.join(raiz, "img"))) {
-  escribe(path.join(v2, "sitio", "img", f), fs.readFileSync(path.join(raiz, "img", f)));
+// recursivo: img/fundas/ trae las fotos de cada modelo
+for (const f of fs.readdirSync(path.join(raiz, "img"), { recursive: true })) {
+  const origen = path.join(raiz, "img", f);
+  if (fs.statSync(origen).isDirectory()) continue;
+  escribe(path.join(v2, "sitio", "img", f), fs.readFileSync(origen));
 }
 
 fs.mkdirSync(path.join(v2, "panel"), { recursive: true });

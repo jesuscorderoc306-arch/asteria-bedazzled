@@ -141,9 +141,26 @@
 
   const esBarra = (modelo) => medidas(modelo).camara === "barra";
 
+  /* El formulario dice "Blanca"/"Negra" (la funda); el catalogo usa el color
+     del producto. Se aceptan los dos. */
+  const NORMAL = { Blanca: "Blanco", Negra: "Negro", Gris: "Gris", Beige: "Beige" };
+  function fotoFunda(modelo, color) {
+    const m = MODELOS[String(modelo || "")];
+    if (!m || !m.colores) return null;
+    return m.colores[NORMAL[color] || color] || null;
+  }
+
   /* Zona prohibida (la camara) en coordenadas de la caja de charms, en %.
      La caja va de 6% a 94% a lo ancho y de 4% a 96% a lo alto de la funda. */
-  function zonaCamara(modelo) {
+  function zonaCamara(modelo, color) {
+    const foto = fotoFunda(modelo, color);
+    if (foto && foto.cam) {
+      // La foto dice donde termina la camara (fraccion de la imagen); se pasa a
+      // coordenadas de la caja de charms, que empieza en 6%/4% de la funda.
+      const x1 = foto.cam.x1 >= 1 ? 102 : ((foto.cam.x1 - 0.06) / 0.88) * 100;
+      const y1 = ((foto.cam.y1 - 0.04) / 0.92) * 100;
+      return { x0: -2, y0: -2, x1: x1, y1: y1 };
+    }
     return esBarra(modelo)
       ? { x0: -2, y0: -2, x1: 102, y1: 21 }   // barra: todo el ancho de arriba
       : { x0: -2, y0: -2, x1: 51, y1: 23 };   // modulo: solo la esquina
@@ -166,6 +183,10 @@
   }
 
   function svgFunda(color, pasta, modelo) {
+    const foto = fotoFunda(modelo, color);
+    if (foto) {
+      return '<img class="ed-foto" src="' + foto.img + '" alt="Tu funda ' + String(modelo) + ' color ' + String(color).toLowerCase() + '" draggable="false">';
+    }
     const s = SILICON[color] || SILICON.Blanca;
     const barra = esBarra(modelo);
     // El alto del lienzo sale de la proporcion real del modelo.
@@ -202,7 +223,7 @@
     let colorFunda = opciones.color || "Blanca";
     let colorPasta = opciones.pasta || colorFunda;
     let modelo = opciones.modelo || "";
-    let camara = zonaCamara(modelo);
+    let camara = zonaCamara(modelo, colorFunda);
     let puestos = [];          // { uid, id, x, y, rot }
     let seleccion = null;      // uid
     let categoria = "Todas";
@@ -236,7 +257,10 @@
     const area = cont.querySelector("#edArea");
     function ajustarProporcion() {
       const caja = cont.querySelector("#edCase");
-      if (caja) caja.style.aspectRatio = anchoFunda(modelo) + " / " + altoFunda(modelo);
+      if (!caja) return;
+      // Con foto manda la proporcion de la foto; si no, la de las medidas.
+      const foto = fotoFunda(modelo, colorFunda);
+      caja.style.aspectRatio = foto && foto.proporcion ? foto.proporcion + " / 1" : anchoFunda(modelo) + " / " + altoFunda(modelo);
     }
     const caseBox = cont.querySelector("#edCase");
     const tira = cont.querySelector("#edTira");
@@ -623,12 +647,11 @@
       cambiarColor(color, pasta, nuevoModelo) {
         colorFunda = color || "Blanca";
         colorPasta = pasta || colorFunda;
-        if (nuevoModelo !== undefined && nuevoModelo !== null) {
-          modelo = nuevoModelo;
-          camara = zonaCamara(modelo);
-          // Al cambiar de modelo lo que quedo bajo la camara se reacomoda solo.
-          puestos.forEach((q) => { const f = fueraDeCamara(camara, q.x, q.y, 5); q.x = f.x; q.y = f.y; });
-        }
+        if (nuevoModelo !== undefined && nuevoModelo !== null) modelo = nuevoModelo;
+        // Cada foto tiene su camara: se recalcula siempre, y lo que quedo debajo
+        // se reacomoda solo.
+        camara = zonaCamara(modelo, colorFunda);
+        puestos.forEach((q) => { const f = fueraDeCamara(camara, q.x, q.y, 5); q.x = f.x; q.y = f.y; });
         ajustarProporcion();
         caseBox.innerHTML = svgFunda(colorFunda, colorPasta, modelo);
         // el area de charms se vuelve a colgar tal cual, con todo lo que lleva

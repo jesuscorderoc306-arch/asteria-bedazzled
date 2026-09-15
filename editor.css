@@ -24,9 +24,11 @@
 /* La funda se dimensiona por altura: la bandeja de charms tiene que caber en la
    misma pantalla, sin hacer scroll para ir por una pieza y volver. */
 /* La proporcion la pone el editor segun el modelo; aqui solo el tamano. */
-.ed-case{position:relative;height:min(38vh,340px);height:min(38dvh,340px);width:auto;aspect-ratio:71.5/147;
-  filter:drop-shadow(0 26px 34px rgba(5,4,3,.22));-webkit-user-select:none;user-select:none}
-.ed-case svg{width:100%;height:100%;display:block;pointer-events:none}
+/* Sin filter en la caja: la foto ya trae su sombra, y un drop-shadow sobre una
+   imagen grande que se desplaza es otro candidato al parpadeo negro en movil. */
+.ed-case{position:relative;height:min(38vh,340px);height:min(38dvh,340px);width:auto;aspect-ratio:.54/1;
+  -webkit-user-select:none;user-select:none}
+.ed-case svg,.ed-case .ed-foto{width:100%;height:100%;display:block;pointer-events:none;-webkit-user-drag:none}
 
 /* Zona donde sí se pueden poner charms. La cámara queda fuera a propósito:
    un charm ahí taparía el lente y en el taller no se pega. */
