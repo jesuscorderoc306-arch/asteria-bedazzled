@@ -107,6 +107,12 @@ window.ASTERIA_MODELOS = {
     Blanco: { img: "img/fundas/iphone-17-pro-max-blanco.webp", proporcion: 0.508, cam: { x1: 1, y1: 0.302 } },
     Negro: { img: "img/fundas/iphone-17-pro-max-negro.webp", proporcion: 0.535, cam: { x1: 1, y1: 0.32 } },
   } },
+  /* El 18 Pro no traia ficha propia en la carpeta: usa la funda del 17 Pro
+     porque el usuario confirmo que son la misma. */
+  "iPhone 18 Pro": { alto: 150, ancho: 71.9, camara: "barra", colores: {
+    Blanco: { img: "img/fundas/iphone-17-pro-blanco.webp", proporcion: 0.554, cam: { x1: 1, y1: 0.335 } },
+    Negro: { img: "img/fundas/iphone-17-pro-negro.webp", proporcion: 0.549, cam: { x1: 1, y1: 0.352 } },
+  } },
   "iPhone 18 Pro Max": { alto: 163, ancho: 77.8, camara: "barra", colores: {
     Blanco: { img: "img/fundas/iphone-18-pro-max-blanco.webp", proporcion: 0.508, cam: { x1: 1, y1: 0.302 } },
     Negro: { img: "img/fundas/iphone-18-pro-max-negro.webp", proporcion: 0.535, cam: { x1: 1, y1: 0.32 } },
