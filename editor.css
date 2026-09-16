@@ -44,11 +44,16 @@
    medida es de ancho o diametro, --h cuando es de largo. El otro lado sale de
    la proporcion de la foto, sin deformarla. */
 .ed-charm{position:absolute;transform:translate(-50%,-50%) rotate(var(--rot,0deg));
-  width:var(--w,13%);height:var(--h,auto);
   cursor:grab;touch-action:none;transition:filter .2s}
-.ed-charm svg,.ed-charm img{width:100%;height:100%;display:block;object-fit:contain;
+/* El lado que trae medida del taller manda; el otro sale de la proporcion de la
+   foto. La clase la pone el editor: antes esto dependia de leer el atributo
+   style, y al girar la pieza cambiaba de tamano. */
+.ed-charm.ed-ancho{width:var(--w,13%);height:auto}
+.ed-charm.ed-alto{height:var(--h,18%);width:auto}
+.ed-charm svg,.ed-charm img{display:block;object-fit:contain;
   filter:drop-shadow(0 3px 4px rgba(5,4,3,.35));pointer-events:none}
-.ed-charm[style*="--w:auto"] svg,.ed-charm[style*="--w:auto"] img{width:auto}
+.ed-charm.ed-ancho svg,.ed-charm.ed-ancho img{width:100%;height:auto}
+.ed-charm.ed-alto svg,.ed-charm.ed-alto img{height:100%;width:auto}
 /* La foto del charm no se deforma: el lado que trae medida del taller manda y
    el otro sale de la proporcion de la imagen. */
 .ed-charm img{object-fit:contain}
