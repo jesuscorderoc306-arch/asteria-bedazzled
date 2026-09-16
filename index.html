@@ -204,9 +204,15 @@
      100vh mide el viewport mas grande y deja contenido debajo de la barra.
      dvh mide lo que de verdad se ve. */
   .form-overlay{position:fixed;inset:0;height:100vh;height:100dvh;z-index:100;background:var(--paper);
-    display:none;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+    display:none;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+    /* La barra de abajo es fija: sin este hueco el contenido nunca alcanza a
+       subir por encima de ella. */
+    padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   .form-overlay.open{display:flex;animation:fadeUp .5s ease}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  /* Solo opacidad: un transform aqui convierte al overlay en el bloque
+     contenedor de .form-nav (position:fixed), la barra se despega de la
+     pantalla y tapa la ultima fila sin dejar scrollear hasta ella. */
+  @keyframes fadeUp{from{opacity:0}to{opacity:1}}
   /* Fondo solido, sin desenfoque: es una barra fija sobre contenido que se
      desplaza, y ahi es donde el navegador del telefono pinta negro. */
   .form-top{position:sticky;top:0;background:var(--paper);border-bottom:1px solid var(--line);z-index:5}
@@ -1023,9 +1029,9 @@
      formulario que hace scroll. */
   function traerAlaVista(el){
     if(!el) return;
-    const cajaOv=overlay.getBoundingClientRect();
-    const alturaNav=formNav.getBoundingClientRect().height;
-    const falta=el.getBoundingClientRect().bottom - (cajaOv.bottom - alturaNav - 20);
+    /* El estorbo es la barra: se mide su borde de arriba. Restarlo del fondo
+       del overlay fallaba cuando el overlay se sale de la pantalla. */
+    const falta=el.getBoundingClientRect().bottom - (formNav.getBoundingClientRect().top - 20);
     /* Sin 'smooth': en el formulario ese scroll se cancela solo (medido) y la
        fila nunca llegaba a la vista. Instantaneo si funciona. */
     if(falta>0) overlay.scrollTo({top:overlay.scrollTop+falta});
@@ -1376,12 +1382,14 @@
     });
   }
 
-  /* toast */
+  /* toast: se queda en el DOM con opacity 0. Sin pointer-events:none seguia
+     comiendose los taps de lo que tenia debajo (la fila del color de pasta)
+     aunque ya no se viera. */
   let toastT;
   function flash(msg){
     let t=document.getElementById('toast');
     if(!t){t=document.createElement('div');t.id='toast';t.setAttribute('role','status');t.setAttribute('aria-live','polite');
-      t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--maroon);color:#fff;padding:12px 22px;font-size:.86rem;z-index:200;border-radius:6px;box-shadow:0 10px 24px -10px rgba(0,0,0,.5);transition:opacity .3s;max-width:86vw;text-align:center';
+      t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--maroon);color:#fff;padding:12px 22px;font-size:.86rem;z-index:200;border-radius:6px;box-shadow:0 10px 24px -10px rgba(0,0,0,.5);transition:opacity .3s;max-width:86vw;text-align:center;pointer-events:none';
       document.body.appendChild(t);}
     t.textContent=msg;t.style.opacity='1';clearTimeout(toastT);
     toastT=setTimeout(()=>t.style.opacity='0',3200);
