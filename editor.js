@@ -410,9 +410,12 @@
     function medidaCss(pieza) {
       const t = tamPieza(pieza);
       // El % del alto se mide contra el alto de la caja de charms, no de la funda.
-      return t.eje === "ancho"
+      // --ar: la proporcion de la pieza (foto) o 1 para las dibujadas. Con
+      // aspect-ratio el otro lado queda definido y no depende del espacio libre.
+      const ar = pieza.proporcion || 1;
+      return (t.eje === "ancho"
         ? "--w:" + t.pct + "%"
-        : "--h:" + (t.pct / AREA.h) + "%";
+        : "--h:" + (t.pct / AREA.h) + "%") + ";--ar:" + ar;
     }
     const clasePorEje = (pieza) => tamPieza(pieza).eje === "ancho" ? "ed-ancho" : "ed-alto";
 
