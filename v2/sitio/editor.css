@@ -46,6 +46,9 @@
 .ed-charm svg,.ed-charm img{width:100%;height:100%;display:block;object-fit:contain;
   filter:drop-shadow(0 3px 4px rgba(5,4,3,.35));pointer-events:none}
 .ed-charm[style*="--w:auto"] svg,.ed-charm[style*="--w:auto"] img{width:auto}
+/* La foto del charm no se deforma: el lado que trae medida del taller manda y
+   el otro sale de la proporcion de la imagen. */
+.ed-charm img{object-fit:contain}
 .ed-charm.dragging{cursor:grabbing;z-index:20}
 /* La pieza se asienta, no rebota: cae y frena, como algo que se pega. */
 .ed-charm.entra{animation:edPop .34s cubic-bezier(.16,1,.3,1)}
