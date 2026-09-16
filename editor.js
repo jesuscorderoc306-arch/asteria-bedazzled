@@ -101,6 +101,32 @@
     "libelula", "mano", "jaguar", "sirena", "rosa", "herradura", "copa", "cerillo",
     "corazonSagrado", "corazonDije", "caracola", "caracolaEspiral", "buey", "tortuga", "ala"];
 
+  /* Las letras no tienen foto (las del tablero venian en baja calidad): se
+     dibujan con la tipografia de la marca, en el tono que toque. */
+  function svgLetra(pieza, tamano) {
+    const tono = TONOS[pieza.tono] || TONOS.oro;
+    const gid = "gl" + String(pieza.id).replace(/[^a-z0-9]/gi, "");
+    return '<svg viewBox="0 0 24 24" width="' + (tamano || 24) + '" height="' + (tamano || 24) + '" aria-hidden="true">'
+      + '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0" stop-color="' + tono[0] + '"/><stop offset="1" stop-color="' + tono[1] + '"/>'
+      + '</linearGradient></defs>'
+      + '<text x="12" y="19" text-anchor="middle" font-size="22"'
+      + ' font-family="Cormorant Garamond, Georgia, serif" font-weight="600"'
+      + ' fill="url(#' + gid + ')" stroke="' + tono[1] + '" stroke-width="0.4">'
+      + String(pieza.letra || "A") + '</text></svg>';
+  }
+
+  /* Lo que se dibuja de una pieza: su foto si la tiene, la letra si es letra,
+     y si no la silueta provisional. */
+  function cuerpoPieza(pieza, tamano, diferir) {
+    // En la bandeja son 123 piezas: las de mas adelante cargan al hacer scroll.
+    const lazy = diferir ? ' loading="lazy" decoding="async"' : '';
+    if (pieza.img) return '<img src="' + pieza.img + '" alt=""' + lazy + ' draggable="false">';
+    if (pieza.imgId && pieza.imgUrl) return '<img src="' + pieza.imgUrl + '" alt=""' + lazy + ' draggable="false">';
+    if (pieza.letra) return svgLetra(pieza, tamano);
+    return svgPieza(pieza, tamano);
+  }
+
   function svgPieza(pieza, tamano) {
     const tono = TONOS[pieza.tono] || TONOS.oro;
     const gid = "g" + String(pieza.id).replace(/[^a-z0-9]/gi, "");
@@ -118,7 +144,8 @@
   /* El catalogo del taller. Si por lo que sea no carga, el editor no se rompe. */
   const PIEZAS_BASE = (window.ASTERIA_CHARMS || []).map(function (c) {
     return { id: c.id, nombre: c.nombre, categoria: c.cat || "Charms",
-      mm: c.mm, forma: c.forma, tono: c.tono, n: c.n };
+      mm: c.mm, eje: c.eje, forma: c.forma, tono: c.tono, n: c.n,
+      img: c.img, letra: c.letra, proporcion: c.proporcion };
   });
 
   /* ---------- la funda ----------
@@ -387,9 +414,7 @@
         const pieza = mapa.get(p.id);
         if (!pieza) return "";
         const sel = p.uid === seleccion;
-        const cuerpo = pieza.imgId
-          ? `<img src="${esc(pieza.imgUrl)}" alt="">`
-          : svgPieza(pieza);
+        const cuerpo = cuerpoPieza(pieza);
         return `<div class="ed-charm${sel ? " sel" : ""}" data-uid="${p.uid}" tabindex="0"
           role="button" aria-label="${esc(pieza.nombre)}, arrastra para mover"
           style="left:${p.x}%;top:${p.y}%;--rot:${p.rot}deg;${medidaCss(pieza)}">${cuerpo}</div>`;
@@ -440,9 +465,9 @@
       const usados = {};
       puestos.forEach((p) => { usados[p.id] = (usados[p.id] || 0) + 1; });
       const lista = piezas.filter((p) => categoria === "Todas" || p.categoria === categoria);
-      tira.innerHTML = lista.map((p) => {
+      tira.innerHTML = lista.map((p, i) => {
         const n = usados[p.id] || 0;
-        const cuerpo = p.imgId ? `<img src="${esc(p.imgUrl)}" alt="">` : svgPieza(p, 38);
+        const cuerpo = cuerpoPieza(p, 38, i > 11);
         return `<button type="button" class="ed-pieza" data-pieza="${esc(p.id)}"
           aria-label="Agregar ${esc(p.nombre)}"${p.disponible === false ? " disabled" : ""}>
           ${cuerpo}<span class="nb">${esc(p.nombre)}</span>
