@@ -364,7 +364,8 @@
       const pieza = porId().get(id);
       if (!pieza) return;
       guardarHistorial();
-      const pos = (opts && opts.pos) || puntoLibre(anchoPct(pieza));
+      const libre = (opts && opts.pos) || puntoLibre(anchoPct(pieza));
+      const pos = limites(libre.x, libre.y, pieza, null);
       const uid = "u" + ++contador;
       puestos.push({ uid, id, x: pos.x, y: pos.y, rot: opts && opts.rot != null ? opts.rot : Math.round((Math.random() * 26 - 13)) });
       seleccion = uid;
@@ -385,6 +386,7 @@
       guardarHistorial();
       // Reparte en una retícula suave y les da un giro leve: se ve hecho a mano,
       // no alineado como una hoja de cálculo.
+      const mapa = porId();
       const n = puestos.length;
       const cols = Math.ceil(Math.sqrt(n * 0.62));
       const filas = Math.ceil(n / cols);
@@ -395,7 +397,7 @@
         const arriba = esBarra(modelo) ? camara.y1 + 4 : 8;
         const px = ((c + 0.5) / cols) * 84 + 8;
         const py = arriba + ((f + 0.5) / filas) * (92 - arriba);
-        const ajustado = fueraDeCamara(camara, px + (Math.random() * 5 - 2.5), py + (Math.random() * 4 - 2), 4);
+        const ajustado = limites(px + (Math.random() * 5 - 2.5), py + (Math.random() * 4 - 2), mapa.get(p.id), null);
         p.x = ajustado.x;
         p.y = ajustado.y;
         p.rot = Math.round(Math.random() * 30 - 15);
@@ -516,11 +518,28 @@
     }
 
     /* ---------- arrastrar ---------- */
-    function limites(x, y) {
-      // Se puede llegar casi al borde: la funda entera es zona de trabajo.
-      const dentro = { x: Math.max(3, Math.min(97, x)), y: Math.max(2, Math.min(98, y)) };
+    /* Cuanto ocupa la pieza dentro de la caja de charms, en % de la caja.
+       Se mide del elemento cuando existe; si no, de sus milimetros. */
+    function mitades(pieza, el) {
+      const caja = area.getBoundingClientRect();
+      if (el && caja.width && caja.height) {
+        return { mx: (el.offsetWidth / 2 / caja.width) * 100,
+                 my: (el.offsetHeight / 2 / caja.height) * 100 };
+      }
+      const anchoCaso = anchoPct(pieza);                 // % del ancho de la funda
+      const ar = (pieza && pieza.proporcion) || 1;
+      const altoCaso = anchoCaso * (anchoFunda(modelo) / altoFunda(modelo)) / ar;
+      return { mx: anchoCaso / AREA.w / 2, my: altoCaso / AREA.h / 2 };
+    }
+
+    /* El tope cuenta el tamano de la pieza: antes miraba solo su centro y la
+       mitad del charm se quedaba fuera de la funda. */
+    function limites(x, y, pieza, el) {
+      const m = pieza ? mitades(pieza, el) : { mx: 3, my: 2 };
+      const mx = Math.min(45, Math.max(2, m.mx)), my = Math.min(45, Math.max(1.5, m.my));
+      const dentro = { x: Math.max(mx, Math.min(100 - mx, x)), y: Math.max(my, Math.min(100 - my, y)) };
       // Un charm sobre el lente no se puede pegar: la pieza se desvia sola.
-      return fueraDeCamara(camara, dentro.x, dentro.y, 5);
+      return fueraDeCamara(camara, dentro.x, dentro.y, Math.max(mx, my));
     }
 
     area.addEventListener("pointerdown", (e) => {
@@ -542,7 +561,8 @@
       function mover(ev) {
         if (!movio) { movio = true; guardarHistorial(); }
         const p = limites(((ev.clientX - dx - caja.left) / caja.width) * 100,
-                          ((ev.clientY - dy - caja.top) / caja.height) * 100);
+                          ((ev.clientY - dy - caja.top) / caja.height) * 100,
+                          porId().get(punto.id), vivo);
         punto.x = p.x; punto.y = p.y;
         vivo.style.left = p.x + "%";
         vivo.style.top = p.y + "%";
@@ -595,7 +615,7 @@
       if (teclas[e.key]) {
         e.preventDefault();
         guardarHistorial();
-        const p = limites(punto.x + teclas[e.key][0], punto.y + teclas[e.key][1]);
+        const p = limites(punto.x + teclas[e.key][0], punto.y + teclas[e.key][1], porId().get(punto.id), el);
         punto.x = p.x; punto.y = p.y;
         seleccion = punto.uid;
         pintar();
@@ -688,7 +708,8 @@
         // Cada foto tiene su camara: se recalcula siempre, y lo que quedo debajo
         // se reacomoda solo.
         camara = zonaCamara(modelo, colorFunda);
-        puestos.forEach((q) => { const f = fueraDeCamara(camara, q.x, q.y, 5); q.x = f.x; q.y = f.y; });
+        const mapa2 = porId();
+        puestos.forEach((q) => { const f = limites(q.x, q.y, mapa2.get(q.id), null); q.x = f.x; q.y = f.y; });
         ajustarProporcion();
         caseBox.innerHTML = svgFunda(colorFunda, colorPasta, modelo);
         // el area de charms se vuelve a colgar tal cual, con todo lo que lleva
