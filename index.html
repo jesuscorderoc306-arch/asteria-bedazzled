@@ -1019,6 +1019,18 @@
     modeloSelect.innerHTML='<option value="">Selecciona tu modelo…</option>'+lista.map(m=>`<option value="${m}">${m}</option>`).join('');
     if(prev && lista.includes(prev)){modeloSelect.value=prev;} else {state.modelo=null;}
   }
+  /* Deja un elemento visible por encima de la barra fija de abajo, dentro del
+     formulario que hace scroll. */
+  function traerAlaVista(el){
+    if(!el) return;
+    const cajaOv=overlay.getBoundingClientRect();
+    const alturaNav=formNav.getBoundingClientRect().height;
+    const falta=el.getBoundingClientRect().bottom - (cajaOv.bottom - alturaNav - 20);
+    /* Sin 'smooth': en el formulario ese scroll se cancela solo (medido) y la
+       fila nunca llegaba a la vista. Instantaneo si funciona. */
+    if(falta>0) overlay.scrollTo({top:overlay.scrollTop+falta});
+  }
+
   const COLORES_FUNDA={Blanco:['Blanca','sw-w'],Negro:['Negra','sw-b'],Gris:['Gris','sw-g'],Beige:['Beige','sw-be']};
   const fundaOpts=document.getElementById('fundaOpts');
   /* Cada modelo tiene sus propios colores en stock: los botones salen del
@@ -1045,9 +1057,14 @@
     state.modelo=modeloSelect.value||null; fldModelo.classList.remove('invalid');
     if(state.style && state.style.indexOf('Pasta')===0){
       pintarColoresFunda();
-      // Elegido el modelo, lo siguiente es el color: se trae a la vista para que
-      // no quede debajo del pliegue.
-      if(state.modelo) setTimeout(()=>pastaWrap.scrollIntoView({behavior:'smooth',block:'center'}),120);
+      // Elegido el modelo, lo siguiente son los colores. scrollIntoView no
+      // servia: dejaba la fila de la pasta fuera de la pantalla (y detras de la
+      // barra de Continuar), asi que no se podia tocar. Se calcula a mano para
+      // que la ultima fila termine arriba de la barra.
+      if(state.modelo) setTimeout(()=>{
+        const filas=pastaWrap.querySelectorAll('.pastaopts');
+        traerAlaVista(filas[filas.length-1] || pastaWrap);
+      },140);
     }
   });
 
@@ -1322,7 +1339,7 @@
       if(esPasta) pintarColoresFunda();
       // El modelo va primero: de el dependen los colores de funda que se ofrecen.
       const scrollTarget = modelBox;
-      setTimeout(()=>scrollTarget.scrollIntoView({behavior:'smooth',block:'start'}),380);
+      setTimeout(()=>scrollTarget.scrollIntoView({block:'start'}),380);
     });
   });
   /* Son dos decisiones distintas: el silicon de la funda y la pasta que va
