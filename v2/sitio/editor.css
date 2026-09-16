@@ -35,7 +35,10 @@
 /* La caja de charms cubre toda la funda por dentro; lo que la camara ocupa se
    descuenta en el editor segun el modelo, no recortando la caja. Antes empezaba
    debajo de la camara y la franja de al lado quedaba dibujada pero inservible. */
-.ed-area{position:absolute;left:6%;top:4%;width:88%;height:92%}
+/* Casi al ras de la funda: antes quedaba un margen de 6% que, sumado al tope
+   del arrastre, dejaba sin usar como un 11% de cada lado. Si cambian estos
+   valores hay que cambiar AREA en editor.js. */
+.ed-area{position:absolute;left:4%;top:2.5%;width:92%;height:95%}
 
 /* Cada pieza se mide por el lado que trae anotado el taller: --w cuando la
    medida es de ancho o diametro, --h cuando es de largo. El otro lado sale de

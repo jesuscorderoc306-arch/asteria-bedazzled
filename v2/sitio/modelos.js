@@ -14,22 +14,22 @@
  */
 window.ASTERIA_MODELOS = {
   "iPhone 11": { alto: 150, ancho: 75.7, camara: "esquina", colores: {
-    Blanco: { img: "img/fundas/iphone-11-blanco.webp", proporcion: 0.539, cam: { x1: 0.512, y1: 0.305 } },
+    Blanco: { img: "img/fundas/iphone-11-blanco.webp", proporcion: 0.532, cam: { x1: 0.508, y1: 0.313 } },
     Negro: { img: "img/fundas/iphone-11-negro.webp", proporcion: 0.521, cam: { x1: 0.502, y1: 0.288 } },
   } },
   "iPhone 11 Pro": { alto: 140, ancho: 71.4, camara: "esquina", colores: {
-    Gris: { img: "img/fundas/iphone-11-pro-gris.webp", proporcion: 0.542, cam: { x1: 0.448, y1: 0.255 } },
+    Gris: { img: "img/fundas/iphone-11-pro-gris.webp", proporcion: 0.536, cam: { x1: 0.445, y1: 0.253 } },
     Beige: { img: "img/fundas/iphone-11-pro-beige.webp", proporcion: 0.515, cam: { x1: 0.45, y1: 0.262 } },
   } },
   "iPhone 11 Pro Max": { alto: 158, ancho: 77.8, camara: "esquina", colores: {
-    Negro: { img: "img/fundas/iphone-11-pro-max-negro.webp", proporcion: 0.536, cam: { x1: 0.46, y1: 0.262 } },
+    Negro: { img: "img/fundas/iphone-11-pro-max-negro.webp", proporcion: 0.543, cam: { x1: 0.465, y1: 0.262 } },
   } },
   "iPhone 12 Pro Max": { alto: 160, ancho: 78, camara: "esquina", colores: {
-    Negro: { img: "img/fundas/iphone-12-pro-max-negro.webp", proporcion: 0.536, cam: { x1: 0.46, y1: 0.262 } },
+    Negro: { img: "img/fundas/iphone-12-pro-max-negro.webp", proporcion: 0.543, cam: { x1: 0.465, y1: 0.262 } },
   } },
   "iPhone 13": { alto: 146.7, ancho: 71.5, camara: "esquina", colores: {
-    Blanco: { img: "img/fundas/iphone-13-blanco.webp", proporcion: 0.542, cam: { x1: 0.592, y1: 0.312 } },
-    Negro: { img: "img/fundas/iphone-13-negro.webp", proporcion: 0.54, cam: { x1: 0.498, y1: 0.276 } },
+    Blanco: { img: "img/fundas/iphone-13-blanco.webp", proporcion: 0.542, cam: { x1: 0.576, y1: 0.309 } },
+    Negro: { img: "img/fundas/iphone-13-negro.webp", proporcion: 0.54, cam: { x1: 0.495, y1: 0.276 } },
   } },
   "iPhone 13 Pro": { alto: 146.7, ancho: 71.5, camara: "esquina", colores: {
     Negro: { img: "img/fundas/iphone-13-pro-negro.webp", proporcion: 0.544, cam: { x1: 0.576, y1: 0.323 } },
@@ -37,86 +37,86 @@ window.ASTERIA_MODELOS = {
     Beige: { img: "img/fundas/iphone-13-pro-beige.webp", proporcion: 0.542, cam: { x1: 0.553, y1: 0.317 } },
   } },
   "iPhone 13 Pro Max": { alto: 160, ancho: 78.1, camara: "esquina", colores: {
-    Blanco: { img: "img/fundas/iphone-13-pro-max-blanco.webp", proporcion: 0.54, cam: { x1: 0.554, y1: 0.307 } },
+    Blanco: { img: "img/fundas/iphone-13-pro-max-blanco.webp", proporcion: 0.536, cam: { x1: 0.553, y1: 0.313 } },
     Gris: { img: "img/fundas/iphone-13-pro-max-gris.webp", proporcion: 0.542, cam: { x1: 0.548, y1: 0.314 } },
     Beige: { img: "img/fundas/iphone-13-pro-max-beige.webp", proporcion: 0.535, cam: { x1: 0.552, y1: 0.313 } },
   } },
   "iPhone 14": { alto: 146.7, ancho: 71.5, camara: "esquina", colores: {
-    Blanco: { img: "img/fundas/iphone-14-blanco.webp", proporcion: 0.542, cam: { x1: 0.592, y1: 0.312 } },
-    Negro: { img: "img/fundas/iphone-14-negro.webp", proporcion: 0.54, cam: { x1: 0.498, y1: 0.276 } },
+    Blanco: { img: "img/fundas/iphone-14-blanco.webp", proporcion: 0.542, cam: { x1: 0.576, y1: 0.309 } },
+    Negro: { img: "img/fundas/iphone-14-negro.webp", proporcion: 0.54, cam: { x1: 0.495, y1: 0.276 } },
   } },
   "iPhone 14 Plus": { alto: 160, ancho: 78.1, camara: "esquina", colores: {
-    Blanco: { img: "img/fundas/iphone-14-plus-blanco.webp", proporcion: 0.549, cam: { x1: 0.496, y1: 0.262 } },
+    Blanco: { img: "img/fundas/iphone-14-plus-blanco.webp", proporcion: 0.54, cam: { x1: 0.495, y1: 0.273 } },
     Negro: { img: "img/fundas/iphone-14-plus-negro.webp", proporcion: 0.532, cam: { x1: 0.49, y1: 0.269 } },
   } },
   "iPhone 14 Pro": { alto: 146.7, ancho: 71.5, camara: "esquina", colores: {
-    Blanco: { img: "img/fundas/iphone-14-pro-blanco.webp", proporcion: 0.54, cam: { x1: 0.554, y1: 0.307 } },
+    Blanco: { img: "img/fundas/iphone-14-pro-blanco.webp", proporcion: 0.536, cam: { x1: 0.553, y1: 0.313 } },
     Negro: { img: "img/fundas/iphone-14-pro-negro.webp", proporcion: 0.544, cam: { x1: 0.576, y1: 0.323 } },
     Gris: { img: "img/fundas/iphone-14-pro-gris.webp", proporcion: 0.543, cam: { x1: 0.549, y1: 0.314 } },
     Beige: { img: "img/fundas/iphone-14-pro-beige.webp", proporcion: 0.542, cam: { x1: 0.551, y1: 0.317 } },
   } },
   "iPhone 14 Pro Max": { alto: 160, ancho: 78.1, camara: "esquina", colores: {
-    Blanco: { img: "img/fundas/iphone-14-pro-max-blanco.webp", proporcion: 0.54, cam: { x1: 0.554, y1: 0.307 } },
+    Blanco: { img: "img/fundas/iphone-14-pro-max-blanco.webp", proporcion: 0.536, cam: { x1: 0.553, y1: 0.313 } },
     Negro: { img: "img/fundas/iphone-14-pro-max-negro.webp", proporcion: 0.533, cam: { x1: 0.585, y1: 0.321 } },
   } },
   "iPhone 15": { alto: 146.7, ancho: 71.5, camara: "esquina", colores: {
-    Blanco: { img: "img/fundas/iphone-15-blanco.webp", proporcion: 0.542, cam: { x1: 0.592, y1: 0.312 } },
-    Negro: { img: "img/fundas/iphone-15-negro.webp", proporcion: 0.54, cam: { x1: 0.498, y1: 0.276 } },
-    Gris: { img: "img/fundas/iphone-15-gris.webp", proporcion: 0.539, cam: { x1: 0.486, y1: 0.263 } },
+    Blanco: { img: "img/fundas/iphone-15-blanco.webp", proporcion: 0.542, cam: { x1: 0.576, y1: 0.309 } },
+    Negro: { img: "img/fundas/iphone-15-negro.webp", proporcion: 0.54, cam: { x1: 0.495, y1: 0.276 } },
+    Gris: { img: "img/fundas/iphone-15-gris.webp", proporcion: 0.542, cam: { x1: 0.486, y1: 0.263 } },
   } },
   "iPhone 15 Plus": { alto: 160, ancho: 78.1, camara: "esquina", colores: {
     Gris: { img: "img/fundas/iphone-15-plus-gris.webp", proporcion: 0.532, cam: { x1: 0.49, y1: 0.269 } },
-    Beige: { img: "img/fundas/iphone-15-plus-beige.webp", proporcion: 0.54, cam: { x1: 0.495, y1: 0.273 } },
+    Beige: { img: "img/fundas/iphone-15-plus-beige.webp", proporcion: 0.54, cam: { x1: 0.495, y1: 0.274 } },
   } },
   "iPhone 15 Pro": { alto: 146.7, ancho: 71.5, camara: "esquina", colores: {
-    Blanco: { img: "img/fundas/iphone-15-pro-blanco.webp", proporcion: 0.54, cam: { x1: 0.554, y1: 0.307 } },
+    Blanco: { img: "img/fundas/iphone-15-pro-blanco.webp", proporcion: 0.536, cam: { x1: 0.553, y1: 0.313 } },
     Negro: { img: "img/fundas/iphone-15-pro-negro.webp", proporcion: 0.544, cam: { x1: 0.576, y1: 0.323 } },
     Gris: { img: "img/fundas/iphone-15-pro-gris.webp", proporcion: 0.542, cam: { x1: 0.551, y1: 0.314 } },
   } },
   "iPhone 15 Pro Max": { alto: 163, ancho: 77.6, camara: "esquina", colores: {
-    Blanco: { img: "img/fundas/iphone-15-pro-max-blanco.webp", proporcion: 0.54, cam: { x1: 0.554, y1: 0.307 } },
+    Blanco: { img: "img/fundas/iphone-15-pro-max-blanco.webp", proporcion: 0.536, cam: { x1: 0.553, y1: 0.313 } },
     Negro: { img: "img/fundas/iphone-15-pro-max-negro.webp", proporcion: 0.533, cam: { x1: 0.585, y1: 0.321 } },
     Gris: { img: "img/fundas/iphone-15-pro-max-gris.webp", proporcion: 0.535, cam: { x1: 0.552, y1: 0.313 } },
   } },
   "iPhone 16": { alto: 147.6, ancho: 71.6, camara: "esquina", colores: {
-    Blanco: { img: "img/fundas/iphone-16-blanco.webp", proporcion: 0.526, cam: { x1: 0.426, y1: 0.285 } },
+    Blanco: { img: "img/fundas/iphone-16-blanco.webp", proporcion: 0.529, cam: { x1: 0.348, y1: 0.305 } },
     Negro: { img: "img/fundas/iphone-16-negro.webp", proporcion: 0.55, cam: { x1: 0.444, y1: 0.299 } },
   } },
   "iPhone 16 Plus": { alto: 160, ancho: 77.6, camara: "esquina", colores: {
-    Blanco: { img: "img/fundas/iphone-16-plus-blanco.webp", proporcion: 0.522, cam: { x1: 0.346, y1: 0.301 } },
-    Negro: { img: "img/fundas/iphone-16-plus-negro.webp", proporcion: 0.535, cam: { x1: 0.446, y1: 0.292 } },
+    Blanco: { img: "img/fundas/iphone-16-plus-blanco.webp", proporcion: 0.535, cam: { x1: 0.37, y1: 0.307 } },
+    Negro: { img: "img/fundas/iphone-16-plus-negro.webp", proporcion: 0.537, cam: { x1: 0.446, y1: 0.294 } },
   } },
   "iPhone 16 Pro": { alto: 149.6, ancho: 71.5, camara: "esquina", colores: {
-    Blanco: { img: "img/fundas/iphone-16-pro-blanco.webp", proporcion: 0.54, cam: { x1: 0.554, y1: 0.307 } },
+    Blanco: { img: "img/fundas/iphone-16-pro-blanco.webp", proporcion: 0.536, cam: { x1: 0.553, y1: 0.313 } },
     Negro: { img: "img/fundas/iphone-16-pro-negro.webp", proporcion: 0.544, cam: { x1: 0.576, y1: 0.323 } },
     Beige: { img: "img/fundas/iphone-16-pro-beige.webp", proporcion: 0.542, cam: { x1: 0.551, y1: 0.317 } },
   } },
   "iPhone 16 Pro Max": { alto: 163, ancho: 77.6, camara: "esquina", colores: {
-    Blanco: { img: "img/fundas/iphone-16-pro-max-blanco.webp", proporcion: 0.54, cam: { x1: 0.554, y1: 0.307 } },
+    Blanco: { img: "img/fundas/iphone-16-pro-max-blanco.webp", proporcion: 0.536, cam: { x1: 0.553, y1: 0.313 } },
     Negro: { img: "img/fundas/iphone-16-pro-max-negro.webp", proporcion: 0.533, cam: { x1: 0.585, y1: 0.321 } },
   } },
   "iPhone 17": { alto: 149.6, ancho: 71.6, camara: "esquina", colores: {
-    Blanco: { img: "img/fundas/iphone-17-blanco.webp", proporcion: 0.526, cam: { x1: 0.426, y1: 0.285 } },
+    Blanco: { img: "img/fundas/iphone-17-blanco.webp", proporcion: 0.529, cam: { x1: 0.348, y1: 0.305 } },
     Negro: { img: "img/fundas/iphone-17-negro.webp", proporcion: 0.55, cam: { x1: 0.444, y1: 0.299 } },
   } },
   "iPhone 17 Pro": { alto: 150, ancho: 71.9, camara: "barra", colores: {
-    Blanco: { img: "img/fundas/iphone-17-pro-blanco.webp", proporcion: 0.554, cam: { x1: 1, y1: 0.335 } },
-    Negro: { img: "img/fundas/iphone-17-pro-negro.webp", proporcion: 0.549, cam: { x1: 1, y1: 0.352 } },
+    Blanco: { img: "img/fundas/iphone-17-pro-blanco.webp", proporcion: 0.546, cam: { x1: 1, y1: 0.351 } },
+    Negro: { img: "img/fundas/iphone-17-pro-negro.webp", proporcion: 0.551, cam: { x1: 1, y1: 0.352 } },
   } },
   "iPhone 17 Pro Max": { alto: 163, ancho: 77.8, camara: "barra", colores: {
-    Blanco: { img: "img/fundas/iphone-17-pro-max-blanco.webp", proporcion: 0.508, cam: { x1: 1, y1: 0.302 } },
-    Negro: { img: "img/fundas/iphone-17-pro-max-negro.webp", proporcion: 0.535, cam: { x1: 1, y1: 0.32 } },
+    Blanco: { img: "img/fundas/iphone-17-pro-max-blanco.webp", proporcion: 0.531, cam: { x1: 1, y1: 0.317 } },
+    Negro: { img: "img/fundas/iphone-17-pro-max-negro.webp", proporcion: 0.536, cam: { x1: 1, y1: 0.321 } },
   } },
   /* No hay iPhone 18 normal: la linea empieza en el 18 Pro. Este no traia
      ficha propia en la carpeta y usa la funda del 17 Pro, que el usuario
      confirmo que es la misma. */
   "iPhone 18 Pro": { alto: 150, ancho: 71.9, camara: "barra", colores: {
-    Blanco: { img: "img/fundas/iphone-17-pro-blanco.webp", proporcion: 0.554, cam: { x1: 1, y1: 0.335 } },
-    Negro: { img: "img/fundas/iphone-17-pro-negro.webp", proporcion: 0.549, cam: { x1: 1, y1: 0.352 } },
+    Blanco: { img: "img/fundas/iphone-17-pro-blanco.webp", proporcion: 0.546, cam: { x1: 1, y1: 0.351 } },
+    Negro: { img: "img/fundas/iphone-17-pro-negro.webp", proporcion: 0.551, cam: { x1: 1, y1: 0.352 } },
   } },
   "iPhone 18 Pro Max": { alto: 163, ancho: 77.8, camara: "barra", colores: {
-    Blanco: { img: "img/fundas/iphone-18-pro-max-blanco.webp", proporcion: 0.508, cam: { x1: 1, y1: 0.302 } },
-    Negro: { img: "img/fundas/iphone-18-pro-max-negro.webp", proporcion: 0.535, cam: { x1: 1, y1: 0.32 } },
+    Blanco: { img: "img/fundas/iphone-18-pro-max-blanco.webp", proporcion: 0.531, cam: { x1: 1, y1: 0.317 } },
+    Negro: { img: "img/fundas/iphone-18-pro-max-negro.webp", proporcion: 0.536, cam: { x1: 1, y1: 0.321 } },
   } },
 };
 
