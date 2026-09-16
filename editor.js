@@ -168,6 +168,10 @@
 
   const esBarra = (modelo) => medidas(modelo).camara === "barra";
 
+  /* Donde vive la caja de charms dentro de la funda; tiene que coincidir con
+     .ed-area en editor.css. */
+  const AREA = { left: 0.04, top: 0.025, w: 0.92, h: 0.95 };
+
   /* El formulario dice "Blanca"/"Negra" (la funda); el catalogo usa el color
      del producto. Se aceptan los dos. */
   const NORMAL = { Blanca: "Blanco", Negra: "Negro", Gris: "Gris", Beige: "Beige" };
@@ -184,8 +188,8 @@
     if (foto && foto.cam) {
       // La foto dice donde termina la camara (fraccion de la imagen); se pasa a
       // coordenadas de la caja de charms, que empieza en 6%/4% de la funda.
-      const x1 = foto.cam.x1 >= 1 ? 102 : ((foto.cam.x1 - 0.06) / 0.88) * 100;
-      const y1 = ((foto.cam.y1 - 0.04) / 0.92) * 100;
+      const x1 = foto.cam.x1 >= 1 ? 102 : ((foto.cam.x1 - AREA.left) / AREA.w) * 100;
+      const y1 = ((foto.cam.y1 - AREA.top) / AREA.h) * 100;
       return { x0: -2, y0: -2, x1: x1, y1: y1 };
     }
     return esBarra(modelo)
@@ -205,8 +209,8 @@
     const m = margen || 0;
     const bajar = zona.y1 + m;
     const derecha = zona.x1 + m;
-    if (zona.x1 < 90 && (derecha - x) < (bajar - y)) return { x: Math.min(94, derecha), y: y };
-    return { x: x, y: Math.min(96, bajar) };
+    if (zona.x1 < 90 && (derecha - x) < (bajar - y)) return { x: Math.min(97, derecha), y: y };
+    return { x: x, y: Math.min(98, bajar) };
   }
 
   function svgFunda(color, pasta, modelo) {
@@ -343,7 +347,7 @@
           const ang = (i / pasos) * Math.PI * 2 + radio * 0.7;
           const x = 50 + Math.cos(ang) * radio;
           const y = centroY + Math.sin(ang) * radio * 1.55;
-          if (x < 8 || x > 92 || y < 4 || y > 94) continue;
+          if (x < 5 || x > 95 || y < 3 || y > 97) continue;
           if (dentroDeCamara(camara, x, y, tam * 0.5)) continue;
           const choca = puestos.some((p) => {
             const otra = porId().get(p.id);
@@ -389,9 +393,9 @@
         // Con modulo en esquina se empieza desde arriba para aprovechar la
         // franja de al lado; con barra completa no hay nada que aprovechar.
         const arriba = esBarra(modelo) ? camara.y1 + 4 : 8;
-        const px = ((c + 0.5) / cols) * 74 + 13;
+        const px = ((c + 0.5) / cols) * 84 + 8;
         const py = arriba + ((f + 0.5) / filas) * (92 - arriba);
-        const ajustado = fueraDeCamara(camara, px + (Math.random() * 5 - 2.5), py + (Math.random() * 4 - 2), 6);
+        const ajustado = fueraDeCamara(camara, px + (Math.random() * 5 - 2.5), py + (Math.random() * 4 - 2), 4);
         p.x = ajustado.x;
         p.y = ajustado.y;
         p.rot = Math.round(Math.random() * 30 - 15);
@@ -506,7 +510,8 @@
 
     /* ---------- arrastrar ---------- */
     function limites(x, y) {
-      const dentro = { x: Math.max(6, Math.min(94, x)), y: Math.max(4, Math.min(96, y)) };
+      // Se puede llegar casi al borde: la funda entera es zona de trabajo.
+      const dentro = { x: Math.max(3, Math.min(97, x)), y: Math.max(2, Math.min(98, y)) };
       // Un charm sobre el lente no se puede pegar: la pieza se desvia sola.
       return fueraDeCamara(camara, dentro.x, dentro.y, 5);
     }
