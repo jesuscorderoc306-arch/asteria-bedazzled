@@ -256,9 +256,6 @@
   .modelbox{max-height:0;opacity:0;overflow:hidden;transition:max-height .5s cubic-bezier(.2,.8,.25,1),opacity .4s,margin .4s;max-width:440px;margin:0 auto}
   .modelbox.show{max-height:420px;opacity:1;margin-top:34px}
   .modelbox-card{background:var(--paper-2);border:1px solid var(--line);border-radius:20px;padding:38px 34px 32px;text-align:center}
-  /* Con el selector visual el aire de la tarjeta le robaba ancho a las fundas. */
-  .modelbox-card:has(.modelgrid:not(:empty)){padding:22px 14px 18px;background:var(--paper)}
-  .modelbox-card:has(.modelgrid:not(:empty)) .modelcard{background:var(--paper-2)}
   .modelbox-star{display:block;color:var(--maroon);font-size:1.25rem;margin-bottom:14px}
   .modelbox .field{margin:0}
   .pastawrap,.modelbox,.gemblock{scroll-margin-top:150px}
@@ -358,23 +355,6 @@
   .gembtn .badge{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;color:#fff;display:grid;place-items:center;font-size:.7rem;opacity:0;transform:scale(.4);transition:.2s}
   .gemrow.prio .gembtn.on .badge{opacity:1;transform:scale(1);background:var(--blue)}
   .gemrow.excl .gembtn.on .badge{opacity:1;transform:scale(1);background:var(--maroon)}
-
-  /* Elegir modelo viendo la funda, no leyendo una lista: cada tarjeta muestra
-     la foto del modelo en el color elegido. */
-  .modelgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:8px;margin-top:4px;
-    max-height:min(38vh,300px);overflow-y:auto;overscroll-behavior-y:contain;padding:2px}
-  .modelgrid:empty{display:none}
-  /* Fondo mas oscuro que el papel: si no, las fundas blancas se pierden. */
-  .modelcard{border:1px solid var(--line);background:var(--paper-2);padding:7px 5px 6px;cursor:pointer;
-    display:flex;flex-direction:column;align-items:center;gap:6px;
-    -webkit-tap-highlight-color:transparent;transition:border-color .2s,transform .2s}
-  .modelcard:hover{border-color:var(--char);transform:translateY(-2px)}
-  .modelcard[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
-  .modelcard img{width:100%;height:68px;object-fit:contain;display:block}
-  .modelcard .nm{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.08em;
-    font-size:.58rem;line-height:1.3;color:var(--char);text-align:center}
-  .modelcard[aria-pressed="true"] .nm{color:var(--ink)}
-  .modelsel-oculto{position:absolute;left:-9999px}
 
   /* charms: misma familia visual que los botones de gemas, con cantidad */
   .charm-intro{max-width:440px;margin:0 auto 26px;text-align:center;font-size:.92rem;color:var(--char);font-weight:300}
@@ -714,7 +694,6 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
               <div class="inputwrap">
                 <select id="modelo"><option value="">Selecciona tu modelo…</option></select>
               </div>
-              <div class="modelgrid" id="modeloGrid" role="group" aria-label="Modelos disponibles"></div>
               <div class="err">Elige tu modelo de iPhone para continuar.</div>
             </div>
           </div>
@@ -1032,7 +1011,7 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
      (modelos.js). Transparente conserva su lista. */
   const MODELOS_PASTA_ANTES=['iPhone 12','iPhone 12 Pro','iPhone 12 Pro Max','iPhone 13 mini','iPhone 13','iPhone 13 Pro','iPhone 13 Pro Max','iPhone 14','iPhone 14 Plus','iPhone 14 Pro','iPhone 14 Pro Max','iPhone 15','iPhone 15 Plus','iPhone 15 Pro','iPhone 15 Pro Max','iPhone 16','iPhone 16 Plus','iPhone 16 Pro','iPhone 16 Pro Max','iPhone 17e','iPhone 17','iPhone Air','iPhone 17 Pro','iPhone 17 Pro Max'];
   const MODELOS_PASTA=Object.keys(window.ASTERIA_MODELOS||{}).length ? Object.keys(window.ASTERIA_MODELOS) : MODELOS_PASTA_ANTES;
-  const MODELOS_TRANSPARENTE=['iPhone 12','iPhone 12 Pro','iPhone 12 Pro Max','iPhone 13 mini','iPhone 13','iPhone 13 Pro','iPhone 13 Pro Max','iPhone 14','iPhone 14 Plus','iPhone 14 Pro','iPhone 14 Pro Max','iPhone 15','iPhone 15 Pro','iPhone 15 Pro Max','iPhone 16','iPhone 16 Plus','iPhone 16 Pro','iPhone 16 Pro Max','iPhone 17e','iPhone 17','iPhone Air','iPhone 17 Pro','iPhone 17 Pro Max'];
+  const MODELOS_TRANSPARENTE=['iPhone 12','iPhone 12 Pro','iPhone 12 Pro Max','iPhone 13 mini','iPhone 13','iPhone 13 Pro','iPhone 13 Pro Max','iPhone 14','iPhone 14 Plus','iPhone 14 Pro','iPhone 14 Pro Max','iPhone 15','iPhone 15 Pro','iPhone 15 Pro Max','iPhone 16','iPhone 16 Plus','iPhone 16 Pro','iPhone 16 Pro Max','iPhone 17e','iPhone 17','iPhone Air','iPhone 17 Pro','iPhone 17 Pro Max','iPhone 18','iPhone 18 Pro','iPhone 18 Pro Max'];
   const modeloSelect=document.getElementById('modelo');
   const fldModelo=document.getElementById('fld-modelo');
   const modelBox=document.getElementById('modelBox');
@@ -1063,43 +1042,7 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
     const b=e.target.closest('[data-funda]'); if(!b) return;
     fundaOpts.querySelectorAll('.pastabtn').forEach(x=>x.classList.remove('on'));
     b.classList.add('on'); state.funda=b.dataset.funda;
-    pintarModelos();
     if(editor) editor.cambiarColor(state.funda, state.pasta, state.modelo);
-  });
-  const modeloGrid=document.getElementById('modeloGrid');
-  const fldModeloWrap=fldModelo.querySelector('.inputwrap');
-  /* Con silicon se eligen viendo la funda; la transparente sigue con la lista
-     desplegable porque no hay foto por modelo. El select sigue existiendo y es
-     el que guarda el valor, solo se esconde. */
-  function pintarModelos(){
-    if(!modeloGrid) return;
-    const esPasta = state.style && state.style.indexOf('Pasta')===0;
-    const cat = window.ASTERIA_MODELOS||{};
-    if(!esPasta || !Object.keys(cat).length){
-      modeloGrid.innerHTML='';
-      fldModeloWrap.classList.remove('modelsel-oculto');
-      return;
-    }
-    fldModeloWrap.classList.add('modelsel-oculto');
-    const colorActual=Object.keys(COLORES_FUNDA).find(k=>COLORES_FUNDA[k][0]===state.funda);
-    // Las primeras entran sin lazy: son las que se ven de una y no deben
-    // aparecer en blanco. El resto carga al hacer scroll.
-    modeloGrid.innerHTML=MODELOS_PASTA.map((m,i)=>{
-      const info=cat[m]; if(!info) return '';
-      const carga = i<8 ? '' : ' loading="lazy"';
-      const color=(colorActual && info.colores[colorActual]) ? colorActual : Object.keys(info.colores)[0];
-      const foto=info.colores[color];
-      const corto=m.replace('iPhone ','');
-      return `<button type="button" class="modelcard" data-modelo="${m}" aria-pressed="${state.modelo===m}">
-        <img src="${foto.img}" alt="Funda ${m} ${color.toLowerCase()}"${carga} decoding="async">
-        <span class="nm">${corto}</span>
-      </button>`;
-    }).join('');
-  }
-  modeloGrid && modeloGrid.addEventListener('click',e=>{
-    const b=e.target.closest('[data-modelo]'); if(!b) return;
-    modeloSelect.value=b.dataset.modelo;
-    modeloSelect.dispatchEvent(new Event('change'));
   });
   modeloSelect.addEventListener('change',()=>{
     state.modelo=modeloSelect.value||null; fldModelo.classList.remove('invalid');
@@ -1109,7 +1052,6 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
       // no quede debajo del pliegue.
       if(state.modelo) setTimeout(()=>pastaWrap.scrollIntoView({behavior:'smooth',block:'center'}),120);
     }
-    pintarModelos();
   });
 
   let formOpenedAt=0;
@@ -1190,7 +1132,6 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
         modelBox.classList.add('show');
       }
       pintarColoresFunda();
-      pintarModelos();
     }
     if(n===4){
       const esCharms = state.tipo==='charms';
@@ -1382,7 +1323,6 @@ text-transform:uppercase;letter-spacing:.22em;font-size:.62rem;text-align:center
       modelBox.classList.add('show');
       populateModelos();
       if(esPasta) pintarColoresFunda();
-      pintarModelos();
       // El modelo va primero: de el dependen los colores de funda que se ofrecen.
       const scrollTarget = modelBox;
       setTimeout(()=>scrollTarget.scrollIntoView({behavior:'smooth',block:'start'}),380);
