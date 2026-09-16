@@ -404,13 +404,17 @@
     }
 
     /* ---------- pintar ---------- */
+    /* El lado medido se marca con una clase, no con el texto del atributo
+       style: al girar se reescribe ese texto y el selector dejaba de coincidir,
+       asi que la pieza cambiaba de tamano sola (se veia en la estrella de mar). */
     function medidaCss(pieza) {
       const t = tamPieza(pieza);
       // El % del alto se mide contra el alto de la caja de charms, no de la funda.
       return t.eje === "ancho"
-        ? "--w:" + t.pct + "%;--h:auto"
-        : "--w:auto;--h:" + (t.pct * (altoFunda(modelo) / (altoFunda(modelo) * 0.92))) + "%";
+        ? "--w:" + t.pct + "%"
+        : "--h:" + (t.pct / AREA.h) + "%";
     }
+    const clasePorEje = (pieza) => tamPieza(pieza).eje === "ancho" ? "ed-ancho" : "ed-alto";
 
     function pintar() {
       const mapa = porId();
@@ -419,7 +423,7 @@
         if (!pieza) return "";
         const sel = p.uid === seleccion;
         const cuerpo = cuerpoPieza(pieza);
-        return `<div class="ed-charm${sel ? " sel" : ""}" data-uid="${p.uid}" tabindex="0"
+        return `<div class="ed-charm ${clasePorEje(pieza)}${sel ? " sel" : ""}" data-uid="${p.uid}" tabindex="0"
           role="button" aria-label="${esc(pieza.nombre)}, arrastra para mover"
           style="left:${p.x}%;top:${p.y}%;--rot:${p.rot}deg;${medidaCss(pieza)}">${cuerpo}</div>`;
       }).join("");
