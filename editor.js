@@ -680,11 +680,68 @@
       };
     }
 
+    /* Foto del diseno para el taller: se dibuja la funda y cada charm con el
+       tamano, lugar y giro que ve la clienta. Se lee del DOM ya pintado para
+       que la imagen sea exactamente lo que aprobo. JPEG sobre papel: Safari no
+       codifica webp y un PNG de este tamano pesa demasiado. */
+    function cargarImg(src) {
+      return new Promise((ok, mal) => {
+        const i = new Image();
+        i.onload = () => ok(i); i.onerror = mal; i.src = src;
+      });
+    }
+    async function captura(ancho) {
+      ancho = ancho || 560;
+      const caja = caseBox.getBoundingClientRect();
+      if (!caja.width) return null;
+      const esc = ancho / caja.width;
+      const c = document.createElement("canvas");
+      c.width = Math.round(ancho); c.height = Math.round(caja.height * esc);
+      const g = c.getContext("2d");
+      g.fillStyle = "#f2efe9"; g.fillRect(0, 0, c.width, c.height);
+
+      const foto = caseBox.querySelector(".ed-foto");
+      if (foto && foto.complete && foto.naturalWidth) {
+        const r = foto.getBoundingClientRect();
+        g.drawImage(foto, (r.left - caja.left) * esc, (r.top - caja.top) * esc, r.width * esc, r.height * esc);
+      }
+
+      const cajaArea = area.getBoundingClientRect();
+      for (const el of area.querySelectorAll(".ed-charm")) {
+        const w = el.offsetWidth, h = el.offsetHeight;
+        if (!w || !h) continue;
+        const cx = (cajaArea.left - caja.left + el.offsetLeft) * esc;
+        const cy = (cajaArea.top - caja.top + el.offsetTop) * esc;
+        const rot = parseFloat(el.style.getPropertyValue("--rot")) || 0;
+        let fuente = el.querySelector("img");
+        if (!fuente) {
+          const svg = el.querySelector("svg");
+          if (!svg) continue;
+          const copia = svg.cloneNode(true);
+          copia.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+          copia.setAttribute("width", w * 3); copia.setAttribute("height", h * 3);
+          try {
+            fuente = await cargarImg("data:image/svg+xml;charset=utf-8," + encodeURIComponent(new XMLSerializer().serializeToString(copia)));
+          } catch (e) { continue; }
+        }
+        const nw = fuente.naturalWidth || w, nh = fuente.naturalHeight || h;
+        const k = Math.min(w / nw, h / nh);           // object-fit: contain
+        const dw = nw * k * esc, dh = nh * k * esc;
+        g.save();
+        g.translate(cx, cy);
+        g.rotate(rot * Math.PI / 180);
+        g.drawImage(fuente, -dw / 2, -dh / 2, dw, dh);
+        g.restore();
+      }
+      return c.toDataURL("image/jpeg", 0.86);
+    }
+
     ajustarProporcion();
     pintar();
 
     return {
       exportar,
+      captura,
       total: () => puestos.length,
       /* El catalogo real reemplaza las piezas de ejemplo sin recargar nada. */
       usarCatalogo(catalogo, urlBase) {

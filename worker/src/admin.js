@@ -1,4 +1,4 @@
-// API de administracion (v2). Todo pasa por ADMIN_KEY.
+// API de administracion (v2). Todo pasa por una sesion valida (ver sesion.js).
 // Nada de esto toca las rutas de produccion: vive en /admin/* y /panel.
 
 import {
@@ -9,16 +9,6 @@ import {
 
 export const MAX_IMG_BYTES = 800 * 1024; // tope acordado: 800 KB por imagen
 const TIPOS_IMG = ["image/webp", "image/jpeg", "image/png"];
-
-export function autorizado(request, url, env) {
-  if (!env.ADMIN_KEY) return false;
-  const key = url.searchParams.get("key") || request.headers.get("X-Admin-Key") || "";
-  // Comparacion de tiempo constante para no filtrar la clave por tiempo de respuesta.
-  if (key.length !== env.ADMIN_KEY.length) return false;
-  let diff = 0;
-  for (let i = 0; i < key.length; i++) diff |= key.charCodeAt(i) ^ env.ADMIN_KEY.charCodeAt(i);
-  return diff === 0;
-}
 
 export function json(data, status = 200, extra = {}) {
   return new Response(JSON.stringify(data), {
@@ -222,6 +212,65 @@ export async function gastosCrud(kv, method, body, id) {
   return json({ ok: false, error: "metodo_no_permitido" }, 405);
 }
 
+// ---------- pedidos ----------
+// El taller los mueve por estados. Los pedidos bedazzled del sistema anterior no
+// traen total: se le puede poner a mano (totalManual) para que cuenten como
+// ingreso, sin tocar nunca el total que calculo el servidor.
+
+export const ESTADOS = ["nuevo", "armando", "listo", "entregado", "cancelado"];
+
+export const totalDe = (p) =>
+  typeof p.total === "number" && isFinite(p.total) ? p.total
+    : typeof p.totalManual === "number" && isFinite(p.totalManual) ? p.totalManual : null;
+
+async function leerPedidos(kv) {
+  const list = await kv.list({ prefix: "order:", limit: 1000 });
+  const pedidos = await Promise.all(list.keys.map(async (k) => {
+    try {
+      const rec = JSON.parse(await kv.get(k.name));
+      return rec && typeof rec === "object" ? { clave: k.name, ...rec } : null;
+    } catch { return null; }
+  }));
+  return pedidos.filter(Boolean);
+}
+
+export async function pedidosCrud(kv, method, body, url) {
+  if (method === "GET") {
+    const mes = /^\d{4}-\d{2}$/.test(url.searchParams.get("mes") || "") ? url.searchParams.get("mes") : null;
+    const pedidos = (await leerPedidos(kv))
+      .filter((p) => !mes || String(p.receivedAt || p.clave.slice(6)).startsWith(mes))
+      .reverse()
+      .map((p) => ({ ...p, estado: ESTADOS.includes(p.estado) ? p.estado : "nuevo", ip: undefined }));
+    return json({ pedidos, estados: ESTADOS });
+  }
+
+  if (method === "PUT") {
+    const b = body || {};
+    const clave = texto(b.clave, 200);
+    if (!clave.startsWith("order:")) return json({ ok: false, error: "clave_invalida" }, 400);
+    const raw = await kv.get(clave);
+    if (!raw) return json({ ok: false, error: "no_encontrado" }, 404);
+    let rec;
+    try { rec = JSON.parse(raw); } catch { return json({ ok: false, error: "pedido_ilegible" }, 500); }
+
+    if (b.estado !== undefined) {
+      if (!ESTADOS.includes(b.estado)) return json({ ok: false, error: "estado_invalido" }, 400);
+      rec.estado = b.estado;
+      rec.estadoCambio = new Date().toISOString();
+    }
+    if (b.totalManual !== undefined) rec.totalManual = numeroOpcional(b.totalManual);
+    if (b.nota !== undefined) rec.nota = texto(b.nota, 500);
+
+    await kv.put(clave, JSON.stringify(rec));
+    // El indice por folio es una copia: se mantiene igual para que el cliente
+    // que consulta su folio vea el mismo estado.
+    if (rec.orderId) await kv.put(`orderid:${rec.orderId}`, JSON.stringify(rec));
+    return json({ ok: true, pedido: { clave, ...rec, ip: undefined } });
+  }
+
+  return json({ ok: false, error: "metodo_no_permitido" }, 405);
+}
+
 // ---------- rendimiento ----------
 // Ingresos derivados de los pedidos guardados (campo `total`, que solo existe en
 // pedidos v2). Un pedido viejo sin total cuenta como pedido, no como ingreso:
@@ -230,17 +279,14 @@ export async function gastosCrud(kv, method, body, id) {
 export async function rendimiento(kv, desde, hasta) {
   const dentro = (iso) => (!desde || iso >= desde) && (!hasta || iso <= hasta);
 
-  const pedidosList = await kv.list({ prefix: "order:", limit: 1000 });
   let ingresos = 0, pedidos = 0, pedidosSinPrecio = 0;
-  for (const k of pedidosList.keys) {
-    const iso = k.name.slice("order:".length, "order:".length + 10);
-    if (!dentro(iso)) continue;
-    let rec;
-    try { rec = JSON.parse(await kv.get(k.name)); } catch { continue; }
-    if (!rec) continue;
+  for (const rec of await leerPedidos(kv)) {
+    const iso = rec.clave.slice("order:".length, "order:".length + 10);
+    if (!dentro(iso) || rec.estado === "cancelado") continue;
     pedidos++;
-    if (typeof rec.total === "number" && isFinite(rec.total)) ingresos += rec.total;
-    else pedidosSinPrecio++;
+    const total = totalDe(rec);
+    if (total === null) pedidosSinPrecio++;
+    else ingresos += total;
   }
 
   const gastosList = await kv.list({ prefix: "expense:", limit: 1000 });

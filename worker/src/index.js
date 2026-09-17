@@ -7,16 +7,18 @@
 //   GET  /catalog                      publico  — charms, precios, stock, fotos
 //   POST /precio                       publico  — total calculado en el servidor
 //   GET  /img/:id                      publico  — imagen guardada en KV
-//   GET  /panel?key=ADMIN_KEY          panel de administracion (HTML)
-//   GET|POST|PUT|DELETE /admin/*       API protegida con ADMIN_KEY
+//   GET  /panel                        panel (HTML; pide usuario y contrasena)
+//   POST /admin/login | /admin/logout  sesion por cookie (ver sesion.js)
+//   GET|POST|PUT|DELETE /admin/*       API protegida por sesion
 //
 // No se despliega sobre produccion: wrangler.toml de esta carpeta apunta a un
 // worker y un KV distintos.
 
 import { ordersHandler } from "./orders.js";
 import { catalogoPublico, calcularPrecio, getCharms, getPrecios, getStock } from "./catalog.js";
+import { quienEs, entrar, salir } from "./sesion.js";
 import {
-  autorizado, json, charmsCrud, preciosCrud, stockCrud, fotosCrud,
+  json, pedidosCrud, charmsCrud, preciosCrud, stockCrud, fotosCrud,
   gastosCrud, rendimiento, subirImagen, servirImagen,
 } from "./admin.js";
 import { panelHtml } from "./panel.js";
@@ -27,7 +29,7 @@ function corsHeaders(origin, allowedOrigins) {
   return {
     "Access-Control-Allow-Origin": allow,
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, X-Admin-Key",
+    "Access-Control-Allow-Headers": "Content-Type",
   };
 }
 
@@ -39,7 +41,7 @@ async function cuerpoJson(request) {
   }
 }
 
-async function rutasAdmin(request, url, env, partes) {
+async function rutasAdmin(request, url, env, partes, usuario) {
   const kv = env.ASTERIA_ORDERS;
   const method = request.method;
   const seccion = partes[1] || "";
@@ -50,6 +52,10 @@ async function rutasAdmin(request, url, env, partes) {
   const body = esJson && (method === "POST" || method === "PUT") ? await cuerpoJson(request) : null;
 
   switch (seccion) {
+    case "yo":
+      return json({ ok: true, usuario });
+    case "pedidos":
+      return pedidosCrud(kv, method, body, url);
     case "charms":
       return charmsCrud(kv, method, body, id);
     case "precios":
@@ -103,19 +109,24 @@ export default {
 
     // --- administracion ---
 
+    // El HTML del panel no trae ningun dato: sin sesion solo muestra la entrada.
     if (url.pathname === "/panel") {
-      if (!autorizado(request, url, env)) return new Response("No autorizado", { status: 403 });
       return new Response(panelHtml(), {
         status: 200,
-        headers: { "Content-Type": "text/html; charset=UTF-8", "Cache-Control": "no-store", "X-Robots-Tag": "noindex" },
+        headers: {
+          "Content-Type": "text/html; charset=UTF-8", "Cache-Control": "no-store", "X-Robots-Tag": "noindex",
+          "X-Frame-Options": "DENY", "Referrer-Policy": "no-referrer",
+        },
       });
     }
 
     if (partes[0] === "admin") {
-      if (!autorizado(request, url, env)) return json({ ok: false, error: "no_autorizado" }, 403);
-      const res = await rutasAdmin(request, url, env, partes);
-      for (const [k, v] of Object.entries(headers)) res.headers.set(k, v);
-      return res;
+      // Sin CORS: el panel vive en este mismo dominio y nadie mas debe hablarle.
+      if (request.method === "POST" && partes[1] === "login") return entrar(request, env);
+      if (request.method === "POST" && partes[1] === "logout") return salir(request, env);
+      const usuario = await quienEs(request, env);
+      if (!usuario) return json({ ok: false, error: "no_autorizado" }, 401);
+      return rutasAdmin(request, url, env, partes, usuario);
     }
 
     // --- todo lo demas: comportamiento identico al worker de produccion ---

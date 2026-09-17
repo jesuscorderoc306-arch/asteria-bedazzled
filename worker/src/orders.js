@@ -169,13 +169,49 @@ async function sendToChat(token, chatId, text) {
 
 // Respaldo del pedido en KV: para que un fallo de Telegram (rate limit, chat_id
 // invalido, caida del servicio) nunca signifique perder el pedido por completo.
+// Foto del diseno que arma el navegador de la clienta (data URL). Se guarda
+// como cualquier otra imagen del panel; si no es imagen o pesa de mas, el
+// pedido se guarda igual, solo sin foto.
+const MAX_DISENO_BYTES = 800 * 1024;
+async function guardarFotoDiseno(kv, dataUrl) {
+  const m = /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/.exec(String(dataUrl || ""));
+  if (!m || m[2].length > MAX_DISENO_BYTES * 1.37) return null;
+  let bytes;
+  try { bytes = Uint8Array.from(atob(m[2]), (c) => c.charCodeAt(0)); } catch { return null; }
+  if (!bytes.byteLength || bytes.byteLength > MAX_DISENO_BYTES) return null;
+  const id = `diseno_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
+  await kv.put(`img:${id}`, bytes.buffer, { metadata: { tipo: m[1], bytes: bytes.byteLength, subida: new Date().toISOString() } });
+  return id;
+}
+
+// Posiciones de los charms: solo numeros acotados y textos cortos.
+function limpiarDiseno(d) {
+  if (!d || typeof d !== "object" || !Array.isArray(d.piezas)) return null;
+  const num = (v, a, b) => (Number.isFinite(Number(v)) ? Math.min(b, Math.max(a, Number(v))) : 0);
+  const txt = (v, n) => String(v == null ? "" : v).slice(0, n);
+  return {
+    color: txt(d.color, 20), pasta: txt(d.pasta, 20), modelo: txt(d.modelo, 40),
+    piezas: d.piezas.slice(0, 80).map((p) => ({
+      id: txt(p && p.id, 40), nombre: txt(p && p.nombre, 60),
+      x: num(p && p.x, 0, 100), y: num(p && p.y, 0, 100), rot: num(p && p.rot, -360, 360),
+    })),
+  };
+}
+
 async function saveOrderBackup(kv, order, ip, telegramOk, precio) {
   if (!kv) return;
   const receivedAt = new Date().toISOString();
+  let disenoImg = null;
+  try { disenoImg = await guardarFotoDiseno(kv, order.disenoImg); } catch { disenoImg = null; }
   const record = {
     orderId: order.orderId || null,
     ig: order.ig || "",
     nombre: order.nombre || "",
+    tipo: order.tipo === "charms" ? "charms" : "bedazzled",
+    funda: String(order.funda || "").slice(0, 20),
+    diseno: limpiarDiseno(order.diseno),
+    disenoImg,
+    estado: "nuevo",
     style: order.style || "",
     pasta: order.pasta || "",
     modelo: order.modelo || "",

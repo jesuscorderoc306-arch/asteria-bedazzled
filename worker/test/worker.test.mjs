@@ -7,12 +7,15 @@ import assert from "node:assert/strict";
 import worker from "../src/index.js";
 import { entorno } from "./mock-kv.mjs";
 import { calcularPrecio, preciosVacios } from "../src/catalog.js";
+import { huellaContrasena } from "../src/sesion.js";
 
 const BASE = "https://w.test";
 const KEY = "clave-de-prueba-123456";
 
-function pedir(ruta, { method = "GET", json, tipo, body, key } = {}) {
+function pedir(ruta, { method = "GET", json, tipo, body, key, cookie, ip } = {}) {
   const headers = {};
+  if (cookie) headers.Cookie = cookie;
+  if (ip) headers["CF-Connecting-IP"] = ip;
   if (json !== undefined) { headers["Content-Type"] = "application/json"; body = JSON.stringify(json); }
   if (tipo) headers["Content-Type"] = tipo;
   if (key) headers["X-Admin-Key"] = key;
@@ -22,20 +25,124 @@ function pedir(ruta, { method = "GET", json, tipo, body, key } = {}) {
 const llamar = (env, ruta, opciones) => worker.fetch(pedir(ruta, opciones), env, {});
 const leer = async (res) => JSON.parse(await res.text());
 
-test("/admin exige la clave correcta", async () => {
+test("/admin exige sesion o la clave de scripts", async () => {
   const env = entorno();
-  assert.equal((await llamar(env, "/admin/charms")).status, 403);
-  assert.equal((await llamar(env, "/admin/charms", { key: "otra-clave-invalida" })).status, 403);
+  assert.equal((await llamar(env, "/admin/charms")).status, 401);
+  assert.equal((await llamar(env, "/admin/charms", { key: "otra-clave-invalida" })).status, 401);
+  assert.equal((await llamar(env, "/admin/charms?key=" + KEY)).status, 401, "la clave en la URL ya no sirve");
   assert.equal((await llamar(env, "/admin/charms", { key: KEY })).status, 200);
 });
 
-test("/panel sin clave no expone nada", async () => {
+test("/panel es solo la puerta: HTML sin datos, con modelos y sin marcadores sin llenar", async () => {
   const env = entorno();
+  await env.ASTERIA_ORDERS.put("order:2026-08-01T10:00:00.000Z:SECRETO", JSON.stringify({ orderId: "SECRETO", ig: "clienta_privada" }));
   const res = await llamar(env, "/panel");
-  assert.equal(res.status, 403);
-  const ok = await llamar(env, "/panel?key=" + KEY);
+  assert.equal(res.status, 200);
+  assert.match(res.headers.get("Content-Type"), /text\/html/);
+  assert.equal(res.headers.get("X-Frame-Options"), "DENY");
+  const html = await res.text();
+  assert.ok(!html.includes("clienta_privada") && !html.includes("SECRETO"));
+  assert.ok(!html.includes("__LOGO__") && !html.includes("__MODELOS__"));
+  assert.ok(html.includes("iPhone 18 Pro Max"));
+});
+
+async function entornoConUsuario() {
+  return entorno({ ADMIN_USER: "Asteria", ADMIN_PASS_HASH: await huellaContrasena("una-contrasena-larga") });
+}
+
+test("entrar con usuario y contrasena da una cookie segura que abre /admin", async () => {
+  const env = await entornoConUsuario();
+  const mal = await llamar(env, "/admin/login", { method: "POST", json: { usuario: "asteria", contrasena: "otra" } });
+  assert.equal(mal.status, 401);
+  assert.equal(mal.headers.get("Set-Cookie"), null);
+
+  const ok = await llamar(env, "/admin/login", { method: "POST", json: { usuario: " ASTERIA ", contrasena: "una-contrasena-larga" } });
   assert.equal(ok.status, 200);
-  assert.match(ok.headers.get("Content-Type"), /text\/html/);
+  const galleta = ok.headers.get("Set-Cookie");
+  assert.match(galleta, /HttpOnly/); assert.match(galleta, /Secure/); assert.match(galleta, /SameSite=Strict/);
+  const cookie = galleta.split(";")[0];
+
+  const yo = await leer(await llamar(env, "/admin/yo", { cookie }));
+  assert.equal(yo.usuario, "asteria");
+
+  const fuera = await llamar(env, "/admin/logout", { method: "POST", cookie });
+  assert.match(fuera.headers.get("Set-Cookie"), /Max-Age=0/);
+  assert.equal((await llamar(env, "/admin/yo", { cookie })).status, 401, "cerrar sesion la invalida en el servidor");
+});
+
+test("cinco intentos fallidos bloquean la entrada aunque despues se atine", async () => {
+  const env = await entornoConUsuario();
+  for (let i = 0; i < 5; i++) {
+    assert.equal((await llamar(env, "/admin/login", { method: "POST", ip: "9.9.9.9", json: { usuario: "asteria", contrasena: "x" + i } })).status, 401);
+  }
+  const bloqueado = await llamar(env, "/admin/login", { method: "POST", ip: "9.9.9.9", json: { usuario: "asteria", contrasena: "una-contrasena-larga" } });
+  assert.equal(bloqueado.status, 429);
+  const otraIp = await llamar(env, "/admin/login", { method: "POST", ip: "8.8.8.8", json: { usuario: "asteria", contrasena: "una-contrasena-larga" } });
+  assert.equal(otraIp.status, 200);
+});
+
+test("sin usuario configurado nadie entra", async () => {
+  const env = entorno();
+  const r = await llamar(env, "/admin/login", { method: "POST", json: { usuario: "", contrasena: "" } });
+  assert.equal(r.status, 503);
+});
+
+test("pedidos: estados, precio a mano y rendimiento", async () => {
+  const env = entorno();
+  const kv = env.ASTERIA_ORDERS;
+  await kv.put("order:2026-08-01T10:00:00.000Z:A1", JSON.stringify({ orderId: "A1", ig: "ana", total: 500, receivedAt: "2026-08-01T10:00:00.000Z", ip: "1.2.3.4" }));
+  await kv.put("order:2026-08-02T10:00:00.000Z:A2", JSON.stringify({ orderId: "A2", ig: "lu", receivedAt: "2026-08-02T10:00:00.000Z" }));
+  await kv.put("order:2026-09-02T10:00:00.000Z:A3", JSON.stringify({ orderId: "A3", ig: "mar", total: 300, receivedAt: "2026-09-02T10:00:00.000Z" }));
+
+  const agosto = await leer(await llamar(env, "/admin/pedidos?mes=2026-08", { key: KEY }));
+  assert.deepEqual(agosto.pedidos.map((p) => p.orderId), ["A2", "A1"], "solo el mes pedido, el mas nuevo primero");
+  assert.ok(agosto.pedidos.every((p) => p.estado === "nuevo"), "los pedidos viejos entran como nuevos");
+  assert.ok(agosto.pedidos.every((p) => p.ip === undefined), "la IP de la clienta no sale al panel");
+
+  const clave = agosto.pedidos[0].clave;
+  assert.equal((await llamar(env, "/admin/pedidos", { method: "PUT", key: KEY, json: { clave, estado: "volando" } })).status, 400);
+  assert.equal((await llamar(env, "/admin/pedidos", { method: "PUT", key: KEY, json: { clave: "expense:x", estado: "listo" } })).status, 400);
+  const puesto = await leer(await llamar(env, "/admin/pedidos", { method: "PUT", key: KEY, json: { clave, estado: "listo", totalManual: "450", nota: "paga al entregar" } }));
+  assert.equal(puesto.pedido.estado, "listo");
+  assert.equal(puesto.pedido.totalManual, 450);
+  assert.equal(JSON.parse(await kv.get("orderid:A2")).estado, "listo", "el indice por folio queda igual");
+
+  let r = await leer(await llamar(env, "/admin/rendimiento?desde=2026-08-01&hasta=2026-08-31", { key: KEY }));
+  assert.equal(r.ingresos, 950);
+  assert.equal(r.pedidosSinPrecio, 0);
+
+  const a1 = agosto.pedidos[1].clave;
+  await llamar(env, "/admin/pedidos", { method: "PUT", key: KEY, json: { clave: a1, estado: "cancelado" } });
+  r = await leer(await llamar(env, "/admin/rendimiento?desde=2026-08-01&hasta=2026-08-31", { key: KEY }));
+  assert.equal(r.ingresos, 450, "un pedido cancelado no es ingreso");
+  assert.equal(r.pedidos, 1);
+});
+
+test("el pedido guarda las posiciones y la foto del diseno, y nunca falla por la foto", async () => {
+  const env = entorno();
+  const fetchReal = globalThis.fetch;
+  globalThis.fetch = async (url) => new Response(JSON.stringify(String(url).includes("turnstile") ? { success: true } : { ok: true }), { status: 200 });
+  try {
+    const jpeg = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3, 4]).toString("base64");
+    const base = { ig: "ana", tipo: "charms", modelo: "iPhone 15", funda: "Blanca", pasta: "Negra", turnstileToken: "t" };
+    const ok = await llamar(env, "/", { method: "POST", ip: "5.5.5.5", json: { ...base, orderId: "F1",
+      diseno: { color: "Blanca", piezas: [{ id: "p1", nombre: "Estrella", x: 140, y: 20, rot: 45, extra: "<script>" }] },
+      disenoImg: "data:image/jpeg;base64," + jpeg } });
+    assert.equal(ok.status, 200);
+    const rec = JSON.parse(await env.ASTERIA_ORDERS.get("orderid:F1"));
+    assert.equal(rec.tipo, "charms");
+    assert.equal(rec.estado, "nuevo");
+    assert.deepEqual(rec.diseno.piezas[0], { id: "p1", nombre: "Estrella", x: 100, y: 20, rot: 45 }, "posiciones acotadas y sin campos extra");
+    assert.match(rec.disenoImg, /^diseno_/);
+    const img = await llamar(env, "/img/" + rec.disenoImg);
+    assert.equal(img.headers.get("Content-Type"), "image/jpeg");
+
+    const sinFoto = await llamar(env, "/", { method: "POST", ip: "6.6.6.6", json: { ...base, orderId: "F2", disenoImg: "data:text/html;base64,PHNjcmlwdD4=" } });
+    assert.equal(sinFoto.status, 200, "una foto invalida no tumba el pedido");
+    assert.equal(JSON.parse(await env.ASTERIA_ORDERS.get("orderid:F2")).disenoImg, null);
+  } finally {
+    globalThis.fetch = fetchReal;
+  }
 });
 
 test("catalogo vacio no inventa precios", async () => {

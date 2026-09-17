@@ -3,7 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test test/",
-    "dev": "wrangler dev"
+    "build:panel": "node scripts/build-panel.mjs",
+    "pretest": "node scripts/build-panel.mjs",
+    "test": "node --test test/worker.test.mjs",
+    "dev": "node scripts/build-panel.mjs && wrangler dev",
+    "deploy": "node scripts/build-panel.mjs && wrangler deploy"
   }
 }

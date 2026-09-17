@@ -1462,6 +1462,15 @@
         if(turnstileToken) break;
         await new Promise(r=>setTimeout(r,150));
       }
+      // La foto del diseno ayuda al taller, pero nunca debe frenar un pedido:
+      // si tarda mas de 2.5 s o falla, se manda sin ella (las posiciones van igual).
+      let disenoImg=null;
+      if(state.tipo==='charms' && editor && editor.captura){
+        disenoImg=await Promise.race([
+          editor.captura(560).catch(()=>null),
+          new Promise(r=>setTimeout(()=>r(null),2500))
+        ]);
+      }
       const ctrl=new AbortController();
       const t=setTimeout(()=>ctrl.abort(),8000);
       const res=await fetch(WORKER_URL,{
@@ -1472,7 +1481,7 @@
           style:state.style, funda:state.funda, pasta:state.pasta,
           modelo:state.modelo, dens:state.dens || '',
           charms:charmsElegidos(), charmsTexto:state.tipo==='charms'?resumenCharms():'',
-          diseno:state.tipo==='charms'?disenoCharms:null,
+          diseno:state.tipo==='charms'?disenoCharms:null, disenoImg,
           prio:prio.length?prio.join(', '):'', excl:excl.length?excl.join(', '):'',
           website, turnstileToken
         }),
