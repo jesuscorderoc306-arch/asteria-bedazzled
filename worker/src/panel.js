@@ -3,6 +3,7 @@
 // `npm run build:panel`. Aqui solo se rellenan el logo y la lista de modelos.
 
 import { LOGO_DATA_URI } from "./logo.js";
+import { LOGO_MARCA } from "./logo-marca.js";
 import { PANEL_HTML } from "./panel-html.js";
 
 // Los modelos que ofrece el formulario publico. Si cambian ahi, cambian aqui.
@@ -19,5 +20,6 @@ export const MODELOS_IPHONE = [
 export function panelHtml() {
   return PANEL_HTML
     .split("__LOGO__").join(LOGO_DATA_URI)
+    .split("__MARCA__").join(LOGO_MARCA)
     .replace("__MODELOS__", JSON.stringify(MODELOS_IPHONE));
 }

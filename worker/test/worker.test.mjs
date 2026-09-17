@@ -42,7 +42,7 @@ test("/panel es solo la puerta: HTML sin datos, con modelos y sin marcadores sin
   assert.equal(res.headers.get("X-Frame-Options"), "DENY");
   const html = await res.text();
   assert.ok(!html.includes("clienta_privada") && !html.includes("SECRETO"));
-  assert.ok(!html.includes("__LOGO__") && !html.includes("__MODELOS__"));
+  assert.ok(!html.includes("__LOGO__") && !html.includes("__MODELOS__") && !html.includes("__MARCA__"));
   assert.ok(html.includes("iPhone 18 Pro Max"));
 });
 

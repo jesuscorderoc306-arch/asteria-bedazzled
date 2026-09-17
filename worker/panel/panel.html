@@ -46,7 +46,7 @@ a{color:inherit;text-underline-offset:3px;text-decoration-thickness:1px}
 .login{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:32px 20px;
   background:radial-gradient(120% 80% at 50% 0%,var(--paper) 40%,var(--paper-2) 100%)}
 .login-box{width:100%;max-width:380px;text-align:center;animation:sube .7s var(--ease) both}
-.login-box img{width:64px;height:64px;margin:0 auto 22px}
+.login-box img{height:92px;width:auto;margin:0 auto 26px}
 .login h1{font-family:var(--font-display);font-weight:400;font-size:2.8rem;line-height:1;letter-spacing:-.01em}
 .login h1 i{color:var(--maroon)}
 .login p.lead{color:var(--taupe);font-weight:300;margin:12px 0 34px}
@@ -85,10 +85,10 @@ input[type=number].in::-webkit-inner-spin-button,input[type=number].in::-webkit-
 /* ---------- armazon ---------- */
 .app{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);min-height:100vh;min-height:100dvh}
 .rail{position:sticky;top:0;height:100vh;height:100dvh;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:26px 18px 22px}
-.marca{display:flex;align-items:center;gap:12px;padding:0 10px 32px}
-.marca img{width:40px;height:40px}
-.marca b{display:block;font-family:var(--font-display);font-weight:400;font-size:1.45rem;letter-spacing:.08em;line-height:1}
-.marca span{display:block;font-family:var(--font-label);text-transform:uppercase;letter-spacing:.3em;font-size:.58rem;color:var(--taupe);margin-top:5px}
+
+.marca{display:flex;align-items:flex-end;gap:12px;padding:0 10px 34px}
+.marca img{height:62px;width:auto}
+.marca span{font-family:var(--font-label);text-transform:uppercase;letter-spacing:.3em;font-size:.58rem;color:var(--taupe);padding-bottom:4px}
 .nav{display:grid;gap:2px}
 .nav a{display:flex;align-items:center;gap:14px;padding:12px;text-decoration:none;font-family:var(--font-label);text-transform:uppercase;
   letter-spacing:.18em;font-size:.74rem;color:var(--char);border-radius:2px;position:relative;transition:color .2s,background .2s}
@@ -339,9 +339,8 @@ dialog.hoja::backdrop{background:rgba(5,4,3,.34);animation:aparece .3s ease}
   .barra-movil{display:flex;position:sticky;top:0;z-index:30;align-items:center;justify-content:space-between;gap:12px;
     padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;background:var(--paper);border-bottom:1px solid var(--line)}
   .barra-movil .marca{padding:0;gap:10px}
-  .barra-movil .marca img{width:32px;height:32px}
-  .barra-movil .marca b{font-size:1.2rem}
-  .barra-movil .marca span{font-size:.52rem;letter-spacing:.26em;margin-top:3px}
+  .barra-movil .marca img{height:38px}
+  .barra-movil .marca span{font-size:.52rem;letter-spacing:.26em;padding-bottom:2px}
   .barra-movil .btn-quiet{padding:10px;margin-right:-10px}
   .tabs-movil{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--paper);
     border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
@@ -426,7 +425,7 @@ dialog.hoja::backdrop{background:rgba(5,4,3,.34);animation:aparece .3s ease}
 <!-- ============ entrada ============ -->
 <div class="login" id="login" hidden>
   <div class="login-box">
-    <img src="__LOGO__" alt="">
+    <img src="__MARCA__" alt="ASTÉRIA">
     <h1>El <i>taller</i></h1>
     <p class="lead">Pedidos, gastos y catálogo de ASTÉRIA.</p>
     <form id="form-login" novalidate>
@@ -443,7 +442,7 @@ dialog.hoja::backdrop{background:rgba(5,4,3,.34);animation:aparece .3s ease}
 <!-- ============ taller ============ -->
 <div class="app" id="app" hidden>
   <aside class="rail" aria-label="Secciones">
-    <div class="marca"><img src="__LOGO__" alt=""><div><b>ASTÉRIA</b><span>Taller</span></div></div>
+    <div class="marca"><img src="__MARCA__" alt="ASTÉRIA"><span>Taller</span></div>
     <nav class="nav" data-nav>
       <a href="#pedidos" data-vista="pedidos"><svg class="ico"><use href="#i-pedidos"/></svg>Pedidos<span class="cuenta" data-cuenta hidden></span></a>
       <a href="#gastos" data-vista="gastos"><svg class="ico"><use href="#i-gastos"/></svg>Gastos</a>
@@ -454,7 +453,7 @@ dialog.hoja::backdrop{background:rgba(5,4,3,.34);animation:aparece .3s ease}
   </aside>
 
   <header class="barra-movil">
-    <div class="marca"><img src="__LOGO__" alt=""><div><b>ASTÉRIA</b><span>Taller</span></div></div>
+    <div class="marca"><img src="__MARCA__" alt="ASTÉRIA"><span>Taller</span></div>
     <button class="btn btn-quiet" data-salir aria-label="Salir"><svg class="ico"><use href="#i-salir"/></svg></button>
   </header>
 
